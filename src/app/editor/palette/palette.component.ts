@@ -16,6 +16,15 @@ export const PALETTE_ITEMS: PaletteItem[] = [
   { type: 'button',  icon: '⬚',  label: 'Button'  },
   { type: 'divider', icon: '—',  label: 'Divider' },
   { type: 'spacer',  icon: '↕',  label: 'Spacer'  },
+  { type: 'heading', icon: 'H',  label: 'Heading' },
+  { type: 'social',  icon: '🔗', label: 'Social'  },
+  { type: 'video',   icon: '▶',  label: 'Video'   },
+  { type: 'html',      icon: '<>',  label: 'HTML'      },
+  { type: 'hero',      icon: '🌅', label: 'Hero'      },
+  { type: 'table',     icon: '⊞',  label: 'Table'     },
+  { type: 'accordion', icon: '≡',  label: 'Accordion' },
+  { type: 'navbar',    icon: '☰',  label: 'Navbar'    },
+  { type: 'carousel',  icon: '⟳',  label: 'Carousel'  },
 ];
 
 @Component({

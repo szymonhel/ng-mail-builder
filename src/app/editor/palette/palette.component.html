@@ -42,5 +42,20 @@
     <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
            [value]="store.doc().settings.bodyColor"
            (input)="store.updateSettings({ bodyColor: $any($event.target).value })" />
+    <label class="text-gray-600">Preview text</label>
+    <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
+           [value]="store.doc().settings.previewText"
+           (change)="store.updateSettings({ previewText: $any($event.target).value })"
+           placeholder="Preview shown in inbox..." />
+    <label class="text-gray-600 mt-2">Google Font name</label>
+    <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
+           [value]="store.doc().settings.googleFontName"
+           (change)="store.updateSettings({ googleFontName: $any($event.target).value })"
+           placeholder="e.g. Roboto" />
+    <label class="text-gray-600">Google Font URL</label>
+    <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
+           [value]="store.doc().settings.googleFontUrl"
+           (change)="store.updateSettings({ googleFontUrl: $any($event.target).value })"
+           placeholder="https://fonts.googleapis.com/css?family=Roboto" />
   </div>
 </div>
