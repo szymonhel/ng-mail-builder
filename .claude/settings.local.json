@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx ng:*)",
+      "Read(//Users/szymonhel/.nvm/versions/node/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(nvm list:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['projects']['ng-mail-builder']['architect']['build'], indent=2\\)\\)\")",
+      "Bash(ls /Users/szymonhel/Projekty/ng-mail-builder/postcss.config*)",
+      "Bash(npx --node-options=\"\" ng version)",
+      "Bash(npm start:*)",
+      "Bash(echo \"Server starting, PID: $!\")",
+      "Bash(python3 -c \"import json,sys;d=json.load\\(sys.stdin\\);print\\(d['version']\\)\")"
+    ]
+  }
+}

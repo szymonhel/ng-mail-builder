@@ -1,0 +1,16 @@
+<div class="bg-gray-200 min-h-full p-6 box-border" (click)="clearSelection($event)">
+  <div class="mx-auto shadow-md rounded overflow-hidden"
+       [style.maxWidth.px]="store.doc().settings.contentWidth"
+       [style.background]="store.doc().settings.bodyColor">
+    <div cdkDropList (cdkDropListDropped)="onRowDrop($event)" class="min-h-[40px] p-2">
+      @for (row of store.doc().rows; track row.id) {
+        <div cdkDrag class="cursor-default">
+          <app-row [row]="row" />
+        </div>
+      }
+    </div>
+    <div class="p-3 text-center border-t border-gray-100">
+      <button class="border-2 border-dashed border-gray-300 bg-transparent text-gray-500 px-6 py-2 rounded cursor-pointer text-sm transition-all hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50" (click)="addRow()">+ Add Row</button>
+    </div>
+  </div>
+</div>

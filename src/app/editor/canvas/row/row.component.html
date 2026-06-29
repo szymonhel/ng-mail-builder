@@ -1,0 +1,39 @@
+<div class="relative border-2 rounded mb-2 transition-colors hover:border-gray-200"
+     [class.border-blue-500]="isRowSelected()"
+     [class.border-transparent]="!isRowSelected()"
+     (click)="selectRow($event)">
+  <div class="flex items-center justify-between px-2 py-1 bg-gray-50 border-b border-gray-100 text-xs text-gray-400">
+    <span>Row</span>
+    <button class="border-0 bg-transparent cursor-pointer px-1.5 py-0.5 rounded text-xs text-red-500 hover:bg-red-50" (click)="removeRow($event)" title="Remove row">&#x2715;</button>
+  </div>
+  <div cdkDropList
+       [id]="columnListId"
+       [cdkDropListData]="column.blocks"
+       [cdkDropListConnectedTo]="connectedTo()"
+       (cdkDropListDropped)="onBlockDrop($any($event))"
+       class="min-h-[48px] p-1">
+    @for (block of column.blocks; track block.id) {
+      <div cdkDrag
+           class="group relative border-2 rounded my-1 transition-all bg-white cursor-pointer"
+           [class.border-blue-500]="isSelected(block.id)"
+           [class.bg-blue-50]="isSelected(block.id)"
+           [class.border-transparent]="!isSelected(block.id)"
+           (click)="selectBlock(block.id, $event)">
+        <div class="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab text-gray-300 text-sm z-10 select-none hover:text-gray-500" cdkDragHandle>&#x22EE;&#x22EE;</div>
+        <div class="px-7">
+          <app-block-host [block]="block" />
+        </div>
+        <div class="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity"
+             [class.opacity-100]="isSelected(block.id)">
+          <button class="border-0 bg-transparent cursor-pointer px-1.5 py-0.5 rounded text-xs text-red-500 hover:bg-red-50" (click)="removeBlock(block.id, $event)" title="Remove block">&#x2715;</button>
+        </div>
+        <div *cdkDragPlaceholder class="h-10 bg-blue-100 border-2 border-dashed border-blue-500 rounded"></div>
+      </div>
+    }
+    @if (column.blocks.length === 0) {
+      <div class="flex items-center justify-center h-16 border-2 border-dashed border-gray-200 rounded text-gray-400 text-sm">
+        <span>Drag a block from the palette</span>
+      </div>
+    }
+  </div>
+</div>

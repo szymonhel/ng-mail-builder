@@ -1,0 +1,162 @@
+<div class="p-3 bg-gray-50 border-l border-gray-200 h-full overflow-y-auto box-border">
+  @if (!block) {
+    <div class="flex flex-col items-center justify-center h-48 text-gray-400 text-sm gap-2 text-center">
+      <div class="text-4xl">&#x2196;</div>
+      <div>Select a block to edit its properties</div>
+    </div>
+  } @else {
+    <div class="mb-4">
+      <span class="inline-block bg-blue-600 text-white px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ block.type | titlecase }}</span>
+    </div>
+
+    @switch (block.type) {
+      @case ('text') {
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Content (HTML)</label>
+          <textarea class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="6" [value]="textProps.html"
+                    (change)="update({ html: $any($event.target).value })"></textarea>
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
+          <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="textProps.align" (change)="update({ align: $any($event.target).value })">
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Font size (px)</label>
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="textProps.fontSize"
+                   (change)="update({ fontSize: +$any($event.target).value })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Color</label>
+            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="textProps.color"
+                   (input)="update({ color: $any($event.target).value })" />
+          </div>
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="textProps.padding"
+                 (change)="update({ padding: $any($event.target).value })" placeholder="e.g. 10px 25px" />
+        </div>
+      }
+
+      @case ('image') {
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Image URL</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.src"
+                 (change)="update({ src: $any($event.target).value })" placeholder="https://..." />
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Alt text</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.alt"
+                 (change)="update({ alt: $any($event.target).value })" />
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Link (href)</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.href"
+                 (change)="update({ href: $any($event.target).value })" placeholder="https://..." />
+        </div>
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Width (px)</label>
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.width"
+                   (change)="update({ width: +$any($event.target).value })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.align" (change)="update({ align: $any($event.target).value })">
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.padding"
+                 (change)="update({ padding: $any($event.target).value })" />
+        </div>
+      }
+
+      @case ('button') {
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Label</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.label"
+                 (change)="update({ label: $any($event.target).value })" />
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">URL (href)</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.href"
+                 (change)="update({ href: $any($event.target).value })" />
+        </div>
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Background</label>
+            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="buttonProps.bg"
+                   (input)="update({ bg: $any($event.target).value })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Text color</label>
+            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="buttonProps.color"
+                   (input)="update({ color: $any($event.target).value })" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.align" (change)="update({ align: $any($event.target).value })">
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Border radius (px)</label>
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.borderRadius"
+                   (change)="update({ borderRadius: +$any($event.target).value })" />
+          </div>
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.padding"
+                 (change)="update({ padding: $any($event.target).value })" />
+        </div>
+      }
+
+      @case ('divider') {
+        <div class="grid grid-cols-2 gap-2 mb-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Color</label>
+            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="dividerProps.borderColor"
+                   (input)="update({ borderColor: $any($event.target).value })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Width (px)</label>
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="dividerProps.borderWidth"
+                   (change)="update({ borderWidth: +$any($event.target).value })" />
+          </div>
+        </div>
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="dividerProps.padding"
+                 (change)="update({ padding: $any($event.target).value })" />
+        </div>
+      }
+
+      @case ('spacer') {
+        <div class="mb-3 flex flex-col gap-1">
+          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Height (px)</label>
+          <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="spacerProps.height"
+                 (change)="update({ height: +$any($event.target).value })" />
+        </div>
+      }
+    }
+
+    <div class="mb-3 flex flex-col gap-1 mt-2">
+      <label class="text-[10px] text-gray-400 normal-case tracking-normal font-normal">Merge fields: use {{ '{' }}{{ '{' }}guest.firstName{{ '}' }}{{ '}' }}</label>
+    </div>
+  }
+</div>

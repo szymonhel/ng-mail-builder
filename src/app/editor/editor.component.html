@@ -1,0 +1,65 @@
+<div class="flex flex-col h-screen overflow-hidden font-sans">
+  <!-- Top bar -->
+  <header class="flex items-center px-4 h-[52px] bg-[#1a1a2e] text-white flex-shrink-0 gap-4">
+    <div class="flex items-center gap-2 font-bold text-base mr-4">
+      <span class="text-xl">&#x2709;</span>
+      <span>Email Builder</span>
+    </div>
+    <nav class="flex gap-1 flex-1">
+      <button
+        class="border-0 px-4 py-1.5 rounded cursor-pointer text-sm transition-all"
+        [ngClass]="store.activeTab() === 'editor' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
+        (click)="store.setActiveTab('editor')">Editor</button>
+      <button
+        class="border-0 px-4 py-1.5 rounded cursor-pointer text-sm transition-all"
+        [ngClass]="store.activeTab() === 'preview' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
+        (click)="store.setActiveTab('preview')">Preview</button>
+      <button
+        class="border-0 px-4 py-1.5 rounded cursor-pointer text-sm transition-all"
+        [ngClass]="store.activeTab() === 'json' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
+        (click)="store.setActiveTab('json')">Export</button>
+    </nav>
+    <div class="flex gap-2">
+      <button class="bg-white/10 text-white border border-white/20 px-3.5 py-1.5 rounded cursor-pointer text-sm hover:bg-white/20" (click)="copyJson()">Copy JSON</button>
+      <button class="bg-blue-600 text-white border-0 px-4 py-1.5 rounded cursor-pointer text-sm font-medium hover:bg-blue-700" (click)="copyMjml()">Copy MJML</button>
+    </div>
+  </header>
+
+  <!-- Main workspace -->
+  <div class="flex flex-1 overflow-hidden">
+    @if (store.activeTab() === 'editor') {
+      <aside class="w-48 flex-shrink-0 overflow-y-auto border-r border-gray-200">
+        <app-palette />
+      </aside>
+      <main class="flex-1 overflow-y-auto min-w-0">
+        <app-canvas />
+      </main>
+      <aside class="w-64 flex-shrink-0 overflow-y-auto border-l border-gray-200">
+        <app-inspector />
+      </aside>
+    }
+    @if (store.activeTab() === 'preview') {
+      <div class="flex-1 overflow-hidden">
+        <app-preview />
+      </div>
+    }
+    @if (store.activeTab() === 'json') {
+      <div class="flex-1 grid grid-cols-2 gap-6 p-6 overflow-auto bg-gray-100">
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <h3 class="m-0 text-sm font-semibold">JSON Document Model</h3>
+            <button class="bg-white text-gray-700 border border-gray-300 px-3.5 py-1.5 rounded cursor-pointer text-sm hover:bg-gray-50" (click)="copyJson()">Copy</button>
+          </div>
+          <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ jsonOutput() }}</pre>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <h3 class="m-0 text-sm font-semibold">MJML Output</h3>
+            <button class="bg-white text-gray-700 border border-gray-300 px-3.5 py-1.5 rounded cursor-pointer text-sm hover:bg-gray-50" (click)="copyMjml()">Copy</button>
+          </div>
+          <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ mjmlOutput() }}</pre>
+        </div>
+      </div>
+    }
+  </div>
+</div>
