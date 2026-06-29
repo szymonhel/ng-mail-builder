@@ -146,6 +146,26 @@ export class EditorStore {
     this._doc.update(d => ({ ...d, rows: [...d.rows, row] }));
   }
 
+  addColumn(rowId: string) {
+    this._doc.update(d => ({
+      ...d,
+      rows: d.rows.map(r => r.id !== rowId ? r : {
+        ...r,
+        columns: [...r.columns, { id: uid(), blocks: [] }]
+      })
+    }));
+  }
+
+  removeColumn(rowId: string, colId: string) {
+    this._doc.update(d => ({
+      ...d,
+      rows: d.rows.map(r => r.id !== rowId ? r : {
+        ...r,
+        columns: r.columns.filter(c => c.id !== colId)
+      })
+    }));
+  }
+
   removeRow(rowId: string) {
     this._doc.update(d => ({ ...d, rows: d.rows.filter(r => r.id !== rowId) }));
     if (this._selectedRowId() === rowId) this._selectedRowId.set(null);
