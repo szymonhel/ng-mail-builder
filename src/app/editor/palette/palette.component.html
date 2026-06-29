@@ -1,61 +1,108 @@
-<div class="p-3 bg-gray-50 border-r border-gray-200 h-full overflow-y-auto box-border">
-  <div class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2">Blocks</div>
-  <div class="text-xs text-gray-400 mb-3">Drag to canvas or click to add</div>
+<div class="flex flex-col h-full bg-gray-50 border-r border-gray-200">
 
-  <div cdkDropList
-       [id]="paletteListId"
-       [cdkDropListData]="items"
-       [cdkDropListConnectedTo]="connectedTo()"
-       cdkDropListSortingDisabled
-       class="flex flex-col gap-1.5">
-    @for (item of items; track item.type) {
-      <div cdkDrag
-           [cdkDragData]="item"
-           class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-grab transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:cursor-grabbing"
-           (click)="addBlock(item.type)">
-        <span class="text-base w-5 text-center select-none">{{ item.icon }}</span>
-        <span class="font-medium select-none">{{ item.label }}</span>
+  <!-- Tab bar -->
+  <div class="flex flex-shrink-0 border-b border-gray-200 bg-white">
+    <button class="flex-1 py-2 text-xs font-semibold transition-colors border-b-2"
+            [ngClass]="activeTab() === 'blocks'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'"
+            (click)="activeTab.set('blocks')">Blocks</button>
+    <button class="flex-1 py-2 text-xs font-semibold transition-colors border-b-2"
+            [ngClass]="activeTab() === 'settings'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'"
+            (click)="activeTab.set('settings')">Settings</button>
+  </div>
 
-        <!-- Drag preview card that follows the cursor -->
-        <div *cdkDragPreview class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md shadow-lg text-sm font-medium pointer-events-none">
-          <span>{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
-        </div>
-
-        <!-- Placeholder left behind in palette while dragging -->
-        <div *cdkDragPlaceholder class="h-10 border-2 border-dashed border-blue-300 rounded-md bg-blue-50"></div>
+  <!-- Blocks tab -->
+  @if (activeTab() === 'blocks') {
+    <div class="p-3 overflow-y-auto flex-1">
+      <div class="text-xs text-gray-400 mb-3">Drag to canvas or click to add</div>
+      <div cdkDropList
+           [id]="paletteListId"
+           [cdkDropListData]="items"
+           [cdkDropListConnectedTo]="connectedTo()"
+           cdkDropListSortingDisabled
+           class="flex flex-col gap-1.5">
+        @for (item of items; track item.type) {
+          <div cdkDrag
+               [cdkDragData]="item"
+               class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-grab transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:cursor-grabbing"
+               (click)="addBlock(item.type)">
+            <span class="text-base w-5 text-center select-none">{{ item.icon }}</span>
+            <span class="font-medium select-none">{{ item.label }}</span>
+            <div *cdkDragPreview class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md shadow-lg text-sm font-medium pointer-events-none">
+              <span>{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </div>
+            <div *cdkDragPlaceholder class="h-10 border-2 border-dashed border-blue-300 rounded-md bg-blue-50"></div>
+          </div>
+        }
       </div>
-    }
-  </div>
+    </div>
+  }
 
-  <div class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-2 mt-4">Settings</div>
-  <div class="flex flex-col gap-1.5 text-xs">
-    <label class="text-gray-600">Content width</label>
-    <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
-           [value]="store.doc().settings.contentWidth"
-           (change)="store.updateSettings({ contentWidth: +$any($event.target).value })" />
-    <label class="text-gray-600">Background</label>
-    <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
-           [value]="store.doc().settings.backgroundColor"
-           (input)="store.updateSettings({ backgroundColor: $any($event.target).value })" />
-    <label class="text-gray-600">Body color</label>
-    <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
-           [value]="store.doc().settings.bodyColor"
-           (input)="store.updateSettings({ bodyColor: $any($event.target).value })" />
-    <label class="text-gray-600">Preview text</label>
-    <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
-           [value]="store.doc().settings.previewText"
-           (change)="store.updateSettings({ previewText: $any($event.target).value })"
-           placeholder="Preview shown in inbox..." />
-    <label class="text-gray-600 mt-2">Google Font name</label>
-    <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
-           [value]="store.doc().settings.googleFontName"
-           (change)="store.updateSettings({ googleFontName: $any($event.target).value })"
-           placeholder="e.g. Roboto" />
-    <label class="text-gray-600">Google Font URL</label>
-    <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border"
-           [value]="store.doc().settings.googleFontUrl"
-           (change)="store.updateSettings({ googleFontUrl: $any($event.target).value })"
-           placeholder="https://fonts.googleapis.com/css?family=Roboto" />
-  </div>
+  <!-- Settings tab -->
+  @if (activeTab() === 'settings') {
+    <div class="p-3 overflow-y-auto flex-1 flex flex-col gap-3">
+
+      <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Layout</div>
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-gray-600">Content width (px)</label>
+          <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border bg-white focus:outline-none focus:border-blue-500"
+                 [value]="store.doc().settings.contentWidth"
+                 (change)="store.updateSettings({ contentWidth: +$any($event.target).value })" />
+        </div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Colors</div>
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-gray-600">Page background</label>
+          <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
+                 [value]="store.doc().settings.backgroundColor"
+                 (input)="store.updateSettings({ backgroundColor: $any($event.target).value })" />
+          <label class="text-xs text-gray-600">Email body background</label>
+          <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
+                 [value]="store.doc().settings.bodyColor"
+                 (input)="store.updateSettings({ bodyColor: $any($event.target).value })" />
+        </div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Typography</div>
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-gray-600">Font family</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border bg-white focus:outline-none focus:border-blue-500"
+                 [value]="store.doc().settings.fontFamily"
+                 (change)="store.updateSettings({ fontFamily: $any($event.target).value })"
+                 placeholder="Arial, sans-serif" />
+          <label class="text-xs text-gray-600">Google Font name</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border bg-white focus:outline-none focus:border-blue-500"
+                 [value]="store.doc().settings.googleFontName"
+                 (change)="store.updateSettings({ googleFontName: $any($event.target).value })"
+                 placeholder="e.g. Roboto" />
+          <label class="text-xs text-gray-600">Google Font URL</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border bg-white focus:outline-none focus:border-blue-500"
+                 [value]="store.doc().settings.googleFontUrl"
+                 (change)="store.updateSettings({ googleFontUrl: $any($event.target).value })"
+                 placeholder="https://fonts.googleapis.com/css?family=Roboto" />
+        </div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Inbox</div>
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-gray-600">Preview text</label>
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-xs box-border bg-white focus:outline-none focus:border-blue-500"
+                 [value]="store.doc().settings.previewText"
+                 (change)="store.updateSettings({ previewText: $any($event.target).value })"
+                 placeholder="Shown in inbox before opening..." />
+        </div>
+      </div>
+
+    </div>
+  }
+
 </div>

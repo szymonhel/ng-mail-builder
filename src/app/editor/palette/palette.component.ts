@@ -1,5 +1,7 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
+import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
 import { DropListsService, PALETTE_LIST_ID } from '../drop-lists.service';
 import { BlockType } from '../../models/email-doc.model';
@@ -30,7 +32,7 @@ export const PALETTE_ITEMS: PaletteItem[] = [
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder],
+  imports: [NgClass, CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule],
   templateUrl: './palette.component.html'
 })
 export class PaletteComponent {
@@ -39,6 +41,7 @@ export class PaletteComponent {
 
   readonly paletteListId = PALETTE_LIST_ID;
   readonly items = PALETTE_ITEMS;
+  activeTab = signal<'blocks' | 'settings'>('blocks');
 
   connectedTo = computed(() => this.dropListsService.columnIds());
 
