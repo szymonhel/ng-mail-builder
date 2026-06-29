@@ -48,10 +48,11 @@ function blockToMjml(b: Block): string {
     case 'table': {
       const p = b.props as any;
       const rows = p.rows.map((row: any, ri: number) => {
+        console.log(p);
         const cells = row.cells.map((cell: string) =>
           (ri === 0 && p.hasHeader)
-            ? `<th style="border:1px solid ${p.borderColor};padding:8px 12px;background:#f5f5f5;font-weight:600">${cell}</th>`
-            : `<td style="border:1px solid ${p.borderColor};padding:8px 12px">${cell}</td>`
+            ? `<th style="font-size: ${p.fontSize}px;border:1px solid ${p.borderColor};padding:8px 12px;background:#f5f5f5;font-weight:600">${cell}</th>`
+            : `<td style="font-size: ${p.fontSize}px;border:1px solid ${p.borderColor};padding:8px 12px">${cell}</td>`
         ).join('');
         return `<tr>${cells}</tr>`;
       }).join('');
