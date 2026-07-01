@@ -81,7 +81,7 @@ function blockToMjml(b: Block): string {
         const href = img.href ? ` href="${img.href}"` : '';
         return `<mj-carousel-image src="${img.src}" alt="${img.alt}"${href} />`;
       }).join('\n          ');
-      return `<mj-carousel padding="${p.padding}" thumbnail-width="${p.thumbnailWidth}px">\n          ${images}\n        </mj-carousel>`;
+      return `<mj-carousel padding="${p.padding}" tb-width="${p.thumbnailWidth}px">\n          ${images}\n        </mj-carousel>`;
     }
   }
 }
