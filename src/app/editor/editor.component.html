@@ -21,9 +21,19 @@
     </nav>
     <div class="flex gap-2">
       <button class="bg-white/10 text-white border border-white/20 px-3.5 py-1.5 rounded cursor-pointer text-sm hover:bg-white/20" (click)="copyJson()">Copy JSON</button>
-      <button class="bg-blue-600 text-white border-0 px-4 py-1.5 rounded cursor-pointer text-sm font-medium hover:bg-blue-700" (click)="copyMjml()">Copy MJML</button>
+      <button class="bg-white/10 text-white border border-white/20 px-3.5 py-1.5 rounded cursor-pointer text-sm hover:bg-white/20" (click)="copyMjml()">Copy MJML</button>
+      <button class="bg-green-500 text-white border-0 px-4 py-1.5 rounded cursor-pointer text-sm font-medium hover:bg-green-600" (click)="openSendDialog()">Send</button>
     </div>
   </header>
+
+  @if (sendDialogOpen()) {
+    <app-send-dialog
+      [status]="sendStatus()"
+      [errorMessage]="sendError()"
+      (closed)="closeSendDialog()"
+      (submitted)="onSendSubmit($event)"
+    />
+  }
 
   <!-- Main workspace -->
   <div class="flex flex-1 overflow-hidden">

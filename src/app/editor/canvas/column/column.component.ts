@@ -81,8 +81,7 @@ export class ColumnComponent implements OnInit, OnDestroy {
       const sourceBlocks = [...(event.previousContainer.data as Block[])];
       const targetBlocks = [...this.col().blocks];
       transferArrayItem(sourceBlocks, targetBlocks, event.previousIndex, event.currentIndex);
-      this.store.setBlocksInColumn(sourceRowId, sourceColId, sourceBlocks);
-      this.store.setBlocksInColumn(this.row().id, this.col().id, targetBlocks);
+      this.store.moveBlockAcrossColumns(sourceRowId, sourceColId, sourceBlocks, this.row().id, this.col().id, targetBlocks);
     }
   }
 

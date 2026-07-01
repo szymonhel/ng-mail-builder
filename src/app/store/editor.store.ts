@@ -33,6 +33,8 @@ const BLOCK_DEFAULTS: Record<BlockType, any> = {
   hero: {
     backgroundUrl: 'https://placehold.co/600x400',
     backgroundColor: '#1a1a2e',
+    backgroundWidth: '600px',
+    backgroundHeight: '400px',
     height: '400px',
     verticalAlign: 'middle',
     title: 'Welcome to Our Hotel',
@@ -147,6 +149,8 @@ export class EditorStore {
   }
 
   addColumn(rowId: string) {
+    const row = this._doc().rows.find(r => r.id === rowId);
+    if (!row || row.columns.some(c => c.blocks.some(b => b.type === 'hero'))) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -154,6 +158,12 @@ export class EditorStore {
         columns: [...r.columns, { id: uid(), blocks: [] }]
       })
     }));
+  }
+
+  // mj-hero must be the sole block in the sole column of its row (see mjml-mapper.ts rowToMjml)
+  private canPlaceInColumn(row: Row, blocks: Block[]): boolean {
+    if (!blocks.some(b => b.type === 'hero')) return true;
+    return blocks.length === 1 && row.columns.length === 1;
   }
 
   removeColumn(rowId: string, colId: string) {
@@ -172,7 +182,11 @@ export class EditorStore {
   }
 
   addBlock(rowId: string, type: BlockType) {
+    const row = this._doc().rows.find(r => r.id === rowId);
+    const col = row?.columns[0];
+    if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
+    if (!this.canPlaceInColumn(row, [...col.blocks, block])) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -184,15 +198,17 @@ export class EditorStore {
   }
 
   addBlockAt(rowId: string, colId: string, type: BlockType, index: number) {
+    const row = this._doc().rows.find(r => r.id === rowId);
+    const col = row?.columns.find(c => c.id === colId);
+    if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
+    const nextBlocks = [...col.blocks.slice(0, index), block, ...col.blocks.slice(index)];
+    if (!this.canPlaceInColumn(row, nextBlocks)) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
-        columns: r.columns.map(c => c.id !== colId ? c : {
-          ...c,
-          blocks: [...c.blocks.slice(0, index), block, ...c.blocks.slice(index)]
-        })
+        columns: r.columns.map(c => c.id !== colId ? c : { ...c, blocks: nextBlocks })
       })
     }));
     this._selectedBlockId.set(block.id);
@@ -238,11 +254,35 @@ export class EditorStore {
   }
 
   setBlocksInColumn(rowId: string, colId: string, blocks: Block[]) {
+    const row = this._doc().rows.find(r => r.id === rowId);
+    if (!row || !this.canPlaceInColumn(row, blocks)) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
         columns: r.columns.map(c => c.id !== colId ? c : { ...c, blocks })
+      })
+    }));
+  }
+
+  // Atomic version of two setBlocksInColumn calls, used when dragging a block between
+  // columns: validating only the target and applying both updates together avoids losing
+  // the block if it were removed from the source before the target rejected it.
+  moveBlockAcrossColumns(sourceRowId: string, sourceColId: string, sourceBlocks: Block[], targetRowId: string, targetColId: string, targetBlocks: Block[]) {
+    const targetRow = this._doc().rows.find(r => r.id === targetRowId);
+    if (!targetRow || !this.canPlaceInColumn(targetRow, targetBlocks)) return;
+    this._doc.update(d => ({
+      ...d,
+      rows: d.rows.map(r => {
+        if (r.id !== sourceRowId && r.id !== targetRowId) return r;
+        return {
+          ...r,
+          columns: r.columns.map(c => {
+            if (c.id === sourceColId) return { ...c, blocks: sourceBlocks };
+            if (c.id === targetColId) return { ...c, blocks: targetBlocks };
+            return c;
+          })
+        };
       })
     }));
   }

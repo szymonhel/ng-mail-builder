@@ -86,6 +86,8 @@ export interface HtmlProps {
 export interface HeroProps {
   backgroundUrl: string;
   backgroundColor: string;
+  backgroundWidth: string;
+  backgroundHeight: string;
   height: string;
   verticalAlign: 'top' | 'middle' | 'bottom';
   title: string;
