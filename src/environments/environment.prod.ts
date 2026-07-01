@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://YOUR_APP_NAME.azurewebsites.net',
-  apiKey: 'change_me_to_a_random_secret',
+  apiUrl: 'https://mail-sender-backend-beeud5f5h5fncta0.polandcentral-01.azurewebsites.net',
+  apiKey: 'zQsdVL8lpOZVP7zOhniDKb+laYFDX8JczsOIU+vLoa5o/jorQVOI0x77NoVpBRJD',
 };
