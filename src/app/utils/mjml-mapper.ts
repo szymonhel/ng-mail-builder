@@ -1,4 +1,15 @@
-import { EmailDoc, Block, Row } from '../models/email-doc.model';
+import { EmailDoc, Block, Row, SocialPlatform } from '../models/email-doc.model';
+
+// MJML's mj-social ships built-in icons/colors only for a fixed set of networks. These
+// platforms aren't in that set, so without an explicit background-color they'd render
+// with no color at all (see mjml-social's defaultSocialNetworks list).
+const FALLBACK_SOCIAL_COLORS: Partial<Record<SocialPlatform, string>> = {
+  tiktok: '#000000',
+  discord: '#5865f2',
+  reddit: '#ff4500',
+  whatsapp: '#25d366',
+  telegram: '#229ed9',
+};
 
 function blockToMjml(b: Block): string {
   switch (b.type) {
@@ -31,9 +42,12 @@ function blockToMjml(b: Block): string {
     }
     case 'social': {
       const p = b.props as any;
-      const els = p.links.filter((l: any) => l.href).map((l: any) =>
-        `<mj-social-element name="${l.platform}" href="${l.href}"></mj-social-element>`
-      ).join('\n          ');
+      const els = p.links.filter((l: any) => l.href).map((l: any) => {
+        const src = l.iconUrl ? ` src="${l.iconUrl}"` : '';
+        const fallbackColor = FALLBACK_SOCIAL_COLORS[l.platform as SocialPlatform];
+        const bg = fallbackColor ? ` background-color="${fallbackColor}"` : '';
+        return `<mj-social-element name="${l.platform}" href="${l.href}"${src}${bg}></mj-social-element>`;
+      }).join('\n          ');
       return `<mj-social align="${p.align}" icon-size="${p.iconSize}px" padding="${p.padding}">\n          ${els}\n        </mj-social>`;
     }
     case 'video': {

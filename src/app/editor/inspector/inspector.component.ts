@@ -34,10 +34,10 @@ export class InspectorComponent {
     }
   }
 
-  updateSocialLink(index: number, href: string) {
+  updateSocialLink(index: number, field: 'href' | 'iconUrl', value: string) {
     if (!this.block) return;
     const links = [...(this.block.props as any).links];
-    links[index] = { ...links[index], href };
+    links[index] = { ...links[index], [field]: value };
     this.store.updateBlockProps(this.block.id, { links });
   }
 

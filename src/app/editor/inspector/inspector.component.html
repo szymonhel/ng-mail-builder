@@ -237,8 +237,10 @@
         @for (link of $any(block.props).links; track link.platform; let i = $index) {
           <div class="mb-2 p-2 border border-gray-200 rounded bg-white">
             <div class="text-[10px] font-semibold text-gray-500 uppercase mb-1">{{ link.platform }}</div>
+            <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500 mb-1"
+                   [value]="link.href" placeholder="https://..." (change)="updateSocialLink(i, 'href', $any($event.target).value)" />
             <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500"
-                   [value]="link.href" placeholder="https://..." (change)="updateSocialLink(i, $any($event.target).value)" />
+                   [value]="link.iconUrl ?? ''" placeholder="Custom icon URL (optional)" (change)="updateSocialLink(i, 'iconUrl', $any($event.target).value)" />
           </div>
         }
       }

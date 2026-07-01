@@ -60,6 +60,9 @@ export type SocialPlatform = 'facebook' | 'instagram' | 'twitter' | 'linkedin' |
 export interface SocialLink {
   platform: SocialPlatform;
   href: string;
+  // Overrides MJML's built-in icon; required for platforms MJML doesn't ship an icon for
+  // (tiktok, discord, reddit, whatsapp, telegram) since those otherwise render as broken images.
+  iconUrl?: string;
 }
 
 export interface SocialProps {
