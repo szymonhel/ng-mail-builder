@@ -8,6 +8,8 @@ export interface SendFormValue {
   subject: string;
 }
 
+const TO_STORAGE_KEY = 'sendDialog.to';
+
 @Component({
   selector: 'app-send-dialog',
   standalone: true,
@@ -21,9 +23,14 @@ export class SendDialogComponent {
   closed = output<void>();
   submitted = output<SendFormValue>();
 
-  to = '';
+  to = sessionStorage.getItem(TO_STORAGE_KEY) ?? '';
   toName = '';
   subject = '';
+
+  onToChange(value: string) {
+    this.to = value;
+    sessionStorage.setItem(TO_STORAGE_KEY, value);
+  }
 
   submit() {
     if (!this.to || !this.subject) return;

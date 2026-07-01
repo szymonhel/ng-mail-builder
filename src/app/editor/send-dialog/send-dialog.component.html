@@ -19,7 +19,8 @@
           <label class="text-xs font-medium text-gray-600">To *</label>
           <input
             type="email"
-            [(ngModel)]="to"
+            [ngModel]="to"
+            (ngModelChange)="onToChange($event)"
             name="to"
             placeholder="recipient@example.com"
             required
