@@ -168,7 +168,8 @@ export interface Column {
 
 export interface Row {
   id: string;
-  backgroundColor: string;
+  // null = inherit the document's page background instead of an explicit color
+  backgroundColor: string | null;
   padding: string;
   columns: Column[];
 }

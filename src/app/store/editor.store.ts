@@ -100,7 +100,7 @@ function initialDoc(): EmailDoc {
     rows: [
       {
         id: uid(),
-        backgroundColor: '#ffffff',
+        backgroundColor: null,
         padding: '0px',
         columns: [{
           id: uid(),
@@ -144,7 +144,7 @@ export class EditorStore {
   selectRow(id: string | null) { this._selectedRowId.set(id); }
 
   addRow() {
-    const row: Row = { id: uid(), backgroundColor: '#ffffff', padding: '0px', columns: [{ id: uid(), blocks: [] }] };
+    const row: Row = { id: uid(), backgroundColor: null, padding: '0px', columns: [{ id: uid(), blocks: [] }] };
     this._doc.update(d => ({ ...d, rows: [...d.rows, row] }));
   }
 
@@ -170,7 +170,7 @@ export class EditorStore {
   // a row with other content) — give it a fresh row right after the intended spot instead of
   // silently dropping the add.
   private insertRowAfter(afterRowId: string, block: Block) {
-    const row: Row = { id: uid(), backgroundColor: '#ffffff', padding: '0px', columns: [{ id: uid(), blocks: [block] }] };
+    const row: Row = { id: uid(), backgroundColor: null, padding: '0px', columns: [{ id: uid(), blocks: [block] }] };
     this._doc.update(d => {
       const idx = d.rows.findIndex(r => r.id === afterRowId);
       const rows = [...d.rows];

@@ -107,7 +107,10 @@ function rowToMjml(row: Row): string {
     const blocks = col.blocks.map(blockToMjml).join('\n        ');
     return `      <mj-column>\n        ${blocks}\n      </mj-column>`;
   }).join('\n');
-  return `    <mj-section background-color="${row.backgroundColor}" padding="${row.padding}"${fullWidth}>\n${cols}\n    </mj-section>`;
+  // No explicit background-color when unset: the section stays transparent so the
+  // mj-wrapper's body background (set to doc.settings.bodyColor) shows through.
+  const bg = row.backgroundColor ? ` background-color="${row.backgroundColor}"` : '';
+  return `    <mj-section${bg} padding="${row.padding}"${fullWidth}>\n${cols}\n    </mj-section>`;
 }
 
 export function docToMjml(doc: EmailDoc): string {
@@ -129,7 +132,9 @@ export function docToMjml(doc: EmailDoc): string {
     </mj-attributes>${previewMjml}
   </mj-head>
   <mj-body background-color="${doc.settings.backgroundColor}" width="${doc.settings.contentWidth}px">
+    <mj-wrapper background-color="${doc.settings.bodyColor}">
 ${rows}
+    </mj-wrapper>
   </mj-body>
 </mjml>`;
 }

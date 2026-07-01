@@ -17,7 +17,21 @@
       "Bash(xargs ls)",
       "Bash(rg -n \"createHeroBlock|hero\" src/app --include=*.ts -i)",
       "Bash(node *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Skill(run)",
+      "Bash(curl -sf http://localhost:4300)",
+      "Bash(break)",
+      "Read(//private/tmp/**)",
+      "Bash(npx --yes playwright --version)",
+      "Bash(npx --yes playwright install chromium)",
+      "Bash(xargs -I{} echo {})",
+      "Bash(timeout 5 npx tsx src/index.ts)",
+      "Bash(ps *)",
+      "Bash(echo \"EXIT CODE: $?\")",
+      "WebSearch",
+      "Bash(dig TXT codeplussoftware.com +short)",
+      "Bash(dig TXT mailjet._eed45919.codeplussoftware.com +short)",
+      "Bash(dig TXT mailjet._domainkey.codeplussoftware.com +short)"
     ]
   }
 }

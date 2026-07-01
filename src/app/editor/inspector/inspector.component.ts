@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
-import { Block } from '../../models/email-doc.model';
+import { Block, Row } from '../../models/email-doc.model';
 
 @Component({
   selector: 'app-inspector',
@@ -15,9 +15,22 @@ export class InspectorComponent {
 
   get block(): Block | null { return this.store.selectedBlock(); }
 
+  get row(): Row | null {
+    if (this.block) return null;
+    const id = this.store.selectedRowId();
+    if (!id) return null;
+    return this.store.doc().rows.find(r => r.id === id) ?? null;
+  }
+
   update(props: any) {
     if (this.block) {
       this.store.updateBlockProps(this.block.id, props);
+    }
+  }
+
+  updateRowBg(color: string | null) {
+    if (this.row) {
+      this.store.updateRowStyle(this.row.id, { backgroundColor: color });
     }
   }
 
