@@ -58,9 +58,11 @@ router.post('/', async (req: Request, res: Response) => {
 
     res.json({ success: true });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to send email';
-    console.error('Mailjet error:', err);
-    res.status(502).json({ error: message });
+    const mjErr = err as any;
+    const statusCode = mjErr?.statusCode ?? 502;
+    const detail = mjErr?.response?.body ?? mjErr?.message ?? 'Failed to send email';
+    console.error('Mailjet error:', JSON.stringify(detail, null, 2));
+    res.status(502).json({ error: `Mailjet ${statusCode}: ${JSON.stringify(detail)}` });
   }
 });
 

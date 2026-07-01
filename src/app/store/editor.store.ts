@@ -166,6 +166,21 @@ export class EditorStore {
     return blocks.length === 1 && row.columns.length === 1;
   }
 
+  // Fallback for when a block can't join its intended row (most commonly: hero can't share
+  // a row with other content) — give it a fresh row right after the intended spot instead of
+  // silently dropping the add.
+  private insertRowAfter(afterRowId: string, block: Block) {
+    const row: Row = { id: uid(), backgroundColor: '#ffffff', padding: '0px', columns: [{ id: uid(), blocks: [block] }] };
+    this._doc.update(d => {
+      const idx = d.rows.findIndex(r => r.id === afterRowId);
+      const rows = [...d.rows];
+      rows.splice(idx + 1, 0, row);
+      return { ...d, rows };
+    });
+    this._selectedRowId.set(row.id);
+    this._selectedBlockId.set(block.id);
+  }
+
   removeColumn(rowId: string, colId: string) {
     this._doc.update(d => ({
       ...d,
@@ -186,7 +201,10 @@ export class EditorStore {
     const col = row?.columns[0];
     if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
-    if (!this.canPlaceInColumn(row, [...col.blocks, block])) return;
+    if (!this.canPlaceInColumn(row, [...col.blocks, block])) {
+      this.insertRowAfter(rowId, block);
+      return;
+    }
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -203,7 +221,10 @@ export class EditorStore {
     if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
     const nextBlocks = [...col.blocks.slice(0, index), block, ...col.blocks.slice(index)];
-    if (!this.canPlaceInColumn(row, nextBlocks)) return;
+    if (!this.canPlaceInColumn(row, nextBlocks)) {
+      this.insertRowAfter(rowId, block);
+      return;
+    }
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
