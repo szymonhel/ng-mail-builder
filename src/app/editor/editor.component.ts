@@ -6,13 +6,14 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { InspectorComponent } from './inspector/inspector.component';
 import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
+import { ColorsTabComponent } from './colors-tab/colors-tab.component';
 import { MailService } from '../services/mail.service';
 import { docToMjml } from '../utils/mjml-mapper';
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent],
+  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {

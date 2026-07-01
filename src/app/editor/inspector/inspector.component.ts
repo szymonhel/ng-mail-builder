@@ -3,11 +3,12 @@ import { TitleCasePipe } from '@angular/common';
 import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
 import { Block, Row } from '../../models/email-doc.model';
+import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 
 @Component({
   selector: 'app-inspector',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe],
+  imports: [FormsModule, TitleCasePipe, ColorPickerComponent],
   templateUrl: './inspector.component.html'
 })
 export class InspectorComponent {

@@ -18,6 +18,10 @@
         class="border-0 px-4 py-1.5 rounded cursor-pointer text-sm transition-all"
         [ngClass]="store.activeTab() === 'json' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
         (click)="store.setActiveTab('json')">Export</button>
+      <button
+        class="border-0 px-4 py-1.5 rounded cursor-pointer text-sm transition-all"
+        [ngClass]="store.activeTab() === 'colors' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
+        (click)="store.setActiveTab('colors')">Colors</button>
     </nav>
     <div class="flex gap-2">
       <button class="bg-white/10 text-white border border-white/20 px-3.5 py-1.5 rounded cursor-pointer text-sm hover:bg-white/20" (click)="copyJson()">Copy JSON</button>
@@ -70,6 +74,9 @@
           <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ mjmlOutput() }}</pre>
         </div>
       </div>
+    }
+    @if (store.activeTab() === 'colors') {
+      <app-colors-tab />
     }
   </div>
 </div>

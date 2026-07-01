@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
 import { DropListsService, PALETTE_LIST_ID } from '../drop-lists.service';
 import { BlockType } from '../../models/email-doc.model';
+import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 
 export interface PaletteItem {
   type: BlockType;
@@ -32,7 +33,7 @@ export const PALETTE_ITEMS: PaletteItem[] = [
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [NgClass, CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule],
+  imports: [NgClass, CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, ColorPickerComponent],
   templateUrl: './palette.component.html'
 })
 export class PaletteComponent {

@@ -1,0 +1,29 @@
+<div class="relative">
+  <button type="button"
+          class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5 flex items-center gap-1.5 px-2 bg-white"
+          (click)="toggle()">
+    <span class="w-5 h-5 rounded border border-gray-300 flex-shrink-0" [style.background]="value()"></span>
+    <span class="text-xs text-gray-600 truncate">{{ value() }}</span>
+  </button>
+
+  @if (open()) {
+    <div class="absolute z-20 mt-1 w-56 bg-white border border-gray-200 rounded shadow-lg p-2">
+      @if (savedColors().length) {
+        <div class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Saved colors</div>
+        <div class="grid grid-cols-6 gap-1.5 mb-2">
+          @for (c of savedColors(); track c.id) {
+            <button type="button" class="w-6 h-6 rounded border border-gray-300 cursor-pointer p-0"
+                    [style.background]="c.value" [title]="c.name" (click)="pick(c.value)"></button>
+          }
+        </div>
+      } @else {
+        <div class="text-xs text-gray-400 mb-2">No saved colors yet. Add some from the Colors tab.</div>
+      }
+      <div class="border-t border-gray-100 pt-2 flex items-center gap-2">
+        <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Custom</span>
+        <input type="color" class="w-8 h-8 border border-gray-300 rounded cursor-pointer p-0.5"
+               [value]="value()" (input)="onCustomChange($any($event.target).value)" />
+      </div>
+    </div>
+  }
+</div>

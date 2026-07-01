@@ -31,7 +31,14 @@
       "WebSearch",
       "Bash(dig TXT codeplussoftware.com +short)",
       "Bash(dig TXT mailjet._eed45919.codeplussoftware.com +short)",
-      "Bash(dig TXT mailjet._domainkey.codeplussoftware.com +short)"
+      "Bash(dig TXT mailjet._domainkey.codeplussoftware.com +short)",
+      "Bash(command -v chromium-cli)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npx playwright *)",
+      "Bash(mkdir -p /private/tmp/claude-501/-Users-szymonhelmecki-Projects-ng-mail-builder/b002f133-47ad-46ec-bd3b-e03407f91887/scratchpad/pw)",
+      "Bash(npm init *)",
+      "Bash(pkill -f \"ng serve --port 4300\")",
+      "Bash(lsof -nP -iTCP:4300 -sTCP:LISTEN)"
     ]
   }
 }

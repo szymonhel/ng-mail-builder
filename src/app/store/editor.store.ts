@@ -120,7 +120,7 @@ export class EditorStore {
   private _doc = signal<EmailDoc>(initialDoc());
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
-  private _activeTab = signal<'editor' | 'preview' | 'json'>('editor');
+  private _activeTab = signal<'editor' | 'preview' | 'json' | 'colors'>('editor');
 
   doc = this._doc.asReadonly();
   selectedBlockId = this._selectedBlockId.asReadonly();
@@ -139,7 +139,7 @@ export class EditorStore {
     return null;
   });
 
-  setActiveTab(tab: 'editor' | 'preview' | 'json') { this._activeTab.set(tab); }
+  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'colors') { this._activeTab.set(tab); }
   selectBlock(id: string | null) { this._selectedBlockId.set(id); }
   selectRow(id: string | null) { this._selectedRowId.set(id); }
 

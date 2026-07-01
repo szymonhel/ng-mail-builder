@@ -5,9 +5,8 @@
     </div>
     <div class="mb-3 flex flex-col gap-1">
       <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Background Color</label>
-      <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-             [value]="row.backgroundColor ?? store.doc().settings.backgroundColor"
-             (input)="updateRowBg($any($event.target).value)" />
+      <app-color-picker [value]="row.backgroundColor ?? store.doc().settings.backgroundColor"
+             (valueChange)="updateRowBg($event)" />
       @if (row.backgroundColor) {
         <button type="button" class="mt-1 text-xs text-blue-600 hover:underline self-start" (click)="updateRowBg(null)">
           Reset to page background
@@ -47,8 +46,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="textProps.color"
-                   (input)="update({ color: $any($event.target).value })" />
+            <app-color-picker [value]="textProps.color" (valueChange)="update({ color: $event })" />
           </div>
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -110,13 +108,11 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Background</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="buttonProps.bg"
-                   (input)="update({ bg: $any($event.target).value })" />
+            <app-color-picker [value]="buttonProps.bg" (valueChange)="update({ bg: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Text color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="buttonProps.color"
-                   (input)="update({ color: $any($event.target).value })" />
+            <app-color-picker [value]="buttonProps.color" (valueChange)="update({ color: $event })" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -145,8 +141,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5" [value]="dividerProps.borderColor"
-                   (input)="update({ borderColor: $any($event.target).value })" />
+            <app-color-picker [value]="dividerProps.borderColor" (valueChange)="update({ borderColor: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Width (px)</label>
@@ -198,8 +193,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).color" (input)="update({ color: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).color" (valueChange)="update({ color: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
@@ -306,8 +300,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Bg color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).backgroundColor" (input)="update({ backgroundColor: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).backgroundColor" (valueChange)="update({ backgroundColor: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Height</label>
@@ -335,8 +328,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).titleColor" (input)="update({ titleColor: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).titleColor" (valueChange)="update({ titleColor: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title size (px)</label>
@@ -362,8 +354,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Button bg</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).buttonBg" (input)="update({ buttonBg: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).buttonBg" (valueChange)="update({ buttonBg: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Vertical align</label>
@@ -386,8 +377,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Text color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).color" (input)="update({ color: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).color" (valueChange)="update({ color: $event })" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -402,8 +392,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Border color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).borderColor" (input)="update({ borderColor: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).borderColor" (valueChange)="update({ borderColor: $event })" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -454,13 +443,11 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title bg</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).titleBg" (input)="update({ titleBg: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).titleBg" (valueChange)="update({ titleBg: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).titleColor" (input)="update({ titleColor: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).titleColor" (valueChange)="update({ titleColor: $event })" />
           </div>
         </div>
         <div class="flex items-center justify-between mb-2">
@@ -518,13 +505,11 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Bg color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).backgroundColor" (input)="update({ backgroundColor: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).backgroundColor" (valueChange)="update({ backgroundColor: $event })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Link color</label>
-            <input type="color" class="w-full h-9 border border-gray-300 rounded cursor-pointer p-0.5"
-                   [value]="$any(block.props).color" (input)="update({ color: $any($event.target).value })" />
+            <app-color-picker [value]="$any(block.props).color" (valueChange)="update({ color: $event })" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">

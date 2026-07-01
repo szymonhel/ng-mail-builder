@@ -60,13 +60,11 @@
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Colors</div>
         <div class="flex flex-col gap-2">
           <label class="text-xs text-gray-600">Page background</label>
-          <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
-                 [value]="store.doc().settings.backgroundColor"
-                 (input)="store.updateSettings({ backgroundColor: $any($event.target).value })" />
+          <app-color-picker [value]="store.doc().settings.backgroundColor"
+                 (valueChange)="store.updateSettings({ backgroundColor: $event })" />
           <label class="text-xs text-gray-600">Email body background</label>
-          <input type="color" class="w-full h-8 border border-gray-300 rounded cursor-pointer p-0.5"
-                 [value]="store.doc().settings.bodyColor"
-                 (input)="store.updateSettings({ bodyColor: $any($event.target).value })" />
+          <app-color-picker [value]="store.doc().settings.bodyColor"
+                 (valueChange)="store.updateSettings({ bodyColor: $event })" />
         </div>
       </div>
 
