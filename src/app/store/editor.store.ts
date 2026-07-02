@@ -163,7 +163,7 @@ export class EditorStore {
 
   addColumn(rowId: string) {
     const row = this._doc().rows.find(r => r.id === rowId);
-    if (!row || row.columns.some(c => c.blocks.some(b => b.type === 'hero'))) return;
+    if (!row) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -171,27 +171,6 @@ export class EditorStore {
         columns: [...r.columns, { id: uid(), blocks: [] }]
       })
     }));
-  }
-
-  // mj-hero must be the sole block in the sole column of its row (see mjml-mapper.ts rowToMjml)
-  private canPlaceInColumn(row: Row, blocks: Block[]): boolean {
-    if (!blocks.some(b => b.type === 'hero')) return true;
-    return blocks.length === 1 && row.columns.length === 1;
-  }
-
-  // Fallback for when a block can't join its intended row (most commonly: hero can't share
-  // a row with other content) — give it a fresh row right after the intended spot instead of
-  // silently dropping the add.
-  private insertRowAfter(afterRowId: string, block: Block) {
-    const row: Row = { id: uid(), backgroundColor: null, padding: '0px', columns: [{ id: uid(), blocks: [block] }] };
-    this._doc.update(d => {
-      const idx = d.rows.findIndex(r => r.id === afterRowId);
-      const rows = [...d.rows];
-      rows.splice(idx + 1, 0, row);
-      return { ...d, rows };
-    });
-    this._selectedRowId.set(row.id);
-    this._selectedBlockId.set(block.id);
   }
 
   removeColumn(rowId: string, colId: string) {
@@ -214,10 +193,6 @@ export class EditorStore {
     const col = row?.columns[0];
     if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
-    if (!this.canPlaceInColumn(row, [...col.blocks, block])) {
-      this.insertRowAfter(rowId, block);
-      return;
-    }
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -234,10 +209,6 @@ export class EditorStore {
     if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
     const nextBlocks = [...col.blocks.slice(0, index), block, ...col.blocks.slice(index)];
-    if (!this.canPlaceInColumn(row, nextBlocks)) {
-      this.insertRowAfter(rowId, block);
-      return;
-    }
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -299,7 +270,7 @@ export class EditorStore {
 
   setBlocksInColumn(rowId: string, colId: string, blocks: Block[]) {
     const row = this._doc().rows.find(r => r.id === rowId);
-    if (!row || !this.canPlaceInColumn(row, blocks)) return;
+    if (!row) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -310,11 +281,11 @@ export class EditorStore {
   }
 
   // Atomic version of two setBlocksInColumn calls, used when dragging a block between
-  // columns: validating only the target and applying both updates together avoids losing
-  // the block if it were removed from the source before the target rejected it.
+  // columns: applying both updates together avoids losing the block if it were removed
+  // from the source before the target update landed.
   moveBlockAcrossColumns(sourceRowId: string, sourceColId: string, sourceBlocks: Block[], targetRowId: string, targetColId: string, targetBlocks: Block[]) {
     const targetRow = this._doc().rows.find(r => r.id === targetRowId);
-    if (!targetRow || !this.canPlaceInColumn(targetRow, targetBlocks)) return;
+    if (!targetRow) return;
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => {

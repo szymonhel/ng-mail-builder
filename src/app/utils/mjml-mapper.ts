@@ -58,7 +58,9 @@ function blockToMjml(b: Block): string {
       const p = b.props as any;
       return `<mj-raw><div style="padding:${p.padding}">${p.html}</div></mj-raw>`;
     }
-    case 'hero': return ''; // handled at row level by heroToMjml
+    // A hero alone in its row renders via the cleaner top-level heroToMjml path (see
+    // rowToMjml); mixed with siblings it still renders here so it's never silently dropped.
+    case 'hero': return heroToMjml(b);
     case 'table': {
       const p = b.props as any;
       const rows = p.rows.map((row: any, ri: number) => {
