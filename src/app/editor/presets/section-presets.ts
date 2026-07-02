@@ -55,6 +55,15 @@ export const SECTION_PRESETS: SectionPreset[] = [
                 { platform: 'facebook', href: 'https://facebook.com' },
                 { platform: 'instagram', href: 'https://instagram.com' },
                 { platform: 'twitter', href: 'https://twitter.com' },
+                { platform: 'linkedin', href: '' },
+                { platform: 'youtube', href: '' },
+                { platform: 'tiktok', href: '' },
+                { platform: 'pinterest', href: '' },
+                { platform: 'github', href: '' },
+                { platform: 'discord', href: '' },
+                { platform: 'reddit', href: '' },
+                { platform: 'whatsapp', href: '' },
+                { platform: 'telegram', href: '' },
               ],
               align: 'center',
               iconSize: 24,
@@ -134,6 +143,69 @@ export const SECTION_PRESETS: SectionPreset[] = [
           ],
         },
       ],
+    }),
+  },
+  {
+    type: 'pricing',
+    icon: '💲',
+    label: 'Pricing cards',
+    build: (): Row => ({
+      id: uid(),
+      backgroundColor: null,
+      padding: '20px 10px',
+      columns: [
+        { name: 'Starter', price: '$9', features: 'Up to 5 projects<br/>Basic support' },
+        { name: 'Pro', price: '$29', features: 'Unlimited projects<br/>Priority support' },
+        { name: 'Business', price: '$79', features: 'Unlimited everything<br/>Dedicated support' },
+      ].map(plan => ({
+        id: uid(),
+        blocks: [
+          { id: uid(), type: 'heading', props: { text: plan.name, level: 3, align: 'center', color: '#222222', padding: '10px 15px 5px' } },
+          { id: uid(), type: 'text', props: { html: `<p style="margin:0;font-size:28px;font-weight:700">${plan.price}<span style="font-size:13px;font-weight:400;color:#999999">/mo</span></p><p style="margin:10px 0 0;font-size:13px;color:#666666">${plan.features}</p>`, align: 'center', fontSize: 13, color: '#666666', padding: '0 15px 10px' } },
+          { id: uid(), type: 'button', props: { label: 'Choose plan', href: '#', bg: '#1a73e8', color: '#ffffff', align: 'center', borderRadius: 3, padding: '0 15px 10px' } },
+        ],
+      })),
+    }),
+  },
+  {
+    type: 'product-grid',
+    icon: '🛒',
+    label: 'Product grid',
+    build: (): Row => ({
+      id: uid(),
+      backgroundColor: null,
+      padding: '20px 10px',
+      columns: [0, 1, 2, 3].map(() => ({
+        id: uid(),
+        blocks: [
+          { id: uid(), type: 'image', props: { src: 'https://placehold.co/150x150', alt: 'Product', width: 150, align: 'center', href: '', padding: '5px 8px' } },
+          { id: uid(), type: 'heading', props: { text: 'Product name', level: 3, align: 'center', color: '#222222', padding: '10px 8px 5px' } },
+          { id: uid(), type: 'text', props: { html: '<p style="margin:0;font-weight:700">$49.00</p>', align: 'center', fontSize: 13, color: '#666666', padding: '0 8px 10px' } },
+          { id: uid(), type: 'button', props: { label: 'Shop now', href: '#', bg: '#1a73e8', color: '#ffffff', align: 'center', borderRadius: 3, padding: '0 8px 10px' } },
+        ],
+      })),
+    }),
+  },
+  {
+    type: 'stats',
+    icon: '📊',
+    label: 'Stats row',
+    build: (): Row => ({
+      id: uid(),
+      backgroundColor: null,
+      padding: '20px 10px',
+      columns: [
+        { number: '10K+', label: 'Happy customers' },
+        { number: '98%', label: 'Satisfaction rate' },
+        { number: '24/7', label: 'Customer support' },
+        { number: '150+', label: 'Countries served' },
+      ].map(stat => ({
+        id: uid(),
+        blocks: [
+          { id: uid(), type: 'heading', props: { text: stat.number, level: 1, align: 'center', color: '#1a73e8', padding: '10px 8px 0' } },
+          { id: uid(), type: 'text', props: { html: `<p style="margin:0">${stat.label}</p>`, align: 'center', fontSize: 13, color: '#666666', padding: '0 8px 10px' } },
+        ],
+      })),
     }),
   },
 ];
