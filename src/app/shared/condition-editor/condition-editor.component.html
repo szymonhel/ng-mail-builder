@@ -1,21 +1,21 @@
 <div class="mb-3 p-2 border border-gray-200 rounded-sm bg-white">
-  <label class="flex items-center gap-1.5 cursor-pointer">
-    <input type="checkbox" [checked]="!!condition()" (change)="toggle($any($event.target).checked)" />
-    <span class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">{{ label() }}</span>
-  </label>
+  <div class="flex items-center gap-1.5">
+    <hlm-checkbox [checked]="!!condition()" (checkedChange)="toggle($event)" />
+    <label hlmLabel class="cursor-pointer text-[10px] uppercase tracking-wider" (click)="toggle(!condition())">{{ label() }}</label>
+  </div>
 
   @if (condition(); as c) {
     @if (variables().length === 0) {
       <div class="text-xs text-gray-400 mt-1.5">No variables yet. Add one in the Variables tab.</div>
     } @else {
       <div class="flex flex-col gap-1.5 mt-1.5">
-        <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
+        <select hlmInput
                 [value]="c.variableName" (change)="setVariableName($any($event.target).value)">
           @for (v of variables(); track v.id) {
             <option [value]="v.name">{{ v.name }}</option>
           }
         </select>
-        <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
+        <select hlmInput
                 [value]="c.operator" (change)="setOperator($any($event.target).value)">
           <option value="isSet">is set</option>
           <option value="isNotSet">is not set</option>
@@ -23,7 +23,7 @@
           <option value="notEquals">does not equal</option>
         </select>
         @if (c.operator === 'equals' || c.operator === 'notEquals') {
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
+          <input hlmInput type="text"
                  placeholder="Value" [value]="c.value ?? ''" (change)="setValue($any($event.target).value)" />
         }
       </div>

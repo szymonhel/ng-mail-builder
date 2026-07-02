@@ -83,7 +83,7 @@
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Layout</div>
         <div class="flex flex-col gap-2">
           <label class="text-xs text-gray-600">Content width (px)</label>
-          <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-xs box-border bg-white focus:outline-hidden focus:border-blue-500"
+          <input hlmInput type="number"
                  [value]="store.doc().settings.contentWidth"
                  (change)="store.updateSettings({ contentWidth: +$any($event.target).value })" />
         </div>
@@ -105,17 +105,17 @@
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Typography</div>
         <div class="flex flex-col gap-2">
           <label class="text-xs text-gray-600">Font family</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-xs box-border bg-white focus:outline-hidden focus:border-blue-500"
+          <input hlmInput type="text"
                  [value]="store.doc().settings.fontFamily"
                  (change)="store.updateSettings({ fontFamily: $any($event.target).value })"
                  placeholder="Arial, sans-serif" />
           <label class="text-xs text-gray-600">Google Font name</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-xs box-border bg-white focus:outline-hidden focus:border-blue-500"
+          <input hlmInput type="text"
                  [value]="store.doc().settings.googleFontName"
                  (change)="store.updateSettings({ googleFontName: $any($event.target).value })"
                  placeholder="e.g. Roboto" />
           <label class="text-xs text-gray-600">Google Font URL</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-xs box-border bg-white focus:outline-hidden focus:border-blue-500"
+          <input hlmInput type="text"
                  [value]="store.doc().settings.googleFontUrl"
                  (change)="store.updateSettings({ googleFontUrl: $any($event.target).value })"
                  placeholder="https://fonts.googleapis.com/css?family=Roboto" />
@@ -126,7 +126,7 @@
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Inbox</div>
         <div class="flex flex-col gap-2">
           <label class="text-xs text-gray-600">Preview text</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-xs box-border bg-white focus:outline-hidden focus:border-blue-500"
+          <input hlmInput type="text"
                  [value]="store.doc().settings.previewText"
                  (change)="store.updateSettings({ previewText: $any($event.target).value })"
                  placeholder="Shown in inbox before opening..." />

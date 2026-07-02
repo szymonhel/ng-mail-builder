@@ -2,6 +2,7 @@ import { Component, input, output, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { EmailVariable } from '../../models/email-doc.model';
+import { HlmInput } from '@spartan-ng/helm/input';
 
 export interface SendFormValue {
   to: string;
@@ -15,7 +16,7 @@ const TO_STORAGE_KEY = 'sendDialog.to';
 @Component({
   selector: 'app-send-dialog',
   standalone: true,
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, HlmInput],
   templateUrl: './send-dialog.component.html',
 })
 export class SendDialogComponent {

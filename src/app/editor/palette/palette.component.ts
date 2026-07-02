@@ -7,6 +7,7 @@ import { DropListsService, PALETTE_LIST_ID, SECTIONS_LIST_ID, CANVAS_ROWS_LIST_I
 import { BlockType } from '../../models/email-doc.model';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { SectionPreset, SECTION_PRESETS } from '../presets/section-presets';
+import { HlmInput } from '@spartan-ng/helm/input';
 
 export interface PaletteItem {
   type: BlockType;
@@ -34,7 +35,7 @@ export const PALETTE_ITEMS: PaletteItem[] = [
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [NgClass, CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, ColorPickerComponent],
+  imports: [NgClass, CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, ColorPickerComponent, HlmInput],
   templateUrl: './palette.component.html'
 })
 export class PaletteComponent {

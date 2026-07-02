@@ -6,11 +6,14 @@ import { Block, Row, Column, VisibilityCondition } from '../../models/email-doc.
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { VariablePickerComponent } from '../../shared/variable-picker/variable-picker.component';
 import { ConditionEditorComponent } from '../../shared/condition-editor/condition-editor.component';
+import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
+import { HlmLabel } from '@spartan-ng/helm/label';
 
 @Component({
   selector: 'app-inspector',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent, ConditionEditorComponent],
+  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent, ConditionEditorComponent, HlmInput, HlmCheckbox, HlmLabel],
   templateUrl: './inspector.component.html'
 })
 export class InspectorComponent {
