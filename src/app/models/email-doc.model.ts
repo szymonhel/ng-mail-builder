@@ -170,7 +170,7 @@ export interface VisibilityCondition {
 export interface Block {
   id: string;
   type: BlockType;
-  props: TextProps | ImageProps | ButtonProps | DividerProps | SpacerProps;
+  props: TextProps | ImageProps | ButtonProps | DividerProps | SpacerProps | HeadingProps | SocialProps | VideoProps | HtmlProps | HeroProps | TableProps | AccordionProps | NavbarProps | CarouselProps;
   // null/undefined = always render; otherwise this block is dropped from output
   // (MJML/HTML/preview) whenever the condition evaluates to false
   condition?: VisibilityCondition | null;

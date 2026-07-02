@@ -162,6 +162,20 @@ export class EditorStore {
     this._doc.update(d => ({ ...d, rows: [...d.rows, row] }));
   }
 
+  addPresetRow(row: Row) {
+    this._doc.update(d => ({ ...d, rows: [...d.rows, row] }));
+    this._selectedRowId.set(row.id);
+  }
+
+  insertPresetRowAt(index: number, row: Row) {
+    this._doc.update(d => {
+      const rows = [...d.rows];
+      rows.splice(index, 0, row);
+      return { ...d, rows };
+    });
+    this._selectedRowId.set(row.id);
+  }
+
   addColumn(rowId: string) {
     const row = this._doc().rows.find(r => r.id === rowId);
     if (!row) return;

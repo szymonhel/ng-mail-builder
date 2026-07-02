@@ -8,6 +8,11 @@
               : 'border-transparent text-gray-500 hover:text-gray-700'"
             (click)="activeTab.set('blocks')">Blocks</button>
     <button class="flex-1 py-2 text-xs font-semibold transition-colors border-b-2"
+            [ngClass]="activeTab() === 'sections'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'"
+            (click)="activeTab.set('sections')">Sections</button>
+    <button class="flex-1 py-2 text-xs font-semibold transition-colors border-b-2"
             [ngClass]="activeTab() === 'settings'
               ? 'border-blue-500 text-blue-600'
               : 'border-transparent text-gray-500 hover:text-gray-700'"
@@ -29,6 +34,34 @@
                [cdkDragData]="item"
                class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-grab transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:cursor-grabbing"
                (click)="addBlock(item.type)">
+            <span class="text-base w-5 text-center select-none">{{ item.icon }}</span>
+            <span class="font-medium select-none">{{ item.label }}</span>
+            <div *cdkDragPreview class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md shadow-lg text-sm font-medium pointer-events-none">
+              <span>{{ item.icon }}</span>
+              <span>{{ item.label }}</span>
+            </div>
+            <div *cdkDragPlaceholder class="h-10 border-2 border-dashed border-blue-300 rounded-md bg-blue-50"></div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Sections tab -->
+  @if (activeTab() === 'sections') {
+    <div class="p-3 overflow-y-auto flex-1">
+      <div class="text-xs text-gray-400 mb-3">Drag to canvas or click to add</div>
+      <div cdkDropList
+           [id]="sectionsListId"
+           [cdkDropListData]="sections"
+           [cdkDropListConnectedTo]="[canvasRowsListId]"
+           cdkDropListSortingDisabled
+           class="flex flex-col gap-1.5">
+        @for (item of sections; track item.type) {
+          <div cdkDrag
+               [cdkDragData]="item"
+               class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-grab transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:cursor-grabbing"
+               (click)="addSection(item)">
             <span class="text-base w-5 text-center select-none">{{ item.icon }}</span>
             <span class="font-medium select-none">{{ item.label }}</span>
             <div *cdkDragPreview class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md shadow-lg text-sm font-medium pointer-events-none">

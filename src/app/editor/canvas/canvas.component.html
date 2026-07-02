@@ -2,7 +2,7 @@
   <div class="mx-auto shadow-md rounded overflow-hidden"
        [style.maxWidth.px]="store.doc().settings.contentWidth"
        [style.background]="store.doc().settings.bodyColor">
-    <div cdkDropList (cdkDropListDropped)="onRowDrop($event)" class="min-h-[40px] p-2">
+    <div cdkDropList [id]="canvasRowsListId" (cdkDropListDropped)="onRowDrop($event)" class="min-h-[40px] p-2">
       @for (row of store.doc().rows; track row.id) {
         <div cdkDrag class="cursor-default">
           <app-row [row]="row" />

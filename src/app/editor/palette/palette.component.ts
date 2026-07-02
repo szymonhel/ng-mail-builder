@@ -3,9 +3,10 @@ import { NgClass } from '@angular/common';
 import { CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
-import { DropListsService, PALETTE_LIST_ID } from '../drop-lists.service';
+import { DropListsService, PALETTE_LIST_ID, SECTIONS_LIST_ID, CANVAS_ROWS_LIST_ID } from '../drop-lists.service';
 import { BlockType } from '../../models/email-doc.model';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
+import { SectionPreset, SECTION_PRESETS } from '../presets/section-presets';
 
 export interface PaletteItem {
   type: BlockType;
@@ -41,8 +42,11 @@ export class PaletteComponent {
   dropListsService = inject(DropListsService);
 
   readonly paletteListId = PALETTE_LIST_ID;
+  readonly sectionsListId = SECTIONS_LIST_ID;
+  readonly canvasRowsListId = CANVAS_ROWS_LIST_ID;
   readonly items = PALETTE_ITEMS;
-  activeTab = signal<'blocks' | 'settings'>('blocks');
+  readonly sections = SECTION_PRESETS;
+  activeTab = signal<'blocks' | 'sections' | 'settings'>('blocks');
 
   connectedTo = computed(() => this.dropListsService.columnIds());
 
@@ -58,5 +62,9 @@ export class PaletteComponent {
       }
     }
     this.store.addBlock(targetRowId, type);
+  }
+
+  addSection(preset: SectionPreset) {
+    this.store.addPresetRow(preset.build());
   }
 }
