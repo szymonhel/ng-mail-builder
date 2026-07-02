@@ -47,12 +47,12 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Content (HTML)</label>
             <app-variable-picker (insert)="insertVariable(textHtml, 'html', $event)" />
           </div>
-          <textarea #textHtml class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="6" [value]="textProps.html"
+          <textarea #textHtml class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500 resize-y" rows="6" [value]="textProps.html"
                     (change)="update({ html: $any($event.target).value })"></textarea>
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-          <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="textProps.align" (change)="update({ align: $any($event.target).value })">
+          <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="textProps.align" (change)="update({ align: $any($event.target).value })">
             <option value="left">Left</option>
             <option value="center">Center</option>
             <option value="right">Right</option>
@@ -61,7 +61,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Font size (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="textProps.fontSize"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="textProps.fontSize"
                    (change)="update({ fontSize: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
@@ -71,7 +71,7 @@
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="textProps.padding"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="textProps.padding"
                  (change)="update({ padding: $any($event.target).value })" placeholder="e.g. 10px 25px" />
         </div>
       }
@@ -79,28 +79,28 @@
       @case ('image') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Image URL</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.src"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="imageProps.src"
                  (change)="update({ src: $any($event.target).value })" placeholder="https://..." />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Alt text</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.alt"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="imageProps.alt"
                  (change)="update({ alt: $any($event.target).value })" />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Link (href)</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.href"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="imageProps.href"
                  (change)="update({ href: $any($event.target).value })" placeholder="https://..." />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Width (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.width"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="imageProps.width"
                    (change)="update({ width: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.align" (change)="update({ align: $any($event.target).value })">
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="imageProps.align" (change)="update({ align: $any($event.target).value })">
               <option value="left">Left</option>
               <option value="center">Center</option>
               <option value="right">Right</option>
@@ -109,7 +109,7 @@
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="imageProps.padding"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="imageProps.padding"
                  (change)="update({ padding: $any($event.target).value })" />
         </div>
       }
@@ -120,12 +120,12 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Label</label>
             <app-variable-picker (insert)="insertVariable(buttonLabel, 'label', $event)" />
           </div>
-          <input #buttonLabel type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.label"
+          <input #buttonLabel type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="buttonProps.label"
                  (change)="update({ label: $any($event.target).value })" />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">URL (href)</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.href"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="buttonProps.href"
                  (change)="update({ href: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -141,7 +141,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.align" (change)="update({ align: $any($event.target).value })">
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="buttonProps.align" (change)="update({ align: $any($event.target).value })">
               <option value="left">Left</option>
               <option value="center">Center</option>
               <option value="right">Right</option>
@@ -149,13 +149,13 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Border radius (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.borderRadius"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="buttonProps.borderRadius"
                    (change)="update({ borderRadius: +$any($event.target).value })" />
           </div>
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.padding"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="buttonProps.padding"
                  (change)="update({ padding: $any($event.target).value })" />
         </div>
       }
@@ -168,13 +168,13 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Width (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="dividerProps.borderWidth"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="dividerProps.borderWidth"
                    (change)="update({ borderWidth: +$any($event.target).value })" />
           </div>
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="dividerProps.padding"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="dividerProps.padding"
                  (change)="update({ padding: $any($event.target).value })" />
         </div>
       }
@@ -182,7 +182,7 @@
       @case ('spacer') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Height (px)</label>
-          <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="spacerProps.height"
+          <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500" [value]="spacerProps.height"
                  (change)="update({ height: +$any($event.target).value })" />
         </div>
       }
@@ -193,13 +193,13 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Text</label>
             <app-variable-picker (insert)="insertVariable(headingText, 'text', $event)" />
           </div>
-          <input #headingText type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input #headingText type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).text" (change)="update({ text: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Level</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                     [value]="$any(block.props).level" (change)="update({ level: +$any($event.target).value })">
               <option value="1">H1</option>
               <option value="2">H2</option>
@@ -208,7 +208,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                     [value]="$any(block.props).align" (change)="update({ align: $any($event.target).value })">
               <option value="left">Left</option>
               <option value="center">Center</option>
@@ -223,7 +223,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" />
           </div>
         </div>
@@ -232,7 +232,7 @@
       @case ('social') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-          <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                   [value]="$any(block.props).align" (change)="update({ align: $any($event.target).value })">
             <option value="left">Left</option>
             <option value="center">Center</option>
@@ -242,12 +242,12 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Icon size (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).iconSize" (change)="update({ iconSize: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" />
           </div>
         </div>
@@ -255,11 +255,11 @@
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Links</label>
         </div>
         @for (link of $any(block.props).links; track link.platform; let i = $index) {
-          <div class="mb-2 p-2 border border-gray-200 rounded bg-white">
+          <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="text-[10px] font-semibold text-gray-500 uppercase mb-1">{{ link.platform }}</div>
-            <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500 mb-1"
+            <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded-sm text-xs font-sans bg-white focus:outline-hidden focus:border-blue-500 mb-1"
                    [value]="link.href" placeholder="https://..." (change)="updateSocialLink(i, 'href', $any($event.target).value)" />
-            <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-300 rounded-sm text-xs font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="link.iconUrl ?? ''" placeholder="Custom icon URL (optional)" (change)="updateSocialLink(i, 'iconUrl', $any($event.target).value)" />
           </div>
         }
@@ -268,28 +268,28 @@
       @case ('video') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Thumbnail URL</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).thumbnailUrl" (change)="update({ thumbnailUrl: $any($event.target).value })" placeholder="https://..." />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Video URL</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).videoUrl" (change)="update({ videoUrl: $any($event.target).value })" placeholder="https://youtube.com/..." />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Alt text</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).alt" (change)="update({ alt: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Width (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).width" (change)="update({ width: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                     [value]="$any(block.props).align" (change)="update({ align: $any($event.target).value })">
               <option value="left">Left</option>
               <option value="center">Center</option>
@@ -299,7 +299,7 @@
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" />
         </div>
       }
@@ -310,12 +310,12 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">HTML</label>
             <app-variable-picker (insert)="insertVariable(rawHtml, 'html', $event)" />
           </div>
-          <textarea #rawHtml class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="8"
+          <textarea #rawHtml class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500 resize-y" rows="8"
                     [value]="$any(block.props).html" (change)="update({ html: $any($event.target).value })"></textarea>
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" />
         </div>
       }
@@ -323,7 +323,7 @@
       @case ('hero') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Background Image URL</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).backgroundUrl" (change)="update({ backgroundUrl: $any($event.target).value })" placeholder="https://..." />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -333,19 +333,19 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Height</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).height" (change)="update({ height: $any($event.target).value })" placeholder="400px" />
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Bg width</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).backgroundWidth" (change)="update({ backgroundWidth: $any($event.target).value })" placeholder="600px" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Bg height</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).backgroundHeight" (change)="update({ backgroundHeight: $any($event.target).value })" placeholder="400px" />
           </div>
         </div>
@@ -354,7 +354,7 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title</label>
             <app-variable-picker (insert)="insertVariable(heroTitle, 'title', $event)" />
           </div>
-          <input #heroTitle type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input #heroTitle type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).title" (change)="update({ title: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -364,7 +364,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title size (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).titleSize" (change)="update({ titleSize: +$any($event.target).value })" />
           </div>
         </div>
@@ -374,7 +374,7 @@
               <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Subtitle</label>
               <app-variable-picker (insert)="insertVariable(heroSubtitle, 'subtitle', $event)" />
             </div>
-            <input #heroSubtitle type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input #heroSubtitle type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).subtitle" (change)="update({ subtitle: $any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
@@ -387,12 +387,12 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Button label</label>
             <app-variable-picker (insert)="insertVariable(heroButtonLabel, 'buttonLabel', $event)" />
           </div>
-          <input #heroButtonLabel type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input #heroButtonLabel type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).buttonLabel" (change)="update({ buttonLabel: $any($event.target).value })" />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Button URL</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).buttonHref" (change)="update({ buttonHref: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -402,7 +402,7 @@
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Vertical align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                     [value]="$any(block.props).verticalAlign" (change)="update({ verticalAlign: $any($event.target).value })">
               <option value="top">Top</option>
               <option value="middle">Middle</option>
@@ -412,7 +412,7 @@
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                  [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" placeholder="e.g. 40px 25px" />
         </div>
       }
@@ -421,7 +421,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Font size (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).fontSize" (change)="update({ fontSize: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
@@ -432,7 +432,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                     [value]="$any(block.props).align" (change)="update({ align: $any($event.target).value })">
               <option value="left">Left</option>
               <option value="center">Center</option>
@@ -447,7 +447,7 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" />
           </div>
           <div class="flex items-end pb-1">
@@ -461,14 +461,14 @@
 
         <div class="flex items-center justify-between mb-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Rows</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addTableRow()">+ Add row</button>
+          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addTableRow()">+ Add row</button>
         </div>
         <div class="flex justify-end mb-2">
-          <button class="text-xs text-blue-600 border border-blue-300 rounded px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addTableColumn()">+ Add column</button>
+          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addTableColumn()">+ Add column</button>
         </div>
 
         @for (row of $any(block.props).rows; track $index; let ri = $index) {
-          <div class="mb-2 p-2 border border-gray-200 rounded bg-white">
+          <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Row {{ ri + 1 }}</span>
               <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeTableRow(ri)">✕ row</button>
@@ -476,7 +476,7 @@
             <div class="flex flex-col gap-1">
               @for (cell of row.cells; track $index; let ci = $index) {
                 <div class="flex gap-1 items-center">
-                  <input type="text" class="flex-1 px-2 py-1 border border-gray-200 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500"
+                  <input type="text" class="flex-1 px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans bg-white focus:outline-hidden focus:border-blue-500"
                          [value]="cell" placeholder="Col {{ ci + 1 }}" (change)="updateTableCell(ri, ci, $any($event.target).value)" />
                   @if (ri === 0) {
                     <button class="text-[10px] text-red-400 cursor-pointer border-0 bg-transparent shrink-0" (click)="removeTableColumn(ci)" title="Remove column">✕</button>
@@ -501,17 +501,17 @@
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Items</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addAccordionItem()">+ Add</button>
+          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addAccordionItem()">+ Add</button>
         </div>
         @for (item of $any(block.props).items; track $index; let i = $index) {
-          <div class="mb-2 p-2 border border-gray-200 rounded bg-white">
+          <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Item {{ i + 1 }}</span>
               <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeAccordionItem(i)">✕</button>
             </div>
-            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans mb-1 bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans mb-1 bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="item.title" placeholder="Question" (change)="updateAccordionItem(i, 'title', $any($event.target).value)" />
-            <textarea class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500 resize-none" rows="2"
+            <textarea class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans bg-white focus:outline-hidden focus:border-blue-500 resize-none" rows="2"
                       [value]="item.content" placeholder="Answer" (change)="updateAccordionItem(i, 'content', $any($event.target).value)"></textarea>
           </div>
         }
@@ -521,30 +521,30 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Thumbnail width (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).thumbnailWidth" (change)="update({ thumbnailWidth: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Padding</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).padding" (change)="update({ padding: $any($event.target).value })" />
           </div>
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Slides</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addCarouselImage()">+ Add</button>
+          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addCarouselImage()">+ Add</button>
         </div>
         @for (img of $any(block.props).images; track $index; let i = $index) {
-          <div class="mb-2 p-2 border border-gray-200 rounded bg-white">
+          <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Slide {{ i + 1 }}</span>
               <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeCarouselImage(i)">✕</button>
             </div>
-            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans mb-1 bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans mb-1 bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="img.src" placeholder="Image URL" (change)="updateCarouselImage(i, 'src', $any($event.target).value)" />
-            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans mb-1 bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans mb-1 bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="img.alt" placeholder="Alt text" (change)="updateCarouselImage(i, 'alt', $any($event.target).value)" />
-            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="img.href" placeholder="Link (optional)" (change)="updateCarouselImage(i, 'href', $any($event.target).value)" />
           </div>
         }
@@ -564,12 +564,12 @@
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Font size (px)</label>
-            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="number" class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="$any(block.props).fontSize" (change)="update({ fontSize: +$any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Align</label>
-            <select class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <select class="w-full px-2 py-1.5 border border-gray-300 rounded-sm text-sm box-border font-sans bg-white focus:outline-hidden focus:border-blue-500"
                     [value]="$any(block.props).align" (change)="update({ align: $any($event.target).value })">
               <option value="left">Left</option>
               <option value="center">Center</option>
@@ -579,17 +579,17 @@
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Links</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addNavbarLink()">+ Add</button>
+          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addNavbarLink()">+ Add</button>
         </div>
         @for (link of $any(block.props).links; track $index; let i = $index) {
-          <div class="mb-2 p-2 border border-gray-200 rounded bg-white">
+          <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Link {{ i + 1 }}</span>
               <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeNavbarLink(i)">✕</button>
             </div>
-            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans mb-1 bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans mb-1 bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="link.label" placeholder="Label" (change)="updateNavbarLink(i, 'label', $any($event.target).value)" />
-            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded text-xs font-sans bg-white focus:outline-none focus:border-blue-500"
+            <input type="text" class="w-full px-2 py-1 border border-gray-200 rounded-sm text-xs font-sans bg-white focus:outline-hidden focus:border-blue-500"
                    [value]="link.href" placeholder="https://..." (change)="updateNavbarLink(i, 'href', $any($event.target).value)" />
           </div>
         }

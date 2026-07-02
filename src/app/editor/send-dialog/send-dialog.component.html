@@ -10,7 +10,7 @@
       <div class="px-6 py-10 text-center">
         <div class="text-4xl mb-3">&#x2713;</div>
         <p class="text-green-700 font-medium text-sm mb-4">Email sent successfully!</p>
-        <button class="bg-gray-100 text-gray-700 border-0 px-4 py-2 rounded cursor-pointer text-sm hover:bg-gray-200" (click)="close()">Close</button>
+        <button class="bg-gray-100 text-gray-700 border-0 px-4 py-2 rounded-sm cursor-pointer text-sm hover:bg-gray-200" (click)="close()">Close</button>
       </div>
     } @else {
       <form class="px-6 py-5 flex flex-col gap-4" (ngSubmit)="submit()">
@@ -24,7 +24,7 @@
             name="to"
             placeholder="recipient@example.com"
             required
-            class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+            class="border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-hidden focus:border-blue-500"
           />
         </div>
 
@@ -35,7 +35,7 @@
             [(ngModel)]="toName"
             name="toName"
             placeholder="John Doe"
-            class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+            class="border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-hidden focus:border-blue-500"
           />
         </div>
 
@@ -47,7 +47,7 @@
             name="subject"
             placeholder="Your email subject"
             required
-            class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+            class="border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-hidden focus:border-blue-500"
           />
         </div>
 
@@ -62,7 +62,7 @@
                   [ngModel]="variableValues()[v.name] ?? ''"
                   (ngModelChange)="setVariableValue(v.name, $event)"
                   [name]="'var_' + v.name"
-                  class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-blue-500"
+                  class="border border-gray-300 rounded-sm px-3 py-2 text-sm focus:outline-hidden focus:border-blue-500"
                 />
               </div>
             }
@@ -70,16 +70,16 @@
         }
 
         @if (status() === 'error') {
-          <p class="text-red-600 text-xs bg-red-50 border border-red-200 rounded px-3 py-2 m-0">{{ errorMessage() || 'Failed to send email. Please try again.' }}</p>
+          <p class="text-red-600 text-xs bg-red-50 border border-red-200 rounded-sm px-3 py-2 m-0">{{ errorMessage() || 'Failed to send email. Please try again.' }}</p>
         }
 
         <div class="flex gap-2 justify-end pt-1">
-          <button type="button" class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded cursor-pointer text-sm hover:bg-gray-50" (click)="close()">Cancel</button>
+          <button type="button" class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-sm cursor-pointer text-sm hover:bg-gray-50" (click)="close()">Cancel</button>
           <button
             type="submit"
             [disabled]="!to || !subject || status() === 'sending'"
             [ngClass]="(!to || !subject || status() === 'sending') ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'"
-            class="bg-blue-600 text-white border-0 px-4 py-2 rounded cursor-pointer text-sm font-medium transition-colors"
+            class="bg-blue-600 text-white border-0 px-4 py-2 rounded-sm cursor-pointer text-sm font-medium transition-colors"
           >
             {{ status() === 'sending' ? 'Sending...' : 'Send' }}
           </button>
