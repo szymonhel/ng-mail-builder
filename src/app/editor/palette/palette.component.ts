@@ -1,5 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, inject, computed } from '@angular/core';
 import { CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
@@ -8,6 +7,7 @@ import { BlockType } from '../../models/email-doc.model';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { SectionPreset, SECTION_PRESETS } from '../presets/section-presets';
 import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent } from '@spartan-ng/helm/tabs';
 
 export interface PaletteItem {
   type: BlockType;
@@ -35,7 +35,7 @@ export const PALETTE_ITEMS: PaletteItem[] = [
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [NgClass, CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, ColorPickerComponent, HlmInput],
+  imports: [CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, ColorPickerComponent, HlmInput, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
   templateUrl: './palette.component.html'
 })
 export class PaletteComponent {
@@ -47,7 +47,6 @@ export class PaletteComponent {
   readonly canvasRowsListId = CANVAS_ROWS_LIST_ID;
   readonly items = PALETTE_ITEMS;
   readonly sections = SECTION_PRESETS;
-  activeTab = signal<'blocks' | 'sections' | 'settings'>('blocks');
 
   connectedTo = computed(() => this.dropListsService.columnIds());
 
