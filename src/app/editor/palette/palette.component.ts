@@ -6,6 +6,7 @@ import { DropListsService, PALETTE_LIST_ID, SECTIONS_LIST_ID, CANVAS_ROWS_LIST_I
 import { BlockType } from '../../models/email-doc.model';
 import { SectionPreset, SECTION_PRESETS } from '../presets/section-presets';
 import { HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent } from '@spartan-ng/helm/tabs';
+import { NgIcon } from '@ng-icons/core';
 
 export interface PaletteItem {
   type: BlockType;
@@ -14,26 +15,26 @@ export interface PaletteItem {
 }
 
 export const PALETTE_ITEMS: PaletteItem[] = [
-  { type: 'text',    icon: 'T',  label: 'Text'    },
-  { type: 'image',   icon: '🖼', label: 'Image'   },
-  { type: 'button',  icon: '⬚',  label: 'Button'  },
-  { type: 'divider', icon: '—',  label: 'Divider' },
-  { type: 'spacer',  icon: '↕',  label: 'Spacer'  },
-  { type: 'heading', icon: 'H',  label: 'Heading' },
-  { type: 'social',  icon: '🔗', label: 'Social'  },
-  { type: 'video',   icon: '▶',  label: 'Video'   },
-  { type: 'html',      icon: '<>',  label: 'HTML'      },
-  { type: 'hero',      icon: '🌅', label: 'Hero'      },
-  { type: 'table',     icon: '⊞',  label: 'Table'     },
-  { type: 'accordion', icon: '≡',  label: 'Accordion' },
-  { type: 'navbar',    icon: '☰',  label: 'Navbar'    },
-  { type: 'carousel',  icon: '⟳',  label: 'Carousel'  },
+  { type: 'text',      icon: 'lucideType',              label: 'Text'      },
+  { type: 'image',     icon: 'lucideImage',              label: 'Image'     },
+  { type: 'button',    icon: 'lucideRectangleHorizontal', label: 'Button'    },
+  { type: 'divider',   icon: 'lucideMinus',               label: 'Divider'   },
+  { type: 'spacer',    icon: 'lucideArrowUpDown',         label: 'Spacer'    },
+  { type: 'heading',   icon: 'lucideHeading',             label: 'Heading'   },
+  { type: 'social',    icon: 'lucideLink',                label: 'Social'    },
+  { type: 'video',     icon: 'lucideVideo',               label: 'Video'     },
+  { type: 'html',      icon: 'lucideCode2',               label: 'HTML'      },
+  { type: 'hero',      icon: 'lucideSunrise',             label: 'Hero'      },
+  { type: 'table',     icon: 'lucideTable',               label: 'Table'     },
+  { type: 'accordion', icon: 'lucideRows3',               label: 'Accordion' },
+  { type: 'navbar',    icon: 'lucideMenu',                label: 'Navbar'    },
+  { type: 'carousel',  icon: 'lucideGalleryHorizontal',   label: 'Carousel'  },
 ];
 
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
+  imports: [CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent, NgIcon],
   templateUrl: './palette.component.html'
 })
 export class PaletteComponent {

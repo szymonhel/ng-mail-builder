@@ -20,10 +20,10 @@
              [cdkDragData]="item"
              class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-grab transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:cursor-grabbing"
              (click)="addBlock(item.type)">
-          <span class="text-base w-5 text-center select-none">{{ item.icon }}</span>
+          <ng-icon [name]="item.icon" size="18" class="w-5 shrink-0" />
           <span class="font-medium select-none">{{ item.label }}</span>
           <div *cdkDragPreview class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md shadow-lg text-sm font-medium pointer-events-none">
-            <span>{{ item.icon }}</span>
+            <ng-icon [name]="item.icon" size="18" />
             <span>{{ item.label }}</span>
           </div>
           <div *cdkDragPlaceholder class="h-10 border-2 border-dashed border-blue-300 rounded-md bg-blue-50"></div>
@@ -46,10 +46,10 @@
              [cdkDragData]="item"
              class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-grab transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 active:cursor-grabbing"
              (click)="addSection(item)">
-          <span class="text-base w-5 text-center select-none">{{ item.icon }}</span>
+          <ng-icon [name]="item.icon" size="18" class="w-5 shrink-0" />
           <span class="font-medium select-none">{{ item.label }}</span>
           <div *cdkDragPreview class="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-md shadow-lg text-sm font-medium pointer-events-none">
-            <span>{{ item.icon }}</span>
+            <ng-icon [name]="item.icon" size="18" />
             <span>{{ item.label }}</span>
           </div>
           <div *cdkDragPlaceholder class="h-10 border-2 border-dashed border-blue-300 rounded-md bg-blue-50"></div>
