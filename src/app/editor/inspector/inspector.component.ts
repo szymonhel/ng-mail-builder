@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
-import { Block, Row } from '../../models/email-doc.model';
+import { Block, Row, Column } from '../../models/email-doc.model';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 
 @Component({
@@ -16,8 +16,19 @@ export class InspectorComponent {
 
   get block(): Block | null { return this.store.selectedBlock(); }
 
-  get row(): Row | null {
+  get column(): { row: Row; col: Column } | null {
     if (this.block) return null;
+    const colId = this.store.selectedColumnId();
+    if (!colId) return null;
+    for (const row of this.store.doc().rows) {
+      const col = row.columns.find(c => c.id === colId);
+      if (col) return { row, col };
+    }
+    return null;
+  }
+
+  get row(): Row | null {
+    if (this.block || this.store.selectedColumnId()) return null;
     const id = this.store.selectedRowId();
     if (!id) return null;
     return this.store.doc().rows.find(r => r.id === id) ?? null;
@@ -26,6 +37,12 @@ export class InspectorComponent {
   update(props: any) {
     if (this.block) {
       this.store.updateBlockProps(this.block.id, props);
+    }
+  }
+
+  updateColumnBg(color: string | null) {
+    if (this.column) {
+      this.store.updateColumnStyle(this.column.row.id, this.column.col.id, { backgroundColor: color });
     }
   }
 

@@ -167,6 +167,9 @@ export interface Block {
 export interface Column {
   id: string;
   blocks: Block[];
+  // null = no background of its own; groups whatever's in this column visually,
+  // independent of sibling columns and the row's own background (mj-column background-color)
+  backgroundColor?: string | null;
 }
 
 export interface Row {

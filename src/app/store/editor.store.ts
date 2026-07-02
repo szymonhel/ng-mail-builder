@@ -120,11 +120,13 @@ export class EditorStore {
   private _doc = signal<EmailDoc>(initialDoc());
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
+  private _selectedColumnId = signal<string | null>(null);
   private _activeTab = signal<'editor' | 'preview' | 'json' | 'colors'>('editor');
 
   doc = this._doc.asReadonly();
   selectedBlockId = this._selectedBlockId.asReadonly();
   selectedRowId = this._selectedRowId.asReadonly();
+  selectedColumnId = this._selectedColumnId.asReadonly();
   activeTab = this._activeTab.asReadonly();
 
   selectedBlock = computed(() => {
@@ -140,8 +142,19 @@ export class EditorStore {
   });
 
   setActiveTab(tab: 'editor' | 'preview' | 'json' | 'colors') { this._activeTab.set(tab); }
-  selectBlock(id: string | null) { this._selectedBlockId.set(id); }
-  selectRow(id: string | null) { this._selectedRowId.set(id); }
+  selectBlock(id: string | null) {
+    this._selectedBlockId.set(id);
+    if (id) this._selectedColumnId.set(null);
+  }
+  selectRow(id: string | null) {
+    this._selectedRowId.set(id);
+    this._selectedColumnId.set(null);
+  }
+  selectColumn(rowId: string, colId: string | null) {
+    this._selectedRowId.set(rowId);
+    this._selectedColumnId.set(colId);
+    this._selectedBlockId.set(null);
+  }
 
   addRow() {
     const row: Row = { id: uid(), backgroundColor: null, padding: '0px', columns: [{ id: uid(), blocks: [] }] };
@@ -263,6 +276,16 @@ export class EditorStore {
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : { ...r, ...props })
+    }));
+  }
+
+  updateColumnStyle(rowId: string, colId: string, props: Partial<Pick<Column, 'backgroundColor'>>) {
+    this._doc.update(d => ({
+      ...d,
+      rows: d.rows.map(r => r.id !== rowId ? r : {
+        ...r,
+        columns: r.columns.map(c => c.id !== colId ? c : { ...c, ...props })
+      })
     }));
   }
 

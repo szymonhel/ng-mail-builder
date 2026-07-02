@@ -34,7 +34,16 @@ export class RowComponent {
     this.store.selectBlock(null);
   }
 
+  selectColumn(colId: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.store.selectColumn(this.row().id, colId);
+  }
+
   isRowSelected() {
-    return this.store.selectedRowId() === this.row().id && !this.store.selectedBlockId();
+    return this.store.selectedRowId() === this.row().id && !this.store.selectedBlockId() && !this.store.selectedColumnId();
+  }
+
+  isColumnSelected(colId: string) {
+    return this.store.selectedColumnId() === colId && !this.store.selectedBlockId();
   }
 }

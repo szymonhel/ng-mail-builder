@@ -100,8 +100,13 @@ function blockToHtml(b: Block): string {
 
 export function docToHtml(doc: EmailDoc): string {
   const rows = doc.rows.map(row => {
-    const blocks = row.columns.flatMap(col => col.blocks).map(blockToHtml).join('');
-    return `<div style="background:${row.backgroundColor};padding:${row.padding}">${blocks}</div>`;
+    const rowBg = row.backgroundColor ?? 'transparent';
+    const cols = row.columns.map(col => {
+      const blocks = col.blocks.map(blockToHtml).join('');
+      const colBg = col.backgroundColor ?? 'transparent';
+      return `<div style="flex:1;min-width:0;background:${colBg}">${blocks}</div>`;
+    }).join('');
+    return `<div style="display:flex;background:${rowBg};padding:${row.padding}">${cols}</div>`;
   }).join('');
 
   return `<!DOCTYPE html>

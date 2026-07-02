@@ -62,7 +62,6 @@ function blockToMjml(b: Block): string {
     case 'table': {
       const p = b.props as any;
       const rows = p.rows.map((row: any, ri: number) => {
-        console.log(p);
         const cells = row.cells.map((cell: string) =>
           (ri === 0 && p.hasHeader)
             ? `<th style="font-size: ${p.fontSize}px;border:1px solid ${p.borderColor};padding:8px 12px;background:#f5f5f5;font-weight:600">${cell}</th>`
@@ -119,7 +118,10 @@ function rowToMjml(row: Row): string {
   const fullWidth = hasNavbar ? ' full-width="full-width"' : '';
   const cols = row.columns.map(col => {
     const blocks = col.blocks.map(blockToMjml).join('\n        ');
-    return `      <mj-column>\n        ${blocks}\n      </mj-column>`;
+    // No explicit background-color when unset: groups the column's own elements
+    // together visually, independent of sibling columns and the row's background.
+    const colBg = col.backgroundColor ? ` background-color="${col.backgroundColor}"` : '';
+    return `      <mj-column${colBg}>\n        ${blocks}\n      </mj-column>`;
   }).join('\n');
   // No explicit background-color when unset: the section stays transparent so the
   // mj-wrapper's body background (set to doc.settings.bodyColor) shows through.
