@@ -24,6 +24,12 @@
         (click)="store.setActiveTab('settings')">Settings</button>
     </nav>
     <div class="flex gap-2">
+      <button hlmBtn variant="outline" size="sm" class="text-foreground px-2" [disabled]="!store.canUndo()" (click)="store.undo()" title="Undo (Ctrl/Cmd+Z)">
+        <ng-icon name="lucideUndo2" size="16" />
+      </button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground px-2" [disabled]="!store.canRedo()" (click)="store.redo()" title="Redo (Ctrl/Cmd+Shift+Z)">
+        <ng-icon name="lucideRedo2" size="16" />
+      </button>
       <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="copyJson()">Copy JSON</button>
       <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="copyMjml()">Copy MJML</button>
       <button hlmBtn size="sm" (click)="openSendDialog()">Send</button>

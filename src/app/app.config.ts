@@ -25,6 +25,8 @@ import {
   lucideDollarSign,
   lucideShoppingCart,
   lucideBarChart3,
+  lucideUndo2,
+  lucideRedo2,
 } from '@ng-icons/lucide';
 
 import { routes } from './app.routes';
@@ -57,6 +59,8 @@ export const appConfig: ApplicationConfig = {
       lucideDollarSign,
       lucideShoppingCart,
       lucideBarChart3,
+      lucideUndo2,
+      lucideRedo2,
     }),
   ]
 };
