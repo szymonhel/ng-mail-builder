@@ -43,7 +43,8 @@
       "Bash(npm ls *)",
       "Bash(timeout 60 bash -c 'until curl -sf http://localhost:4300 >/dev/null; do sleep 1; done')",
       "Bash(open -a \"Google Chrome\" --args --new-window \"http://localhost:4300\")",
-      "Bash(screencapture -x /private/tmp/claude-501/-Users-szymonhelmecki-Projects-ng-mail-builder/ed3dfde8-cb58-4ec1-a44f-8812be80b938/scratchpad/shot1.png)"
+      "Bash(screencapture -x /private/tmp/claude-501/-Users-szymonhelmecki-Projects-ng-mail-builder/ed3dfde8-cb58-4ec1-a44f-8812be80b938/scratchpad/shot1.png)",
+      "Bash(npm test *)"
     ]
   }
 }

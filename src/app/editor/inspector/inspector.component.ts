@@ -2,14 +2,15 @@ import { Component, inject } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
-import { Block, Row, Column } from '../../models/email-doc.model';
+import { Block, Row, Column, VisibilityCondition } from '../../models/email-doc.model';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { VariablePickerComponent } from '../../shared/variable-picker/variable-picker.component';
+import { ConditionEditorComponent } from '../../shared/condition-editor/condition-editor.component';
 
 @Component({
   selector: 'app-inspector',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent],
+  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent, ConditionEditorComponent],
   templateUrl: './inspector.component.html'
 })
 export class InspectorComponent {
@@ -66,6 +67,18 @@ export class InspectorComponent {
   updateRowBg(color: string | null) {
     if (this.row) {
       this.store.updateRowStyle(this.row.id, { backgroundColor: color });
+    }
+  }
+
+  updateRowCondition(condition: VisibilityCondition | null) {
+    if (this.row) {
+      this.store.updateRowCondition(this.row.id, condition);
+    }
+  }
+
+  updateBlockCondition(condition: VisibilityCondition | null) {
+    if (this.block) {
+      this.store.updateBlockCondition(this.block.id, condition);
     }
   }
 

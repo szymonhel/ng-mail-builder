@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { EmailDoc, Block, BlockType, Row, Column, EmailVariable } from '../models/email-doc.model';
+import { EmailDoc, Block, BlockType, Row, Column, EmailVariable, VisibilityCondition } from '../models/email-doc.model';
 import { uid } from '../utils/id.utils';
 
 const BLOCK_DEFAULTS: Record<BlockType, any> = {
@@ -248,6 +248,26 @@ export class EditorStore {
     this._doc.update(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : { ...r, ...props })
+    }));
+  }
+
+  updateRowCondition(rowId: string, condition: VisibilityCondition | null) {
+    this._doc.update(d => ({
+      ...d,
+      rows: d.rows.map(r => r.id !== rowId ? r : { ...r, condition })
+    }));
+  }
+
+  updateBlockCondition(blockId: string, condition: VisibilityCondition | null) {
+    this._doc.update(d => ({
+      ...d,
+      rows: d.rows.map(r => ({
+        ...r,
+        columns: r.columns.map(c => ({
+          ...c,
+          blocks: c.blocks.map(b => b.id !== blockId ? b : { ...b, condition })
+        }))
+      }))
     }));
   }
 

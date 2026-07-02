@@ -1,4 +1,5 @@
 import { EmailDoc, Block } from '../models/email-doc.model';
+import { defaultVariableValues, evaluateCondition } from './template-vars';
 
 function blockToHtml(b: Block): string {
   switch (b.type) {
@@ -98,16 +99,19 @@ function blockToHtml(b: Block): string {
   }
 }
 
-export function docToHtml(doc: EmailDoc): string {
-  const rows = doc.rows.map(row => {
-    const rowBg = row.backgroundColor ?? 'transparent';
-    const cols = row.columns.map(col => {
-      const blocks = col.blocks.map(blockToHtml).join('');
-      const colBg = col.backgroundColor ?? 'transparent';
-      return `<div style="flex:1;min-width:0;background:${colBg}">${blocks}</div>`;
+export function docToHtml(doc: EmailDoc, values?: Record<string, string>): string {
+  const vals = values ?? defaultVariableValues(doc.variables);
+  const rows = doc.rows
+    .filter(row => evaluateCondition(row.condition, vals))
+    .map(row => {
+      const rowBg = row.backgroundColor ?? 'transparent';
+      const cols = row.columns.map(col => {
+        const blocks = col.blocks.filter(b => evaluateCondition(b.condition, vals)).map(blockToHtml).join('');
+        const colBg = col.backgroundColor ?? 'transparent';
+        return `<div style="flex:1;min-width:0;background:${colBg}">${blocks}</div>`;
+      }).join('');
+      return `<div style="display:flex;background:${rowBg};padding:${row.padding}">${cols}</div>`;
     }).join('');
-    return `<div style="display:flex;background:${rowBg};padding:${row.padding}">${cols}</div>`;
-  }).join('');
 
   return `<!DOCTYPE html>
 <html>

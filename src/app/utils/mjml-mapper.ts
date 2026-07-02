@@ -1,4 +1,5 @@
 import { EmailDoc, Block, Row, SocialPlatform } from '../models/email-doc.model';
+import { defaultVariableValues, evaluateCondition } from './template-vars';
 
 // MJML's mj-social ships built-in icons/colors only for a fixed set of networks. These
 // platforms aren't in that set, so without an explicit background-color they'd render
@@ -131,8 +132,15 @@ function rowToMjml(row: Row): string {
   return `    <mj-section${bg} padding="${row.padding}"${fullWidth}>\n${cols}\n    </mj-section>`;
 }
 
-export function docToMjml(doc: EmailDoc): string {
-  const rows = doc.rows.map(row => rowToMjml(row)).join('\n');
+export function docToMjml(doc: EmailDoc, values?: Record<string, string>): string {
+  const vals = values ?? defaultVariableValues(doc.variables);
+  const visibleRows = doc.rows
+    .filter(row => evaluateCondition(row.condition, vals))
+    .map(row => ({
+      ...row,
+      columns: row.columns.map(col => ({ ...col, blocks: col.blocks.filter(b => evaluateCondition(b.condition, vals)) })),
+    }));
+  const rows = visibleRows.map(row => rowToMjml(row)).join('\n');
 
   const previewMjml = doc.settings.previewText
     ? `\n    <mj-preview>${doc.settings.previewText}</mj-preview>`

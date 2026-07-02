@@ -158,10 +158,22 @@ export interface CarouselProps {
   padding: string;
 }
 
+export type ConditionOperator = 'isSet' | 'isNotSet' | 'equals' | 'notEquals';
+
+export interface VisibilityCondition {
+  variableName: string;
+  operator: ConditionOperator;
+  // only used by the equals/notEquals operators
+  value?: string;
+}
+
 export interface Block {
   id: string;
   type: BlockType;
   props: TextProps | ImageProps | ButtonProps | DividerProps | SpacerProps;
+  // null/undefined = always render; otherwise this block is dropped from output
+  // (MJML/HTML/preview) whenever the condition evaluates to false
+  condition?: VisibilityCondition | null;
 }
 
 export interface Column {
@@ -178,6 +190,8 @@ export interface Row {
   backgroundColor: string | null;
   padding: string;
   columns: Column[];
+  // same semantics as Block.condition, but drops the whole row/section
+  condition?: VisibilityCondition | null;
 }
 
 export interface EmailVariable {

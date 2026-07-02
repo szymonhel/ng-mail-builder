@@ -5,7 +5,12 @@
 
   <!-- Row toolbar -->
   <div class="flex items-center justify-between px-2 py-1 bg-gray-50 border-b border-gray-100 text-xs text-gray-400">
-    <span>Row &middot; {{ row().columns.length }} col{{ row().columns.length !== 1 ? 's' : '' }}</span>
+    <span>
+      Row &middot; {{ row().columns.length }} col{{ row().columns.length !== 1 ? 's' : '' }}
+      @if (row().condition) {
+        <span class="ml-1.5 inline-block bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px] font-semibold align-middle" title="Only rendered when its condition is met">conditional</span>
+      }
+    </span>
     <div class="flex items-center gap-1">
       <button class="border border-gray-300 bg-white text-gray-500 cursor-pointer px-1.5 py-0.5 rounded text-xs hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50"
               (click)="addColumn($event)" title="Add column">+ col</button>

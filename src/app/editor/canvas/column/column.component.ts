@@ -25,6 +25,9 @@ import { PaletteItem } from '../../palette/palette.component';
              [class.border-transparent]="!isSelected(block.id)"
              (click)="selectBlock(block.id, $event)">
           <div class="absolute left-1 top-1/2 -translate-y-1/2 cursor-grab text-gray-300 text-sm z-10 select-none hover:text-gray-500" cdkDragHandle>&#x22EE;&#x22EE;</div>
+          @if (block.condition) {
+            <span class="absolute left-6 top-1 bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px] font-semibold z-10" title="Only rendered when its condition is met">conditional</span>
+          }
           <div class="px-7">
             <app-block-host [block]="block" />
           </div>

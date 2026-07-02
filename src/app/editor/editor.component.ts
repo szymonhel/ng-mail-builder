@@ -45,11 +45,15 @@ export class EditorComponent {
 
   onSendSubmit(form: SendFormValue) {
     this.sendStatus.set('sending');
+    // Regenerated from the doc (rather than reusing mjmlOutput()) so block/row
+    // visibility conditions are re-evaluated against this send's actual values,
+    // not the defaults baked into the Export tab's preview.
+    const mjml = applyVariables(docToMjml(this.store.doc(), form.variableValues), form.variableValues);
     this.mail.send({
       to: form.to,
       toName: form.toName || undefined,
       subject: form.subject,
-      mjml: applyVariables(this.mjmlOutput(), form.variableValues),
+      mjml,
     }).subscribe({
       next: () => this.sendStatus.set('success'),
       error: (err) => {
