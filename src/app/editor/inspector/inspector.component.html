@@ -40,8 +40,11 @@
     @switch (block.type) {
       @case ('text') {
         <div class="mb-3 flex flex-col gap-1">
-          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Content (HTML)</label>
-          <textarea class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="6" [value]="textProps.html"
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Content (HTML)</label>
+            <app-variable-picker (insert)="insertVariable(textHtml, 'html', $event)" />
+          </div>
+          <textarea #textHtml class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="6" [value]="textProps.html"
                     (change)="update({ html: $any($event.target).value })"></textarea>
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -110,8 +113,11 @@
 
       @case ('button') {
         <div class="mb-3 flex flex-col gap-1">
-          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Label</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.label"
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Label</label>
+            <app-variable-picker (insert)="insertVariable(buttonLabel, 'label', $event)" />
+          </div>
+          <input #buttonLabel type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500" [value]="buttonProps.label"
                  (change)="update({ label: $any($event.target).value })" />
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -180,8 +186,11 @@
 
       @case ('heading') {
         <div class="mb-3 flex flex-col gap-1">
-          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Text</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Text</label>
+            <app-variable-picker (insert)="insertVariable(headingText, 'text', $event)" />
+          </div>
+          <input #headingText type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
                  [value]="$any(block.props).text" (change)="update({ text: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -294,8 +303,11 @@
 
       @case ('html') {
         <div class="mb-3 flex flex-col gap-1">
-          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">HTML</label>
-          <textarea class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="8"
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">HTML</label>
+            <app-variable-picker (insert)="insertVariable(rawHtml, 'html', $event)" />
+          </div>
+          <textarea #rawHtml class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500 resize-y" rows="8"
                     [value]="$any(block.props).html" (change)="update({ html: $any($event.target).value })"></textarea>
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -335,8 +347,11 @@
           </div>
         </div>
         <div class="mb-3 flex flex-col gap-1">
-          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Title</label>
+            <app-variable-picker (insert)="insertVariable(heroTitle, 'title', $event)" />
+          </div>
+          <input #heroTitle type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
                  [value]="$any(block.props).title" (change)="update({ title: $any($event.target).value })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
@@ -352,8 +367,11 @@
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
-            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Subtitle</label>
-            <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Subtitle</label>
+              <app-variable-picker (insert)="insertVariable(heroSubtitle, 'subtitle', $event)" />
+            </div>
+            <input #heroSubtitle type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
                    [value]="$any(block.props).subtitle" (change)="update({ subtitle: $any($event.target).value })" />
           </div>
           <div class="flex flex-col gap-1">
@@ -362,8 +380,11 @@
           </div>
         </div>
         <div class="mb-3 flex flex-col gap-1">
-          <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Button label</label>
-          <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <div class="flex items-center justify-between">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Button label</label>
+            <app-variable-picker (insert)="insertVariable(heroButtonLabel, 'buttonLabel', $event)" />
+          </div>
+          <input #heroButtonLabel type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
                  [value]="$any(block.props).buttonLabel" (change)="update({ buttonLabel: $any($event.target).value })" />
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -571,9 +592,5 @@
         }
       }
     }
-
-    <div class="mb-3 flex flex-col gap-1 mt-2">
-      <label class="text-[10px] text-gray-400 normal-case tracking-normal font-normal">Merge fields: use {{ '{' }}{{ '{' }}guest.firstName{{ '}' }}{{ '}' }}</label>
-    </div>
   }
 </div>

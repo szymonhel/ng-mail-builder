@@ -180,8 +180,15 @@ export interface Row {
   columns: Column[];
 }
 
+export interface EmailVariable {
+  id: string;
+  name: string;
+  defaultValue: string;
+}
+
 export interface EmailDoc {
   version: number;
   settings: DocSettings;
+  variables: EmailVariable[];
   rows: Row[];
 }

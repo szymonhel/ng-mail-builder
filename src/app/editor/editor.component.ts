@@ -7,13 +7,15 @@ import { InspectorComponent } from './inspector/inspector.component';
 import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
 import { ColorsTabComponent } from './colors-tab/colors-tab.component';
+import { VariablesTabComponent } from './variables-tab/variables-tab.component';
 import { MailService } from '../services/mail.service';
 import { docToMjml } from '../utils/mjml-mapper';
+import { applyVariables } from '../utils/template-vars';
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent],
+  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent, VariablesTabComponent],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {
@@ -47,7 +49,7 @@ export class EditorComponent {
       to: form.to,
       toName: form.toName || undefined,
       subject: form.subject,
-      mjml: this.mjmlOutput(),
+      mjml: applyVariables(this.mjmlOutput(), form.variableValues),
     }).subscribe({
       next: () => this.sendStatus.set('success'),
       error: (err) => {

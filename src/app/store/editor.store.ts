@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { EmailDoc, Block, BlockType, Row, Column } from '../models/email-doc.model';
+import { EmailDoc, Block, BlockType, Row, Column, EmailVariable } from '../models/email-doc.model';
 import { uid } from '../utils/id.utils';
 
 const BLOCK_DEFAULTS: Record<BlockType, any> = {
@@ -97,6 +97,7 @@ function initialDoc(): EmailDoc {
   return {
     version: 1,
     settings: { contentWidth: 600, backgroundColor: '#f4f4f4', bodyColor: '#ffffff', fontFamily: 'Arial, sans-serif', previewText: '', googleFontName: '', googleFontUrl: '' },
+    variables: [],
     rows: [
       {
         id: uid(),
@@ -121,7 +122,7 @@ export class EditorStore {
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
   private _selectedColumnId = signal<string | null>(null);
-  private _activeTab = signal<'editor' | 'preview' | 'json' | 'colors'>('editor');
+  private _activeTab = signal<'editor' | 'preview' | 'json' | 'colors' | 'variables'>('editor');
 
   doc = this._doc.asReadonly();
   selectedBlockId = this._selectedBlockId.asReadonly();
@@ -141,7 +142,7 @@ export class EditorStore {
     return null;
   });
 
-  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'colors') { this._activeTab.set(tab); }
+  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'colors' | 'variables') { this._activeTab.set(tab); }
   selectBlock(id: string | null) {
     this._selectedBlockId.set(id);
     if (id) this._selectedColumnId.set(null);
@@ -262,6 +263,22 @@ export class EditorStore {
 
   updateSettings(settings: Partial<EmailDoc['settings']>) {
     this._doc.update(d => ({ ...d, settings: { ...d.settings, ...settings } }));
+  }
+
+  addVariable(name: string, defaultValue: string) {
+    const variable: EmailVariable = { id: uid(), name, defaultValue };
+    this._doc.update(d => ({ ...d, variables: [...d.variables, variable] }));
+  }
+
+  updateVariable(id: string, props: Partial<Pick<EmailVariable, 'name' | 'defaultValue'>>) {
+    this._doc.update(d => ({
+      ...d,
+      variables: d.variables.map(v => v.id !== id ? v : { ...v, ...props })
+    }));
+  }
+
+  removeVariable(id: string) {
+    this._doc.update(d => ({ ...d, variables: d.variables.filter(v => v.id !== id) }));
   }
 
   setRows(rows: Row[]) {

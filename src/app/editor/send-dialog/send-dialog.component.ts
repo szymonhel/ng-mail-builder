@@ -1,11 +1,13 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { EmailVariable } from '../../models/email-doc.model';
 
 export interface SendFormValue {
   to: string;
   toName: string;
   subject: string;
+  variableValues: Record<string, string>;
 }
 
 const TO_STORAGE_KEY = 'sendDialog.to';
@@ -19,6 +21,7 @@ const TO_STORAGE_KEY = 'sendDialog.to';
 export class SendDialogComponent {
   status = input<'idle' | 'sending' | 'success' | 'error'>('idle');
   errorMessage = input<string>('');
+  variables = input<EmailVariable[]>([]);
 
   closed = output<void>();
   submitted = output<SendFormValue>();
@@ -26,15 +29,31 @@ export class SendDialogComponent {
   to = sessionStorage.getItem(TO_STORAGE_KEY) ?? '';
   toName = '';
   subject = '';
+  variableValues = signal<Record<string, string>>({});
+
+  constructor() {
+    // Pre-fill with each variable's default the moment the dialog opens with a doc;
+    // doesn't re-fire on unrelated doc edits since the variables array reference is
+    // only replaced when a variable is actually added/edited/removed.
+    effect(() => {
+      const defaults: Record<string, string> = {};
+      for (const v of this.variables()) defaults[v.name] = v.defaultValue;
+      this.variableValues.set(defaults);
+    });
+  }
 
   onToChange(value: string) {
     this.to = value;
     sessionStorage.setItem(TO_STORAGE_KEY, value);
   }
 
+  setVariableValue(name: string, value: string) {
+    this.variableValues.update(values => ({ ...values, [name]: value }));
+  }
+
   submit() {
     if (!this.to || !this.subject) return;
-    this.submitted.emit({ to: this.to, toName: this.toName, subject: this.subject });
+    this.submitted.emit({ to: this.to, toName: this.toName, subject: this.subject, variableValues: this.variableValues() });
   }
 
   close() {

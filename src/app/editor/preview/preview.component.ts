@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { EditorStore } from '../../store/editor.store';
 import { docToHtml } from '../../utils/html-preview';
 import { docToMjml } from '../../utils/mjml-mapper';
+import { applyVariables, defaultVariableValues } from '../../utils/template-vars';
 
 @Component({
   selector: 'app-preview',
@@ -18,14 +19,16 @@ export class PreviewComponent {
   mode: 'desktop' | 'mobile' = 'desktop';
 
   previewHtml = computed(() => {
-    const html = docToHtml(this.store.doc());
+    const doc = this.store.doc();
+    const html = applyVariables(docToHtml(doc), defaultVariableValues(doc.variables));
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 
   mjmlOutput = computed(() => docToMjml(this.store.doc()));
 
   iframeSrc = computed(() => {
-    const html = docToHtml(this.store.doc());
+    const doc = this.store.doc();
+    const html = applyVariables(docToHtml(doc), defaultVariableValues(doc.variables));
     const blob = new Blob([html], { type: 'text/html' });
     return this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(blob));
   });

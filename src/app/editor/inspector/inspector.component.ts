@@ -4,11 +4,12 @@ import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
 import { Block, Row, Column } from '../../models/email-doc.model';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
+import { VariablePickerComponent } from '../../shared/variable-picker/variable-picker.component';
 
 @Component({
   selector: 'app-inspector',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ColorPickerComponent],
+  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent],
   templateUrl: './inspector.component.html'
 })
 export class InspectorComponent {
@@ -38,6 +39,22 @@ export class InspectorComponent {
     if (this.block) {
       this.store.updateBlockProps(this.block.id, props);
     }
+  }
+
+  // Splices the token in at the caret instead of appending, then restores focus/caret
+  // afterwards since re-rendering the [value]-bound field on update() drops both.
+  insertVariable(el: HTMLInputElement | HTMLTextAreaElement, key: string, token: string) {
+    if (!this.block) return;
+    const current: string = (this.block.props as any)[key] ?? '';
+    const start = el.selectionStart ?? current.length;
+    const end = el.selectionEnd ?? current.length;
+    const next = current.slice(0, start) + token + current.slice(end);
+    this.update({ [key]: next });
+    setTimeout(() => {
+      el.focus();
+      const pos = start + token.length;
+      el.setSelectionRange(pos, pos);
+    });
   }
 
   updateColumnBg(color: string | null) {
