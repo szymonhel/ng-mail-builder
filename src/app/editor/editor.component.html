@@ -28,9 +28,9 @@
         (click)="store.setActiveTab('variables')">Variables</button>
     </nav>
     <div class="flex gap-2">
-      <button class="bg-white/10 text-white border border-white/20 px-3.5 py-1.5 rounded-sm cursor-pointer text-sm hover:bg-white/20" (click)="copyJson()">Copy JSON</button>
-      <button class="bg-white/10 text-white border border-white/20 px-3.5 py-1.5 rounded-sm cursor-pointer text-sm hover:bg-white/20" (click)="copyMjml()">Copy MJML</button>
-      <button class="bg-green-500 text-white border-0 px-4 py-1.5 rounded-sm cursor-pointer text-sm font-medium hover:bg-green-600" (click)="openSendDialog()">Send</button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="copyJson()">Copy JSON</button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="copyMjml()">Copy MJML</button>
+      <button hlmBtn size="sm" (click)="openSendDialog()">Send</button>
     </div>
   </header>
 
@@ -67,14 +67,14 @@
         <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
           <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
             <h3 class="m-0 text-sm font-semibold">JSON Document Model</h3>
-            <button class="bg-white text-gray-700 border border-gray-300 px-3.5 py-1.5 rounded-sm cursor-pointer text-sm hover:bg-gray-50" (click)="copyJson()">Copy</button>
+            <button hlmBtn variant="outline" size="sm" (click)="copyJson()">Copy</button>
           </div>
           <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ jsonOutput() }}</pre>
         </div>
         <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
           <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
             <h3 class="m-0 text-sm font-semibold">MJML Output</h3>
-            <button class="bg-white text-gray-700 border border-gray-300 px-3.5 py-1.5 rounded-sm cursor-pointer text-sm hover:bg-gray-50" (click)="copyMjml()">Copy</button>
+            <button hlmBtn variant="outline" size="sm" (click)="copyMjml()">Copy</button>
           </div>
           <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ mjmlOutput() }}</pre>
         </div>

@@ -11,11 +11,12 @@ import { VariablesTabComponent } from './variables-tab/variables-tab.component';
 import { MailService } from '../services/mail.service';
 import { docToMjml } from '../utils/mjml-mapper';
 import { applyVariables } from '../utils/template-vars';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent, VariablesTabComponent],
+  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent, VariablesTabComponent, HlmButton],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {

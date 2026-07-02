@@ -1,15 +1,15 @@
 import { Component, inject, computed } from '@angular/core';
-import { NgClass } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EditorStore } from '../../store/editor.store';
 import { docToHtml } from '../../utils/html-preview';
 import { docToMjml } from '../../utils/mjml-mapper';
 import { applyVariables, defaultVariableValues } from '../../utils/template-vars';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-preview',
   standalone: true,
-  imports: [NgClass],
+  imports: [HlmButton],
   templateUrl: './preview.component.html'
 })
 export class PreviewComponent {

@@ -1,6 +1,6 @@
 <div class="relative">
-  <button type="button"
-          class="w-full h-9 border border-gray-300 rounded-sm cursor-pointer p-0.5 flex items-center gap-1.5 px-2 bg-white"
+  <button hlmBtn type="button" variant="outline"
+          class="w-full h-9 justify-start gap-1.5 px-2"
           (click)="toggle()">
     <span class="w-5 h-5 rounded-sm border border-gray-300 shrink-0" [style.background]="value()"></span>
     <span class="text-xs text-gray-600 truncate">{{ value() }}</span>

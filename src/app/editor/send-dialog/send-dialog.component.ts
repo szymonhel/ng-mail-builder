@@ -1,8 +1,8 @@
 import { Component, input, output, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
 import { EmailVariable } from '../../models/email-doc.model';
 import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 export interface SendFormValue {
   to: string;
@@ -16,7 +16,7 @@ const TO_STORAGE_KEY = 'sendDialog.to';
 @Component({
   selector: 'app-send-dialog',
   standalone: true,
-  imports: [FormsModule, NgClass, HlmInput],
+  imports: [FormsModule, HlmInput, HlmButton],
   templateUrl: './send-dialog.component.html',
 })
 export class SendDialogComponent {

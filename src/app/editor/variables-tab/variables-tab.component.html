@@ -18,8 +18,7 @@
         <input hlmInput type="text"
                placeholder="e.g. BR-12345" [ngModel]="newDefaultValue()" (ngModelChange)="newDefaultValue.set($event)" (keydown.enter)="add()" />
       </div>
-      <button type="button"
-              class="bg-blue-600 text-white border-0 px-4 py-2 rounded-sm cursor-pointer text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      <button hlmBtn type="button"
               [disabled]="!newName().trim()"
               (click)="add()">Add variable</button>
     </div>
@@ -33,9 +32,9 @@
             <code class="text-xs font-mono bg-gray-100 text-blue-700 px-2 py-1 rounded-sm shrink-0">{{ '{{' + v.name + '}}' }}</code>
             <input hlmInput type="text" class="flex-1 min-w-0"
                    [ngModel]="v.defaultValue" (ngModelChange)="updateDefaultValue(v.id, $event)" placeholder="Default value" />
-            <button type="button" class="text-gray-500 hover:text-blue-600 bg-transparent border-0 cursor-pointer text-xs px-2 py-1 whitespace-nowrap"
+            <button hlmBtn type="button" variant="ghost" size="sm" class="whitespace-nowrap"
                     (click)="copyToken(v.id, v.name)">{{ copiedId() === v.id ? 'Copied!' : 'Copy token' }}</button>
-            <button type="button" class="text-gray-400 hover:text-red-500 bg-transparent border-0 cursor-pointer text-sm" (click)="remove(v.id)">&#x2715;</button>
+            <button hlmBtn type="button" variant="ghost" size="icon-sm" class="text-destructive" (click)="remove(v.id)">&#x2715;</button>
           </div>
         }
       </div>

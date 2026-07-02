@@ -1,9 +1,11 @@
 import { Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
 import { SavedColorsService } from '../../services/saved-colors.service';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-color-picker',
   standalone: true,
+  imports: [HlmButton],
   templateUrl: './color-picker.component.html',
 })
 export class ColorPickerComponent {

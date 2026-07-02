@@ -9,11 +9,12 @@ import { ConditionEditorComponent } from '../../shared/condition-editor/conditio
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { HlmLabel } from '@spartan-ng/helm/label';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-inspector',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent, ConditionEditorComponent, HlmInput, HlmCheckbox, HlmLabel],
+  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent, ConditionEditorComponent, HlmInput, HlmCheckbox, HlmLabel, HlmButton],
   templateUrl: './inspector.component.html'
 })
 export class InspectorComponent {

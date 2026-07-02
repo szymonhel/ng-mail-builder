@@ -3,14 +3,14 @@
 
     <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
       <h2 class="text-base font-semibold text-gray-900 m-0">Send Email</h2>
-      <button class="text-gray-400 hover:text-gray-600 text-xl leading-none bg-transparent border-0 cursor-pointer" (click)="close()">&#x2715;</button>
+      <button hlmBtn type="button" variant="ghost" size="icon-sm" (click)="close()">&#x2715;</button>
     </div>
 
     @if (status() === 'success') {
       <div class="px-6 py-10 text-center">
         <div class="text-4xl mb-3">&#x2713;</div>
         <p class="text-green-700 font-medium text-sm mb-4">Email sent successfully!</p>
-        <button class="bg-gray-100 text-gray-700 border-0 px-4 py-2 rounded-sm cursor-pointer text-sm hover:bg-gray-200" (click)="close()">Close</button>
+        <button hlmBtn type="button" variant="secondary" (click)="close()">Close</button>
       </div>
     } @else {
       <form class="px-6 py-5 flex flex-col gap-4" (ngSubmit)="submit()">
@@ -74,12 +74,11 @@
         }
 
         <div class="flex gap-2 justify-end pt-1">
-          <button type="button" class="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-sm cursor-pointer text-sm hover:bg-gray-50" (click)="close()">Cancel</button>
+          <button hlmBtn type="button" variant="outline" (click)="close()">Cancel</button>
           <button
+            hlmBtn
             type="submit"
             [disabled]="!to || !subject || status() === 'sending'"
-            [ngClass]="(!to || !subject || status() === 'sending') ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'"
-            class="bg-blue-600 text-white border-0 px-4 py-2 rounded-sm cursor-pointer text-sm font-medium transition-colors"
           >
             {{ status() === 'sending' ? 'Sending...' : 'Send' }}
           </button>

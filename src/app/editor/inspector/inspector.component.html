@@ -8,7 +8,7 @@
       <app-color-picker [value]="column.col.backgroundColor ?? '#ffffff'"
              (valueChange)="updateColumnBg($event)" />
       @if (column.col.backgroundColor) {
-        <button type="button" class="mt-1 text-xs text-blue-600 hover:underline self-start" (click)="updateColumnBg(null)">
+        <button type="button" hlmBtn variant="link" size="sm" class="mt-1 h-auto p-0 self-start" (click)="updateColumnBg(null)">
           Clear
         </button>
       }
@@ -22,7 +22,7 @@
       <app-color-picker [value]="row.backgroundColor ?? store.doc().settings.backgroundColor"
              (valueChange)="updateRowBg($event)" />
       @if (row.backgroundColor) {
-        <button type="button" class="mt-1 text-xs text-blue-600 hover:underline self-start" (click)="updateRowBg(null)">
+        <button type="button" hlmBtn variant="link" size="sm" class="mt-1 h-auto p-0 self-start" (click)="updateRowBg(null)">
           Reset to page background
         </button>
       }
@@ -459,17 +459,17 @@
 
         <div class="flex items-center justify-between mb-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Rows</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addTableRow()">+ Add row</button>
+          <button hlmBtn variant="outline" size="xs" (click)="addTableRow()">+ Add row</button>
         </div>
         <div class="flex justify-end mb-2">
-          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addTableColumn()">+ Add column</button>
+          <button hlmBtn variant="outline" size="xs" (click)="addTableColumn()">+ Add column</button>
         </div>
 
         @for (row of $any(block.props).rows; track $index; let ri = $index) {
           <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Row {{ ri + 1 }}</span>
-              <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeTableRow(ri)">✕ row</button>
+              <button hlmBtn variant="ghost" size="xs" class="text-destructive" (click)="removeTableRow(ri)">✕ row</button>
             </div>
             <div class="flex flex-col gap-1">
               @for (cell of row.cells; track $index; let ci = $index) {
@@ -477,7 +477,7 @@
                   <input hlmInput type="text" class="flex-1"
                          [value]="cell" placeholder="Col {{ ci + 1 }}" (change)="updateTableCell(ri, ci, $any($event.target).value)" />
                   @if (ri === 0) {
-                    <button class="text-[10px] text-red-400 cursor-pointer border-0 bg-transparent shrink-0" (click)="removeTableColumn(ci)" title="Remove column">✕</button>
+                    <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive shrink-0" (click)="removeTableColumn(ci)" title="Remove column">✕</button>
                   }
                 </div>
               }
@@ -499,13 +499,13 @@
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Items</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addAccordionItem()">+ Add</button>
+          <button hlmBtn variant="outline" size="xs" (click)="addAccordionItem()">+ Add</button>
         </div>
         @for (item of $any(block.props).items; track $index; let i = $index) {
           <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Item {{ i + 1 }}</span>
-              <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeAccordionItem(i)">✕</button>
+              <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="removeAccordionItem(i)">✕</button>
             </div>
             <input hlmInput type="text" class="mb-1"
                    [value]="item.title" placeholder="Question" (change)="updateAccordionItem(i, 'title', $any($event.target).value)" />
@@ -530,13 +530,13 @@
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Slides</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addCarouselImage()">+ Add</button>
+          <button hlmBtn variant="outline" size="xs" (click)="addCarouselImage()">+ Add</button>
         </div>
         @for (img of $any(block.props).images; track $index; let i = $index) {
           <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Slide {{ i + 1 }}</span>
-              <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeCarouselImage(i)">✕</button>
+              <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="removeCarouselImage(i)">✕</button>
             </div>
             <input hlmInput type="text" class="mb-1"
                    [value]="img.src" placeholder="Image URL" (change)="updateCarouselImage(i, 'src', $any($event.target).value)" />
@@ -577,13 +577,13 @@
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Links</label>
-          <button class="text-xs text-blue-600 border border-blue-300 rounded-sm px-2 py-0.5 cursor-pointer bg-white hover:bg-blue-50" (click)="addNavbarLink()">+ Add</button>
+          <button hlmBtn variant="outline" size="xs" (click)="addNavbarLink()">+ Add</button>
         </div>
         @for (link of $any(block.props).links; track $index; let i = $index) {
           <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
             <div class="flex justify-between items-center mb-1">
               <span class="text-[10px] text-gray-400">Link {{ i + 1 }}</span>
-              <button class="text-[10px] text-red-500 cursor-pointer border-0 bg-transparent" (click)="removeNavbarLink(i)">✕</button>
+              <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="removeNavbarLink(i)">✕</button>
             </div>
             <input hlmInput type="text" class="mb-1"
                    [value]="link.label" placeholder="Label" (change)="updateNavbarLink(i, 'label', $any($event.target).value)" />
