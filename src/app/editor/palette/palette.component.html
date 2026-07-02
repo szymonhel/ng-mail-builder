@@ -4,7 +4,6 @@
   <div hlmTabsList class="w-full shrink-0 rounded-none border-b border-gray-200 bg-white h-auto p-0">
     <button hlmTabsTrigger="blocks" class="flex-1 py-2 rounded-none">Blocks</button>
     <button hlmTabsTrigger="sections" class="flex-1 py-2 rounded-none">Sections</button>
-    <button hlmTabsTrigger="settings" class="flex-1 py-2 rounded-none">Settings</button>
   </div>
 
   <!-- Blocks tab -->
@@ -57,65 +56,6 @@
         </div>
       }
     </div>
-  </div>
-
-  <!-- Settings tab -->
-  <div hlmTabsContent="settings" class="p-3 overflow-y-auto flex-1 flex flex-col gap-3">
-
-    <div>
-      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Layout</div>
-      <div class="flex flex-col gap-2">
-        <label class="text-xs text-gray-600">Content width (px)</label>
-        <input hlmInput type="number"
-               [value]="store.doc().settings.contentWidth"
-               (change)="store.updateSettings({ contentWidth: +$any($event.target).value })" />
-      </div>
-    </div>
-
-    <div>
-      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Colors</div>
-      <div class="flex flex-col gap-2">
-        <label class="text-xs text-gray-600">Page background</label>
-        <app-color-picker [value]="store.doc().settings.backgroundColor"
-               (valueChange)="store.updateSettings({ backgroundColor: $event })" />
-        <label class="text-xs text-gray-600">Email body background</label>
-        <app-color-picker [value]="store.doc().settings.bodyColor"
-               (valueChange)="store.updateSettings({ bodyColor: $event })" />
-      </div>
-    </div>
-
-    <div>
-      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Typography</div>
-      <div class="flex flex-col gap-2">
-        <label class="text-xs text-gray-600">Font family</label>
-        <input hlmInput type="text"
-               [value]="store.doc().settings.fontFamily"
-               (change)="store.updateSettings({ fontFamily: $any($event.target).value })"
-               placeholder="Arial, sans-serif" />
-        <label class="text-xs text-gray-600">Google Font name</label>
-        <input hlmInput type="text"
-               [value]="store.doc().settings.googleFontName"
-               (change)="store.updateSettings({ googleFontName: $any($event.target).value })"
-               placeholder="e.g. Roboto" />
-        <label class="text-xs text-gray-600">Google Font URL</label>
-        <input hlmInput type="text"
-               [value]="store.doc().settings.googleFontUrl"
-               (change)="store.updateSettings({ googleFontUrl: $any($event.target).value })"
-               placeholder="https://fonts.googleapis.com/css?family=Roboto" />
-      </div>
-    </div>
-
-    <div>
-      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Inbox</div>
-      <div class="flex flex-col gap-2">
-        <label class="text-xs text-gray-600">Preview text</label>
-        <input hlmInput type="text"
-               [value]="store.doc().settings.previewText"
-               (change)="store.updateSettings({ previewText: $any($event.target).value })"
-               placeholder="Shown in inbox before opening..." />
-      </div>
-    </div>
-
   </div>
 
 </div>

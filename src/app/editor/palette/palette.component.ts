@@ -4,9 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
 import { DropListsService, PALETTE_LIST_ID, SECTIONS_LIST_ID, CANVAS_ROWS_LIST_ID } from '../drop-lists.service';
 import { BlockType } from '../../models/email-doc.model';
-import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { SectionPreset, SECTION_PRESETS } from '../presets/section-presets';
-import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent } from '@spartan-ng/helm/tabs';
 
 export interface PaletteItem {
@@ -35,7 +33,7 @@ export const PALETTE_ITEMS: PaletteItem[] = [
 @Component({
   selector: 'app-palette',
   standalone: true,
-  imports: [CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, ColorPickerComponent, HlmInput, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
+  imports: [CdkDrag, CdkDropList, CdkDragPreview, CdkDragPlaceholder, FormsModule, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
   templateUrl: './palette.component.html'
 })
 export class PaletteComponent {

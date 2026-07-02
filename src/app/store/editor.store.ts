@@ -122,7 +122,7 @@ export class EditorStore {
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
   private _selectedColumnId = signal<string | null>(null);
-  private _activeTab = signal<'editor' | 'preview' | 'json' | 'colors' | 'variables'>('editor');
+  private _activeTab = signal<'editor' | 'preview' | 'json' | 'settings'>('editor');
 
   doc = this._doc.asReadonly();
   selectedBlockId = this._selectedBlockId.asReadonly();
@@ -142,7 +142,7 @@ export class EditorStore {
     return null;
   });
 
-  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'colors' | 'variables') { this._activeTab.set(tab); }
+  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'settings') { this._activeTab.set(tab); }
   selectBlock(id: string | null) {
     this._selectedBlockId.set(id);
     if (id) this._selectedColumnId.set(null);

@@ -10,24 +10,38 @@ import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmTextarea } from '@spartan-ng/helm/textarea';
 
 @Component({
   selector: 'app-inspector',
   standalone: true,
-  imports: [FormsModule, TitleCasePipe, ColorPickerComponent, VariablePickerComponent, ConditionEditorComponent, HlmInput, HlmCheckbox, HlmLabel, HlmButton],
-  templateUrl: './inspector.component.html'
+  imports: [
+    FormsModule,
+    TitleCasePipe,
+    ColorPickerComponent,
+    VariablePickerComponent,
+    ConditionEditorComponent,
+    HlmInput,
+    HlmCheckbox,
+    HlmLabel,
+    HlmButton,
+    HlmTextarea,
+  ],
+  templateUrl: './inspector.component.html',
 })
 export class InspectorComponent {
   store = inject(EditorStore);
 
-  get block(): Block | null { return this.store.selectedBlock(); }
+  get block(): Block | null {
+    return this.store.selectedBlock();
+  }
 
   get column(): { row: Row; col: Column } | null {
     if (this.block) return null;
     const colId = this.store.selectedColumnId();
     if (!colId) return null;
     for (const row of this.store.doc().rows) {
-      const col = row.columns.find(c => c.id === colId);
+      const col = row.columns.find((c) => c.id === colId);
       if (col) return { row, col };
     }
     return null;
@@ -37,7 +51,7 @@ export class InspectorComponent {
     if (this.block || this.store.selectedColumnId()) return null;
     const id = this.store.selectedRowId();
     if (!id) return null;
-    return this.store.doc().rows.find(r => r.id === id) ?? null;
+    return this.store.doc().rows.find((r) => r.id === id) ?? null;
   }
 
   update(props: any) {
@@ -64,7 +78,9 @@ export class InspectorComponent {
 
   updateColumnBg(color: string | null) {
     if (this.column) {
-      this.store.updateColumnStyle(this.column.row.id, this.column.col.id, { backgroundColor: color });
+      this.store.updateColumnStyle(this.column.row.id, this.column.col.id, {
+        backgroundColor: color,
+      });
     }
   }
 
@@ -93,11 +109,21 @@ export class InspectorComponent {
     this.store.updateBlockProps(this.block.id, { links });
   }
 
-  get textProps() { return this.block?.props as any; }
-  get imageProps() { return this.block?.props as any; }
-  get buttonProps() { return this.block?.props as any; }
-  get dividerProps() { return this.block?.props as any; }
-  get spacerProps() { return this.block?.props as any; }
+  get textProps() {
+    return this.block?.props as any;
+  }
+  get imageProps() {
+    return this.block?.props as any;
+  }
+  get buttonProps() {
+    return this.block?.props as any;
+  }
+  get dividerProps() {
+    return this.block?.props as any;
+  }
+  get spacerProps() {
+    return this.block?.props as any;
+  }
 
   updateAccordionItem(index: number, field: 'title' | 'content', value: string) {
     if (!this.block) return;
@@ -108,7 +134,10 @@ export class InspectorComponent {
 
   addAccordionItem() {
     if (!this.block) return;
-    const items = [...(this.block.props as any).items, { title: 'New question', content: 'Answer here' }];
+    const items = [
+      ...(this.block.props as any).items,
+      { title: 'New question', content: 'Answer here' },
+    ];
     this.store.updateBlockProps(this.block.id, { items });
   }
 
@@ -140,7 +169,9 @@ export class InspectorComponent {
   updateTableCell(rowIndex: number, cellIndex: number, value: string) {
     if (!this.block) return;
     const rows = (this.block.props as any).rows.map((r: any, ri: number) =>
-      ri !== rowIndex ? r : { cells: r.cells.map((c: string, ci: number) => ci !== cellIndex ? c : value) }
+      ri !== rowIndex
+        ? r
+        : { cells: r.cells.map((c: string, ci: number) => (ci !== cellIndex ? c : value)) },
     );
     this.store.updateBlockProps(this.block.id, { rows });
   }
@@ -168,7 +199,7 @@ export class InspectorComponent {
   removeTableColumn(colIndex: number) {
     if (!this.block) return;
     const rows = (this.block.props as any).rows.map((r: any) => ({
-      cells: r.cells.filter((_: any, i: number) => i !== colIndex)
+      cells: r.cells.filter((_: any, i: number) => i !== colIndex),
     }));
     this.store.updateBlockProps(this.block.id, { rows });
   }
@@ -182,7 +213,10 @@ export class InspectorComponent {
 
   addCarouselImage() {
     if (!this.block) return;
-    const images = [...(this.block.props as any).images, { src: 'https://placehold.co/600x400', alt: 'Slide', href: '' }];
+    const images = [
+      ...(this.block.props as any).images,
+      { src: 'https://placehold.co/600x400', alt: 'Slide', href: '' },
+    ];
     this.store.updateBlockProps(this.block.id, { images });
   }
 

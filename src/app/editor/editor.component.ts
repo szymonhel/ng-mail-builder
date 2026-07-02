@@ -6,8 +6,7 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { InspectorComponent } from './inspector/inspector.component';
 import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
-import { ColorsTabComponent } from './colors-tab/colors-tab.component';
-import { VariablesTabComponent } from './variables-tab/variables-tab.component';
+import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { MailService } from '../services/mail.service';
 import { docToMjml } from '../utils/mjml-mapper';
 import { applyVariables } from '../utils/template-vars';
@@ -16,7 +15,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent, VariablesTabComponent, HlmButton],
+  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, HlmButton],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {

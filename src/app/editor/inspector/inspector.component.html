@@ -47,7 +47,7 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Content (HTML)</label>
             <app-variable-picker (insert)="insertVariable(textHtml, 'html', $event)" />
           </div>
-          <textarea hlmInput #textHtml class="resize-y" rows="6" [value]="textProps.html"
+          <textarea hlmTextarea #textHtml class="resize-y" rows="6" [value]="textProps.html"
                     (change)="update({ html: $any($event.target).value })"></textarea>
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -310,7 +310,7 @@
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">HTML</label>
             <app-variable-picker (insert)="insertVariable(rawHtml, 'html', $event)" />
           </div>
-          <textarea hlmInput #rawHtml class="resize-y" rows="8"
+          <textarea htmlTextArea #rawHtml class="resize-y" rows="8"
                     [value]="$any(block.props).html" (change)="update({ html: $any($event.target).value })"></textarea>
         </div>
         <div class="mb-3 flex flex-col gap-1">
@@ -509,7 +509,7 @@
             </div>
             <input hlmInput type="text" class="mb-1"
                    [value]="item.title" placeholder="Question" (change)="updateAccordionItem(i, 'title', $any($event.target).value)" />
-            <textarea hlmInput class="resize-none" rows="2"
+            <textarea hlmTextarea class="resize-none" rows="2"
                       [value]="item.content" placeholder="Answer" (change)="updateAccordionItem(i, 'content', $any($event.target).value)"></textarea>
           </div>
         }
