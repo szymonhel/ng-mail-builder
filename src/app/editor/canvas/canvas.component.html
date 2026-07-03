@@ -1,7 +1,10 @@
 <div class="bg-gray-200 min-h-full p-6 box-border" (click)="clearSelection($event)">
-  <div class="mx-auto shadow-md rounded-sm overflow-hidden"
+  <div class="mx-auto shadow-md rounded-sm overflow-hidden box-border"
        [style.maxWidth.px]="store.doc().settings.contentWidth"
-       [style.background]="store.doc().settings.bodyColor">
+       [style.background]="store.doc().settings.bodyColor"
+       [style.border]="store.doc().settings.bodyBorderWidth > 0
+         ? store.doc().settings.bodyBorderWidth + 'px ' + store.doc().settings.bodyBorderStyle + ' ' + store.doc().settings.bodyBorderColor
+         : 'none'">
     <div cdkDropList [id]="canvasRowsListId" (cdkDropListDropped)="onRowDrop($event)" class="min-h-[40px] p-2">
       @for (row of store.doc().rows; track row.id) {
         <div cdkDrag class="cursor-default">

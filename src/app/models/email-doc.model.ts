@@ -1,9 +1,14 @@
 export type BlockType = 'text' | 'image' | 'button' | 'divider' | 'spacer' | 'heading' | 'social' | 'video' | 'html' | 'hero' | 'table' | 'accordion' | 'navbar' | 'carousel';
 
+export type BorderStyle = 'solid' | 'dashed' | 'dotted';
+
 export interface DocSettings {
   contentWidth: number;
   backgroundColor: string;
   bodyColor: string;
+  bodyBorderWidth: number;
+  bodyBorderColor: string;
+  bodyBorderStyle: BorderStyle;
   fontFamily: string;
   previewText: string;
   googleFontName: string;

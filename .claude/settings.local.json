@@ -81,7 +81,12 @@
       "Bash(pkill -f \"tsx src/index.ts\")",
       "Bash(rm -f /tmp/fake.pdf)",
       "Bash(lsof -i :3000 -sTCP:LISTEN)",
-      "Bash(kill 5539 5541)"
+      "Bash(kill 5539 5541)",
+      "Bash(git stash *)",
+      "Bash(gh run *)",
+      "Bash(brew list *)",
+      "Bash(grep -i \"^gh$\")",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }

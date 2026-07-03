@@ -34,6 +34,32 @@
       </div>
 
       <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Body Border</div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-gray-600">Width (px)</label>
+            <input hlmInput type="number" min="0"
+                   [value]="store.doc().settings.bodyBorderWidth"
+                   (change)="store.updateSettings({ bodyBorderWidth: +$any($event.target).value })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-gray-600">Color</label>
+            <app-color-picker [value]="store.doc().settings.bodyBorderColor"
+                   (valueChange)="store.updateSettings({ bodyBorderColor: $event })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-gray-600">Style</label>
+            <select hlmInput [value]="store.doc().settings.bodyBorderStyle"
+                    (change)="store.updateSettings({ bodyBorderStyle: $any($event.target).value })">
+              <option value="solid">Solid</option>
+              <option value="dashed">Dashed</option>
+              <option value="dotted">Dotted</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div>
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Typography</div>
         <div class="flex flex-col gap-2">
           <label class="text-xs text-gray-600">Font family</label>

@@ -113,6 +113,10 @@ export function docToHtml(doc: EmailDoc, values?: Record<string, string>): strin
       return `<div style="display:flex;background:${rowBg};padding:${row.padding}">${cols}</div>`;
     }).join('');
 
+  const border = doc.settings.bodyBorderWidth > 0
+    ? `border: ${doc.settings.bodyBorderWidth}px ${doc.settings.bodyBorderStyle} ${doc.settings.bodyBorderColor};`
+    : '';
+
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -120,7 +124,7 @@ export function docToHtml(doc: EmailDoc, values?: Record<string, string>): strin
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
   body { margin: 0; background: ${doc.settings.backgroundColor}; font-family: ${doc.settings.fontFamily}; }
-  .email-wrapper { max-width: ${doc.settings.contentWidth}px; margin: 0 auto; background: ${doc.settings.bodyColor}; }
+  .email-wrapper { max-width: ${doc.settings.contentWidth}px; margin: 0 auto; background: ${doc.settings.bodyColor}; ${border} box-sizing: border-box; }
 </style>
 </head>
 <body>

@@ -1,4 +1,4 @@
-import { EmailDoc, Block, Row, Column, DocSettings, SocialPlatform } from '../models/email-doc.model';
+import { EmailDoc, Block, Row, Column, DocSettings, SocialPlatform, BorderStyle } from '../models/email-doc.model';
 import { defaultVariableValues, evaluateCondition } from './template-vars';
 import { uid } from './id.utils';
 
@@ -151,6 +151,10 @@ export function docToMjml(doc: EmailDoc, values?: Record<string, string>): strin
     ? `\n    <mj-font name="${doc.settings.googleFontName}" href="${doc.settings.googleFontUrl}" />`
     : '';
 
+  const border = doc.settings.bodyBorderWidth > 0
+    ? ` border="${doc.settings.bodyBorderWidth}px ${doc.settings.bodyBorderStyle} ${doc.settings.bodyBorderColor}"`
+    : '';
+
   return `<mjml>
   <mj-head>${fontMjml}
     <mj-attributes>
@@ -159,7 +163,7 @@ export function docToMjml(doc: EmailDoc, values?: Record<string, string>): strin
     </mj-attributes>${previewMjml}
   </mj-head>
   <mj-body background-color="${doc.settings.backgroundColor}" width="${doc.settings.contentWidth}px">
-    <mj-wrapper background-color="${doc.settings.bodyColor}">
+    <mj-wrapper background-color="${doc.settings.bodyColor}"${border}>
 ${rows}
     </mj-wrapper>
   </mj-body>
@@ -194,6 +198,19 @@ function intAttr(el: Element | null | undefined, name: string, fallback: number)
 function alignAttr(el: Element | null | undefined, fallback: 'left' | 'center' | 'right'): 'left' | 'center' | 'right' {
   const raw = el?.getAttribute('align');
   return raw === 'left' || raw === 'center' || raw === 'right' ? raw : fallback;
+}
+
+// Parses MJML's border shorthand (e.g. "1px solid #dddddd") back into its parts.
+// Falls back to "no border" for anything that isn't in that exact shape.
+function parseBorder(value: string): { width: number; style: BorderStyle; color: string } {
+  const [rawWidth, rawStyle, rawColor] = value.trim().split(/\s+/);
+  const width = parseInt(rawWidth ?? '', 10);
+  const style: BorderStyle = rawStyle === 'dashed' || rawStyle === 'dotted' ? rawStyle : 'solid';
+  return {
+    width: Number.isFinite(width) ? width : 0,
+    style,
+    color: rawColor ?? '#dddddd',
+  };
 }
 
 function innerXml(el: Element): string {
@@ -417,11 +434,15 @@ function parseSettingsFromHead(headEl: Element | null, bodyEl: Element): DocSett
   const fontEl = headEl ? children(headEl, 'mj-font')[0] : undefined;
   const previewEl = headEl ? children(headEl, 'mj-preview')[0] : undefined;
   const wrapperEl = children(bodyEl, 'mj-wrapper')[0];
+  const border = parseBorder(attr(wrapperEl, 'border', ''));
 
   return {
     contentWidth: intAttr(attrBodyEl, 'width', intAttr(bodyEl, 'width', 600)),
     backgroundColor: attr(attrBodyEl, 'background-color') || attr(bodyEl, 'background-color', '#f4f4f4'),
     bodyColor: attr(wrapperEl, 'background-color', '#ffffff'),
+    bodyBorderWidth: border.width,
+    bodyBorderColor: border.color,
+    bodyBorderStyle: border.style,
     fontFamily: attr(allEl, 'font-family', 'Arial, sans-serif'),
     previewText: previewEl?.textContent?.trim() ?? '',
     googleFontName: attr(fontEl, 'name'),

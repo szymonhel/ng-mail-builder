@@ -96,7 +96,7 @@ const BLOCK_DEFAULTS: Record<BlockType, any> = {
 function initialDoc(): EmailDoc {
   return {
     version: 1,
-    settings: { contentWidth: 600, backgroundColor: '#f4f4f4', bodyColor: '#ffffff', fontFamily: 'Arial, sans-serif', previewText: '', googleFontName: '', googleFontUrl: '' },
+    settings: { contentWidth: 600, backgroundColor: '#f4f4f4', bodyColor: '#ffffff', bodyBorderWidth: 0, bodyBorderColor: '#dddddd', bodyBorderStyle: 'solid', fontFamily: 'Arial, sans-serif', previewText: '', googleFontName: '', googleFontUrl: '' },
     variables: [],
     rows: [
       {
