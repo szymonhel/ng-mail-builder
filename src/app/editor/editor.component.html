@@ -17,7 +17,7 @@
       <button
         class="border-0 px-4 py-1.5 rounded-sm cursor-pointer text-sm transition-all"
         [ngClass]="store.activeTab() === 'json' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
-        (click)="store.setActiveTab('json')">Export</button>
+        (click)="store.setActiveTab('json')">Import / Export</button>
       <button
         class="border-0 px-4 py-1.5 rounded-sm cursor-pointer text-sm transition-all"
         [ngClass]="store.activeTab() === 'settings' ? 'bg-white/15 text-white' : 'bg-transparent text-white/60 hover:bg-white/10 hover:text-white'"
@@ -30,11 +30,16 @@
       <button hlmBtn variant="outline" size="sm" class="text-foreground px-2" [disabled]="!store.canRedo()" (click)="store.redo()" title="Redo (Ctrl/Cmd+Shift+Z)">
         <ng-icon name="lucideRedo2" size="16" />
       </button>
-      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="copyJson()">Copy JSON</button>
-      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="copyMjml()">Copy MJML</button>
       <button hlmBtn size="sm" (click)="openSendDialog()">Send</button>
     </div>
   </header>
+
+  @if (importError()) {
+    <div class="flex items-center justify-between gap-4 px-4 py-2 bg-red-50 border-b border-red-200">
+      <p class="text-red-600 text-xs m-0">{{ importError() }}</p>
+      <button class="text-red-600 text-xs underline shrink-0" (click)="importError.set(null)">Dismiss</button>
+    </div>
+  }
 
   @if (sendDialogOpen()) {
     <app-send-dialog
@@ -65,20 +70,34 @@
       </div>
     }
     @if (store.activeTab() === 'json') {
-      <div class="flex-1 grid grid-cols-2 gap-6 p-6 overflow-auto bg-gray-100">
-        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+      <div class="flex-1 flex flex-col gap-6 p-6 overflow-auto bg-gray-100">
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shrink-0">
           <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-            <h3 class="m-0 text-sm font-semibold">JSON Document Model</h3>
-            <button hlmBtn variant="outline" size="sm" (click)="copyJson()">Copy</button>
+            <h3 class="m-0 text-sm font-semibold">Import</h3>
+            <div class="flex gap-2">
+              <input #importInput type="file" accept=".json,.mjml,.xml,application/json,text/xml" class="hidden" (change)="onImportFile($event)" />
+              <button hlmBtn variant="outline" size="sm" (click)="importInput.click()">Upload file&hellip;</button>
+              <button hlmBtn size="sm" (click)="importFromText(importTextarea)">Import</button>
+            </div>
           </div>
-          <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ jsonOutput() }}</pre>
+          <textarea #importTextarea rows="6" placeholder="Paste a JSON document or MJML markup here, then click Import."
+            class="m-0 p-4 text-xs font-mono border-0 outline-none resize-y bg-gray-50"></textarea>
         </div>
-        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
-          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-            <h3 class="m-0 text-sm font-semibold">MJML Output</h3>
-            <button hlmBtn variant="outline" size="sm" (click)="copyMjml()">Copy</button>
+        <div class="flex-1 grid grid-cols-2 gap-6 min-h-0">
+          <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <h3 class="m-0 text-sm font-semibold">JSON Document Model</h3>
+              <button hlmBtn variant="outline" size="sm" (click)="copyJson()">Copy</button>
+            </div>
+            <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre">{{ jsonOutput() }}</pre>
           </div>
-          <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre max-h-[calc(100vh-200px)]">{{ mjmlOutput() }}</pre>
+          <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <h3 class="m-0 text-sm font-semibold">MJML Output</h3>
+              <button hlmBtn variant="outline" size="sm" (click)="copyMjml()">Copy</button>
+            </div>
+            <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre">{{ mjmlOutput() }}</pre>
+          </div>
         </div>
       </div>
     }

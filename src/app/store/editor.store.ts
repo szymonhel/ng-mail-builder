@@ -376,6 +376,14 @@ export class EditorStore {
     this.commit(d => ({ ...d, rows }));
   }
 
+  // Replaces the whole document (e.g. from an imported JSON/MJML file). Goes through the
+  // normal commit path so the previous doc is still one undo away.
+  loadDoc(doc: EmailDoc) {
+    this.commit(() => doc);
+    this.clearSelection();
+    this._activeTab.set('editor');
+  }
+
   setBlocksInColumn(rowId: string, colId: string, blocks: Block[]) {
     const row = this._doc().rows.find(r => r.id === rowId);
     if (!row) return;

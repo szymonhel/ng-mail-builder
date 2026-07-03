@@ -8,7 +8,8 @@ import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { MailService } from '../services/mail.service';
-import { docToMjml } from '../utils/mjml-mapper';
+import { docToMjml, mjmlToDoc } from '../utils/mjml-mapper';
+import { parseJsonImport } from '../utils/import.utils';
 import { applyVariables } from '../utils/template-vars';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { NgIcon } from '@ng-icons/core';
@@ -48,8 +49,55 @@ export class EditorComponent {
   sendStatus = signal<'idle' | 'sending' | 'success' | 'error'>('idle');
   sendError = signal('');
 
+  importError = signal<string | null>(null);
+
   copyJson() { navigator.clipboard.writeText(this.jsonOutput()); }
   copyMjml() { navigator.clipboard.writeText(this.mjmlOutput()); }
+
+  // Shared by both the paste-text and file-upload import paths: sniffs JSON vs MJML
+  // from content alone, for whichever of the two doesn't have a filename to go by.
+  private importDocFromText(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed) throw new Error('Paste some JSON or MJML first.');
+    return trimmed.startsWith('{') ? parseJsonImport(text) : mjmlToDoc(text);
+  }
+
+  importFromText(textarea: HTMLTextAreaElement) {
+    try {
+      const doc = this.importDocFromText(textarea.value);
+      this.store.loadDoc(doc);
+      this.importError.set(null);
+      textarea.value = '';
+    } catch (err: any) {
+      this.importError.set(err?.message ?? 'Failed to import.');
+    }
+  }
+
+  onImportFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result as string;
+      try {
+        const doc = /\.(mjml|xml)$/i.test(file.name)
+          ? mjmlToDoc(text)
+          : file.name.toLowerCase().endsWith('.json')
+            ? parseJsonImport(text)
+            : this.importDocFromText(text);
+        this.store.loadDoc(doc);
+        this.importError.set(null);
+      } catch (err: any) {
+        this.importError.set(err?.message ?? 'Failed to import file.');
+      }
+    };
+    reader.onerror = () => this.importError.set('Failed to read that file.');
+    reader.readAsText(file);
+
+    input.value = '';
+  }
 
   openSendDialog() {
     this.sendStatus.set('idle');
