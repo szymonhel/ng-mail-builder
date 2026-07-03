@@ -1,9 +1,11 @@
 import { Component, ElementRef, HostListener, computed, inject, output, signal } from '@angular/core';
 import { EditorStore } from '../../store/editor.store';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-variable-picker',
   standalone: true,
+  imports: [HlmButton],
   templateUrl: './variable-picker.component.html',
 })
 export class VariablePickerComponent {

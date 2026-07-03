@@ -1,18 +1,12 @@
 <div class="flex flex-col h-full">
   <div class="px-4 py-2 border-b border-gray-200 bg-gray-50 flex gap-3 items-center">
-    <div class="flex border border-gray-300 rounded overflow-hidden">
-      <button
-        class="border-0 px-4 py-1.5 cursor-pointer text-sm transition-all"
-        [ngClass]="mode === 'desktop' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
-        (click)="setMode('desktop')">Desktop</button>
-      <button
-        class="border-0 px-4 py-1.5 cursor-pointer text-sm transition-all"
-        [ngClass]="mode === 'mobile' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
-        (click)="setMode('mobile')">Mobile</button>
+    <div class="flex gap-1">
+      <button hlmBtn size="sm" [variant]="mode === 'desktop' ? 'default' : 'outline'" (click)="setMode('desktop')">Desktop</button>
+      <button hlmBtn size="sm" [variant]="mode === 'mobile' ? 'default' : 'outline'" (click)="setMode('mobile')">Mobile</button>
     </div>
   </div>
   <div class="flex-1 overflow-auto bg-gray-200 p-6 flex justify-center">
-    <div class="w-full bg-white shadow-lg rounded overflow-hidden transition-all duration-300"
+    <div class="w-full bg-white shadow-lg rounded-sm overflow-hidden transition-all duration-300"
          [style.maxWidth]="mode === 'mobile' ? '375px' : '700px'">
       <iframe [src]="iframeSrc()" class="w-full h-[600px] border-0 block" title="Email preview"></iframe>
     </div>

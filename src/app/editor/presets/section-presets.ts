@@ -11,7 +11,7 @@ export interface SectionPreset {
 export const SECTION_PRESETS: SectionPreset[] = [
   {
     type: 'header',
-    icon: '🔝',
+    icon: 'lucidePanelTop',
     label: 'Header',
     build: (): Row => ({
       id: uid(),
@@ -39,7 +39,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'footer',
-    icon: '⬇',
+    icon: 'lucidePanelBottom',
     label: 'Footer',
     build: (): Row => ({
       id: uid(),
@@ -83,7 +83,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'feature-list',
-    icon: '▦',
+    icon: 'lucideLayoutGrid',
     label: 'Feature list',
     build: (): Row => ({
       id: uid(),
@@ -101,7 +101,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'testimonial',
-    icon: '💬',
+    icon: 'lucideMessageSquare',
     label: 'Testimonial',
     build: (): Row => ({
       id: uid(),
@@ -121,7 +121,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'image-text',
-    icon: '⬛',
+    icon: 'lucideColumns2',
     label: 'Image + text',
     build: (): Row => ({
       id: uid(),
@@ -147,7 +147,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'pricing',
-    icon: '💲',
+    icon: 'lucideDollarSign',
     label: 'Pricing cards',
     build: (): Row => ({
       id: uid(),
@@ -169,7 +169,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'product-grid',
-    icon: '🛒',
+    icon: 'lucideShoppingCart',
     label: 'Product grid',
     build: (): Row => ({
       id: uid(),
@@ -188,7 +188,7 @@ export const SECTION_PRESETS: SectionPreset[] = [
   },
   {
     type: 'stats',
-    icon: '📊',
+    icon: 'lucideBarChart3',
     label: 'Stats row',
     build: (): Row => ({
       id: uid(),

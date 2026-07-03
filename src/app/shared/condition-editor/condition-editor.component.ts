@@ -1,10 +1,14 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { EditorStore } from '../../store/editor.store';
 import { ConditionOperator, VisibilityCondition } from '../../models/email-doc.model';
+import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
+import { HlmLabel } from '@spartan-ng/helm/label';
 
 @Component({
   selector: 'app-condition-editor',
   standalone: true,
+  imports: [HlmInput, HlmCheckbox, HlmLabel],
   templateUrl: './condition-editor.component.html',
 })
 export class ConditionEditorComponent {

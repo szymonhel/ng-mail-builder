@@ -116,19 +116,30 @@ function initialDoc(): EmailDoc {
   };
 }
 
+// Rapid-fire edits (e.g. dragging the native color input, which fires on every tick)
+// land within this window of each other and are coalesced into a single undo step.
+const HISTORY_COALESCE_MS = 400;
+const HISTORY_LIMIT = 100;
+
 @Injectable({ providedIn: 'root' })
 export class EditorStore {
   private _doc = signal<EmailDoc>(initialDoc());
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
   private _selectedColumnId = signal<string | null>(null);
-  private _activeTab = signal<'editor' | 'preview' | 'json' | 'colors' | 'variables'>('editor');
+  private _activeTab = signal<'editor' | 'preview' | 'json' | 'settings'>('editor');
+
+  private _past = signal<EmailDoc[]>([]);
+  private _future = signal<EmailDoc[]>([]);
+  private _lastCommitAt = 0;
 
   doc = this._doc.asReadonly();
   selectedBlockId = this._selectedBlockId.asReadonly();
   selectedRowId = this._selectedRowId.asReadonly();
   selectedColumnId = this._selectedColumnId.asReadonly();
   activeTab = this._activeTab.asReadonly();
+  canUndo = computed(() => this._past().length > 0);
+  canRedo = computed(() => this._future().length > 0);
 
   selectedBlock = computed(() => {
     const id = this._selectedBlockId();
@@ -142,7 +153,53 @@ export class EditorStore {
     return null;
   });
 
-  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'colors' | 'variables') { this._activeTab.set(tab); }
+  // All doc mutations funnel through here so undo/redo has a single choke point.
+  private commit(updater: (doc: EmailDoc) => EmailDoc) {
+    const prev = this._doc();
+    const next = updater(prev);
+    if (next === prev) return;
+
+    const now = Date.now();
+    if (now - this._lastCommitAt > HISTORY_COALESCE_MS) {
+      this._past.update(p => {
+        const grown = [...p, prev];
+        return grown.length > HISTORY_LIMIT ? grown.slice(grown.length - HISTORY_LIMIT) : grown;
+      });
+      this._future.set([]);
+    }
+    this._lastCommitAt = now;
+    this._doc.set(next);
+  }
+
+  undo() {
+    const past = this._past();
+    if (past.length === 0) return;
+    const previous = past[past.length - 1];
+    this._past.set(past.slice(0, -1));
+    this._future.update(f => [this._doc(), ...f]);
+    this._doc.set(previous);
+    this._lastCommitAt = 0;
+    this.clearSelection();
+  }
+
+  redo() {
+    const future = this._future();
+    if (future.length === 0) return;
+    const next = future[0];
+    this._future.set(future.slice(1));
+    this._past.update(p => [...p, this._doc()]);
+    this._doc.set(next);
+    this._lastCommitAt = 0;
+    this.clearSelection();
+  }
+
+  private clearSelection() {
+    this._selectedBlockId.set(null);
+    this._selectedRowId.set(null);
+    this._selectedColumnId.set(null);
+  }
+
+  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'settings') { this._activeTab.set(tab); }
   selectBlock(id: string | null) {
     this._selectedBlockId.set(id);
     if (id) this._selectedColumnId.set(null);
@@ -159,16 +216,16 @@ export class EditorStore {
 
   addRow() {
     const row: Row = { id: uid(), backgroundColor: null, padding: '0px', columns: [{ id: uid(), blocks: [] }] };
-    this._doc.update(d => ({ ...d, rows: [...d.rows, row] }));
+    this.commit(d => ({ ...d, rows: [...d.rows, row] }));
   }
 
   addPresetRow(row: Row) {
-    this._doc.update(d => ({ ...d, rows: [...d.rows, row] }));
+    this.commit(d => ({ ...d, rows: [...d.rows, row] }));
     this._selectedRowId.set(row.id);
   }
 
   insertPresetRowAt(index: number, row: Row) {
-    this._doc.update(d => {
+    this.commit(d => {
       const rows = [...d.rows];
       rows.splice(index, 0, row);
       return { ...d, rows };
@@ -179,7 +236,7 @@ export class EditorStore {
   addColumn(rowId: string) {
     const row = this._doc().rows.find(r => r.id === rowId);
     if (!row) return;
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
@@ -189,7 +246,7 @@ export class EditorStore {
   }
 
   removeColumn(rowId: string, colId: string) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
@@ -199,7 +256,7 @@ export class EditorStore {
   }
 
   removeRow(rowId: string) {
-    this._doc.update(d => ({ ...d, rows: d.rows.filter(r => r.id !== rowId) }));
+    this.commit(d => ({ ...d, rows: d.rows.filter(r => r.id !== rowId) }));
     if (this._selectedRowId() === rowId) this._selectedRowId.set(null);
   }
 
@@ -208,7 +265,7 @@ export class EditorStore {
     const col = row?.columns[0];
     if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
@@ -224,7 +281,7 @@ export class EditorStore {
     if (!row || !col) return;
     const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
     const nextBlocks = [...col.blocks.slice(0, index), block, ...col.blocks.slice(index)];
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
@@ -235,7 +292,7 @@ export class EditorStore {
   }
 
   removeBlock(blockId: string) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => ({
         ...r,
@@ -246,7 +303,7 @@ export class EditorStore {
   }
 
   updateBlockProps(blockId: string, props: Partial<any>) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => ({
         ...r,
@@ -259,21 +316,21 @@ export class EditorStore {
   }
 
   updateRowStyle(rowId: string, props: Partial<Pick<Row, 'backgroundColor' | 'padding'>>) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : { ...r, ...props })
     }));
   }
 
   updateRowCondition(rowId: string, condition: VisibilityCondition | null) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : { ...r, condition })
     }));
   }
 
   updateBlockCondition(blockId: string, condition: VisibilityCondition | null) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => ({
         ...r,
@@ -286,7 +343,7 @@ export class EditorStore {
   }
 
   updateColumnStyle(rowId: string, colId: string, props: Partial<Pick<Column, 'backgroundColor'>>) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
@@ -296,33 +353,33 @@ export class EditorStore {
   }
 
   updateSettings(settings: Partial<EmailDoc['settings']>) {
-    this._doc.update(d => ({ ...d, settings: { ...d.settings, ...settings } }));
+    this.commit(d => ({ ...d, settings: { ...d.settings, ...settings } }));
   }
 
   addVariable(name: string, defaultValue: string) {
     const variable: EmailVariable = { id: uid(), name, defaultValue };
-    this._doc.update(d => ({ ...d, variables: [...d.variables, variable] }));
+    this.commit(d => ({ ...d, variables: [...d.variables, variable] }));
   }
 
   updateVariable(id: string, props: Partial<Pick<EmailVariable, 'name' | 'defaultValue'>>) {
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       variables: d.variables.map(v => v.id !== id ? v : { ...v, ...props })
     }));
   }
 
   removeVariable(id: string) {
-    this._doc.update(d => ({ ...d, variables: d.variables.filter(v => v.id !== id) }));
+    this.commit(d => ({ ...d, variables: d.variables.filter(v => v.id !== id) }));
   }
 
   setRows(rows: Row[]) {
-    this._doc.update(d => ({ ...d, rows }));
+    this.commit(d => ({ ...d, rows }));
   }
 
   setBlocksInColumn(rowId: string, colId: string, blocks: Block[]) {
     const row = this._doc().rows.find(r => r.id === rowId);
     if (!row) return;
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
         ...r,
@@ -337,7 +394,7 @@ export class EditorStore {
   moveBlockAcrossColumns(sourceRowId: string, sourceColId: string, sourceBlocks: Block[], targetRowId: string, targetColId: string, targetBlocks: Block[]) {
     const targetRow = this._doc().rows.find(r => r.id === targetRowId);
     if (!targetRow) return;
-    this._doc.update(d => ({
+    this.commit(d => ({
       ...d,
       rows: d.rows.map(r => {
         if (r.id !== sourceRowId && r.id !== targetRowId) return r;
@@ -354,7 +411,7 @@ export class EditorStore {
   }
 
   moveRow(fromIndex: number, toIndex: number) {
-    this._doc.update(d => {
+    this.commit(d => {
       const rows = [...d.rows];
       const [moved] = rows.splice(fromIndex, 1);
       rows.splice(toIndex, 0, moved);

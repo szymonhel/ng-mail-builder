@@ -1,4 +1,4 @@
-<div class="relative border-2 rounded mb-2 transition-colors hover:border-gray-200"
+<div class="relative border-2 rounded-sm mb-2 transition-colors hover:border-gray-200"
      [class.border-blue-500]="isRowSelected()"
      [class.border-transparent]="!isRowSelected()"
      (click)="selectRow($event)">
@@ -8,14 +8,12 @@
     <span>
       Row &middot; {{ row().columns.length }} col{{ row().columns.length !== 1 ? 's' : '' }}
       @if (row().condition) {
-        <span class="ml-1.5 inline-block bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[10px] font-semibold align-middle" title="Only rendered when its condition is met">conditional</span>
+        <span class="ml-1.5 inline-block bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-sm text-[10px] font-semibold align-middle" title="Only rendered when its condition is met">conditional</span>
       }
     </span>
     <div class="flex items-center gap-1">
-      <button class="border border-gray-300 bg-white text-gray-500 cursor-pointer px-1.5 py-0.5 rounded text-xs hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50"
-              (click)="addColumn($event)" title="Add column">+ col</button>
-      <button class="border-0 bg-transparent cursor-pointer px-1.5 py-0.5 rounded text-xs text-red-500 hover:bg-red-50"
-              (click)="removeRow($event)" title="Remove row">&#x2715;</button>
+      <button hlmBtn variant="outline" size="xs" (click)="addColumn($event)" title="Add column">+ col</button>
+      <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="removeRow($event)" title="Remove row">&#x2715;</button>
     </div>
   </div>
 
@@ -29,8 +27,8 @@
            (click)="selectColumn(col.id, $event)">
 
         @if (row().columns.length > 1) {
-          <button class="absolute top-1 right-1 z-10 border-0 bg-transparent cursor-pointer text-[10px] text-red-400 hover:text-red-600 leading-none px-1"
-                  (click)="removeColumn(col.id, $event)" title="Remove column">&#x2715; col</button>
+          <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive absolute top-1 right-1 z-10"
+                  (click)="removeColumn(col.id, $event)" title="Remove column">&#x2715;</button>
         }
 
         <app-column [row]="row()" [col]="col" />

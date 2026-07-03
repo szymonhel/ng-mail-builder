@@ -2,11 +2,12 @@ import { Component, inject, input } from '@angular/core';
 import { EditorStore } from '../../../store/editor.store';
 import { Row } from '../../../models/email-doc.model';
 import { ColumnComponent } from '../column/column.component';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-row',
   standalone: true,
-  imports: [ColumnComponent],
+  imports: [ColumnComponent, HlmButton],
   templateUrl: './row.component.html'
 })
 export class RowComponent {

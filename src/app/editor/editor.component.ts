@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, HostListener } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { EditorStore } from '../store/editor.store';
 import { PaletteComponent } from './palette/palette.component';
@@ -6,21 +6,40 @@ import { CanvasComponent } from './canvas/canvas.component';
 import { InspectorComponent } from './inspector/inspector.component';
 import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
-import { ColorsTabComponent } from './colors-tab/colors-tab.component';
-import { VariablesTabComponent } from './variables-tab/variables-tab.component';
+import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { MailService } from '../services/mail.service';
 import { docToMjml } from '../utils/mjml-mapper';
 import { applyVariables } from '../utils/template-vars';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, ColorsTabComponent, VariablesTabComponent],
+  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, HlmButton, NgIcon],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {
   store = inject(EditorStore);
   private mail = inject(MailService);
+
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(e: KeyboardEvent) {
+    if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'z') return;
+
+    const target = e.target as HTMLElement | null;
+    const isEditingText = !!target && (
+      target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+    );
+    if (isEditingText) return;
+
+    e.preventDefault();
+    if (e.shiftKey) {
+      this.store.redo();
+    } else {
+      this.store.undo();
+    }
+  }
 
   jsonOutput = computed(() => JSON.stringify(this.store.doc(), null, 2));
   mjmlOutput = computed(() => docToMjml(this.store.doc()));

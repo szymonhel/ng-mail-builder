@@ -4,11 +4,12 @@ import { EditorStore } from '../../store/editor.store';
 import { RowComponent } from './row/row.component';
 import { SECTIONS_LIST_ID, CANVAS_ROWS_LIST_ID } from '../drop-lists.service';
 import { SectionPreset } from '../presets/section-presets';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-canvas',
   standalone: true,
-  imports: [CdkDrag, CdkDropList, RowComponent],
+  imports: [CdkDrag, CdkDropList, RowComponent, HlmButton],
   templateUrl: './canvas.component.html'
 })
 export class CanvasComponent {

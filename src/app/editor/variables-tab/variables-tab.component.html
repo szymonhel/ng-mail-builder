@@ -1,5 +1,5 @@
 <div class="flex-1 overflow-auto bg-gray-100 p-6">
-  <div class="max-w-2xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
     <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Custom Variables</h2>
     <p class="text-xs text-gray-500 mt-0 mb-4">
       Define a placeholder here, then type its token (e.g. {{ '{{bookingId}}' }}) into any text field in the
@@ -10,16 +10,15 @@
     <div class="flex items-end gap-2 mb-5 pb-5 border-b border-gray-200">
       <div class="flex flex-col gap-1 flex-1">
         <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Name</label>
-        <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+        <input hlmInput type="text"
                placeholder="e.g. bookingId" [ngModel]="newName()" (ngModelChange)="newName.set($event)" (keydown.enter)="add()" />
       </div>
       <div class="flex flex-col gap-1 flex-1">
         <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Default value</label>
-        <input type="text" class="w-full px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+        <input hlmInput type="text"
                placeholder="e.g. BR-12345" [ngModel]="newDefaultValue()" (ngModelChange)="newDefaultValue.set($event)" (keydown.enter)="add()" />
       </div>
-      <button type="button"
-              class="bg-blue-600 text-white border-0 px-4 py-2 rounded cursor-pointer text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+      <button hlmBtn type="button"
               [disabled]="!newName().trim()"
               (click)="add()">Add variable</button>
     </div>
@@ -29,13 +28,13 @@
     } @else {
       <div class="flex flex-col gap-2">
         @for (v of variables(); track v.id) {
-          <div class="flex items-center gap-2 border border-gray-200 rounded px-3 py-2">
-            <code class="text-xs font-mono bg-gray-100 text-blue-700 px-2 py-1 rounded flex-shrink-0">{{ '{{' + v.name + '}}' }}</code>
-            <input type="text" class="flex-1 min-w-0 px-2 py-1.5 border border-gray-300 rounded text-sm box-border font-sans bg-white focus:outline-none focus:border-blue-500"
+          <div class="flex items-center gap-2 border border-gray-200 rounded-sm px-3 py-2">
+            <code class="text-xs font-mono bg-gray-100 text-blue-700 px-2 py-1 rounded-sm shrink-0">{{ '{{' + v.name + '}}' }}</code>
+            <input hlmInput type="text" class="flex-1 min-w-0"
                    [ngModel]="v.defaultValue" (ngModelChange)="updateDefaultValue(v.id, $event)" placeholder="Default value" />
-            <button type="button" class="text-gray-500 hover:text-blue-600 bg-transparent border-0 cursor-pointer text-xs px-2 py-1 whitespace-nowrap"
+            <button hlmBtn type="button" variant="ghost" size="sm" class="whitespace-nowrap"
                     (click)="copyToken(v.id, v.name)">{{ copiedId() === v.id ? 'Copied!' : 'Copy token' }}</button>
-            <button type="button" class="text-gray-400 hover:text-red-500 bg-transparent border-0 cursor-pointer text-sm" (click)="remove(v.id)">&#x2715;</button>
+            <button hlmBtn type="button" variant="ghost" size="icon-sm" class="text-destructive" (click)="remove(v.id)">&#x2715;</button>
           </div>
         }
       </div>

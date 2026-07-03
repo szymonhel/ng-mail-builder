@@ -1,11 +1,13 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
+import { HlmInput } from '@spartan-ng/helm/input';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-variables-tab',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, HlmInput, HlmButton],
   templateUrl: './variables-tab.component.html',
 })
 export class VariablesTabComponent {
