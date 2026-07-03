@@ -461,8 +461,9 @@
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Rows</label>
           <button hlmBtn variant="outline" size="xs" (click)="addTableRow()">+ Add row</button>
         </div>
-        <div class="flex justify-end mb-2">
+        <div class="flex justify-end gap-2 mb-2">
           <button hlmBtn variant="outline" size="xs" (click)="addTableColumn()">+ Add column</button>
+          <app-variable-picker (insert)="insertVariableIntoTable($event)" />
         </div>
 
         @for (row of $any(block.props).rows; track $index; let ri = $index) {
@@ -475,7 +476,8 @@
               @for (cell of row.cells; track $index; let ci = $index) {
                 <div class="flex gap-1 items-center">
                   <input hlmInput type="text" class="flex-1"
-                         [value]="cell" placeholder="Col {{ ci + 1 }}" (change)="updateTableCell(ri, ci, $any($event.target).value)" />
+                         [value]="cell" placeholder="Col {{ ci + 1 }}" (change)="updateTableCell(ri, ci, $any($event.target).value)"
+                         (focus)="onTableCellFocus($any($event.target), ri, ci)" />
                   @if (ri === 0) {
                     <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive shrink-0" (click)="removeTableColumn(ci)" title="Remove column">✕</button>
                   }
@@ -499,7 +501,10 @@
         </div>
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Items</label>
-          <button hlmBtn variant="outline" size="xs" (click)="addAccordionItem()">+ Add</button>
+          <div class="flex gap-2">
+            <button hlmBtn variant="outline" size="xs" (click)="addAccordionItem()">+ Add</button>
+            <app-variable-picker (insert)="insertVariableIntoAccordion($event)" />
+          </div>
         </div>
         @for (item of $any(block.props).items; track $index; let i = $index) {
           <div class="mb-2 p-2 border border-gray-200 rounded-sm bg-white">
@@ -508,9 +513,11 @@
               <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="removeAccordionItem(i)">✕</button>
             </div>
             <input hlmInput type="text" class="mb-1"
-                   [value]="item.title" placeholder="Question" (change)="updateAccordionItem(i, 'title', $any($event.target).value)" />
+                   [value]="item.title" placeholder="Question" (change)="updateAccordionItem(i, 'title', $any($event.target).value)"
+                   (focus)="onAccordionFieldFocus($any($event.target), i, 'title')" />
             <textarea hlmTextarea class="resize-none" rows="2"
-                      [value]="item.content" placeholder="Answer" (change)="updateAccordionItem(i, 'content', $any($event.target).value)"></textarea>
+                      [value]="item.content" placeholder="Answer" (change)="updateAccordionItem(i, 'content', $any($event.target).value)"
+                      (focus)="onAccordionFieldFocus($any($event.target), i, 'content')"></textarea>
           </div>
         }
       }

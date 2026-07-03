@@ -62,18 +62,81 @@ export class InspectorComponent {
 
   // Splices the token in at the caret instead of appending, then restores focus/caret
   // afterwards since re-rendering the [value]-bound field on update() drops both.
-  insertVariable(el: HTMLInputElement | HTMLTextAreaElement, key: string, token: string) {
-    if (!this.block) return;
-    const current: string = (this.block.props as any)[key] ?? '';
+  private spliceToken(el: HTMLInputElement | HTMLTextAreaElement, current: string, token: string) {
     const start = el.selectionStart ?? current.length;
     const end = el.selectionEnd ?? current.length;
     const next = current.slice(0, start) + token + current.slice(end);
-    this.update({ [key]: next });
+    return { next, caretPos: start + token.length };
+  }
+
+  private restoreCaret(el: HTMLInputElement | HTMLTextAreaElement, pos: number) {
     setTimeout(() => {
       el.focus();
-      const pos = start + token.length;
       el.setSelectionRange(pos, pos);
     });
+  }
+
+  insertVariable(el: HTMLInputElement | HTMLTextAreaElement, key: string, token: string) {
+    if (!this.block) return;
+    const current: string = (this.block.props as any)[key] ?? '';
+    const { next, caretPos } = this.spliceToken(el, current, token);
+    this.update({ [key]: next });
+    this.restoreCaret(el, caretPos);
+  }
+
+  private insertVariableIntoTableCell(el: HTMLInputElement, rowIndex: number, cellIndex: number, token: string) {
+    if (!this.block) return;
+    const current: string = (this.block.props as any).rows[rowIndex].cells[cellIndex] ?? '';
+    const { next, caretPos } = this.spliceToken(el, current, token);
+    this.updateTableCell(rowIndex, cellIndex, next);
+    this.restoreCaret(el, caretPos);
+  }
+
+  private insertVariableIntoAccordionItem(el: HTMLInputElement | HTMLTextAreaElement, index: number, field: 'title' | 'content', token: string) {
+    if (!this.block) return;
+    const current: string = (this.block.props as any).items[index][field] ?? '';
+    const { next, caretPos } = this.spliceToken(el, current, token);
+    this.updateAccordionItem(index, field, next);
+    this.restoreCaret(el, caretPos);
+  }
+
+  // A single "+ Variable" button serves the whole table/accordion (rather than one per
+  // field), so it needs to know which field was last focused; these track that, and fall
+  // back to the first cell/item when nothing has been focused yet (e.g. picked right
+  // after adding a row with the button, no click into a field first).
+  private lastTableCellFocus: { el: HTMLInputElement; rowIndex: number; cellIndex: number } | null = null;
+  private lastAccordionFieldFocus: { el: HTMLInputElement | HTMLTextAreaElement; index: number; field: 'title' | 'content' } | null = null;
+
+  onTableCellFocus(el: HTMLInputElement, rowIndex: number, cellIndex: number) {
+    this.lastTableCellFocus = { el, rowIndex, cellIndex };
+  }
+
+  onAccordionFieldFocus(el: HTMLInputElement | HTMLTextAreaElement, index: number, field: 'title' | 'content') {
+    this.lastAccordionFieldFocus = { el, index, field };
+  }
+
+  insertVariableIntoTable(token: string) {
+    if (!this.block) return;
+    const rows = (this.block.props as any).rows as { cells: string[] }[];
+    if (!rows.length || !rows[0].cells.length) return;
+    const target = this.lastTableCellFocus;
+    if (target) {
+      this.insertVariableIntoTableCell(target.el, target.rowIndex, target.cellIndex, token);
+    } else {
+      this.updateTableCell(0, 0, (rows[0].cells[0] ?? '') + token);
+    }
+  }
+
+  insertVariableIntoAccordion(token: string) {
+    if (!this.block) return;
+    const items = (this.block.props as any).items as { title: string; content: string }[];
+    if (!items.length) return;
+    const target = this.lastAccordionFieldFocus;
+    if (target) {
+      this.insertVariableIntoAccordionItem(target.el, target.index, target.field, token);
+    } else {
+      this.updateAccordionItem(0, 'title', (items[0].title ?? '') + token);
+    }
   }
 
   updateColumnBg(color: string | null) {

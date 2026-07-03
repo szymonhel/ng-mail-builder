@@ -60,7 +60,14 @@
       "Bash(npm ci *)",
       "Bash(cd *)",
       "Bash(curl -s \"https://api.github.com/repos/szymonhel/ng-mail-builder/actions/runs?per_page=10\")",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(npm --version)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('/Users/szymonhelmecki/Projects/ng-mail-builder/package-lock.json'\\)\\); print\\('lockfileVersion:', d.get\\('lockfileVersion'\\)\\)\")",
+      "Read(//Users/szymonhelmecki/.nvm/versions/node/**)",
+      "Bash(git fetch *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
