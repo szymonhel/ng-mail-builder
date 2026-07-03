@@ -67,7 +67,21 @@
       "Bash(git fetch *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(xargs -I{} sh -c 'echo ==={}===; cat {}')",
+      "Bash(npm install *)",
+      "Bash(pkill -f \"ng serve\")",
+      "Bash(pkill -f \"tsx watch src/index.ts\")",
+      "Bash(pkill -f \"node.*server/src/index\")",
+      "Bash(curl -s -o /dev/null -w \"angular still up?: %{http_code}\\\\n\" http://localhost:4200)",
+      "Bash(curl -s -o /dev/null -w \"api still up?: %{http_code}\\\\n\" http://localhost:3000/health)",
+      "Bash(curl -s -o /dev/null -w \"port 3000 status: %{http_code}\\\\n\" http://localhost:3000/health)",
+      "Bash(curl -s -o /dev/null -w \"port 4200 status: %{http_code}\\\\n\" http://localhost:4200)",
+      "WebFetch(domain:developers.openai.com)",
+      "Bash(pkill -f \"tsx src/index.ts\")",
+      "Bash(rm -f /tmp/fake.pdf)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(kill 5539 5541)"
     ]
   }
 }

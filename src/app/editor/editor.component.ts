@@ -8,8 +8,9 @@ import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { MailService } from '../services/mail.service';
+import { AiImportService, PdfImportMode } from '../services/ai-import.service';
 import { docToMjml, mjmlToDoc } from '../utils/mjml-mapper';
-import { parseJsonImport } from '../utils/import.utils';
+import { parseJsonImport, normalizeImportedDoc } from '../utils/import.utils';
 import { applyVariables } from '../utils/template-vars';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { NgIcon } from '@ng-icons/core';
@@ -23,6 +24,7 @@ import { NgIcon } from '@ng-icons/core';
 export class EditorComponent {
   store = inject(EditorStore);
   private mail = inject(MailService);
+  private aiImport = inject(AiImportService);
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(e: KeyboardEvent) {
@@ -51,8 +53,101 @@ export class EditorComponent {
 
   importError = signal<string | null>(null);
 
+  private static readonly AI_KEY_STORAGE_KEY = 'ngmb.openaiApiKey';
+  aiApiKey = signal(localStorage.getItem(EditorComponent.AI_KEY_STORAGE_KEY) ?? '');
+  aiImageFile = signal<File | null>(null);
+  aiImagePreviewUrl = signal<string | null>(null);
+  aiImportLoading = signal(false);
+  aiImportError = signal<string | null>(null);
+
   copyJson() { navigator.clipboard.writeText(this.jsonOutput()); }
   copyMjml() { navigator.clipboard.writeText(this.mjmlOutput()); }
+
+  saveAiKey(value: string) {
+    const trimmed = value.trim();
+    this.aiApiKey.set(trimmed);
+    if (trimmed) {
+      localStorage.setItem(EditorComponent.AI_KEY_STORAGE_KEY, trimmed);
+    } else {
+      localStorage.removeItem(EditorComponent.AI_KEY_STORAGE_KEY);
+    }
+  }
+
+  clearAiKey() {
+    this.aiApiKey.set('');
+    localStorage.removeItem(EditorComponent.AI_KEY_STORAGE_KEY);
+  }
+
+  onAiImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    this.aiImportError.set(null);
+    this.aiImageFile.set(file);
+
+    const previous = this.aiImagePreviewUrl();
+    if (previous) URL.revokeObjectURL(previous);
+    this.aiImagePreviewUrl.set(file ? URL.createObjectURL(file) : null);
+
+    input.value = '';
+  }
+
+  generateFromPhoto() {
+    const file = this.aiImageFile();
+    const apiKey = this.aiApiKey();
+    if (!file || !apiKey) return;
+
+    this.aiImportLoading.set(true);
+    this.aiImportError.set(null);
+
+    this.aiImport.importFromImage(file, apiKey).subscribe({
+      next: (doc) => {
+        this.store.loadDoc(normalizeImportedDoc(doc));
+        this.aiImportLoading.set(false);
+        this.aiImageFile.set(null);
+        const previewUrl = this.aiImagePreviewUrl();
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        this.aiImagePreviewUrl.set(null);
+      },
+      error: (err) => {
+        this.aiImportLoading.set(false);
+        this.aiImportError.set(err?.error?.error ?? err.message ?? 'Failed to generate template from photo.');
+      },
+    });
+  }
+
+  aiPdfMode = signal<PdfImportMode>('mockup');
+  aiPdfFile = signal<File | null>(null);
+  aiPdfImportLoading = signal(false);
+  aiPdfImportError = signal<string | null>(null);
+
+  onAiPdfSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    this.aiPdfImportError.set(null);
+    this.aiPdfFile.set(file);
+    input.value = '';
+  }
+
+  generateFromPdf() {
+    const file = this.aiPdfFile();
+    const apiKey = this.aiApiKey();
+    if (!file || !apiKey) return;
+
+    this.aiPdfImportLoading.set(true);
+    this.aiPdfImportError.set(null);
+
+    this.aiImport.importFromPdf(file, this.aiPdfMode(), apiKey).subscribe({
+      next: (doc) => {
+        this.store.loadDoc(normalizeImportedDoc(doc));
+        this.aiPdfImportLoading.set(false);
+        this.aiPdfFile.set(null);
+      },
+      error: (err) => {
+        this.aiPdfImportLoading.set(false);
+        this.aiPdfImportError.set(err?.error?.error ?? err.message ?? 'Failed to generate template from PDF.');
+      },
+    });
+  }
 
   // Shared by both the paste-text and file-upload import paths: sniffs JSON vs MJML
   // from content alone, for whichever of the two doesn't have a filename to go by.

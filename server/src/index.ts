@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import sendRouter from './routes/send';
+import aiImportRouter from './routes/aiImport';
+import aiImportPdfRouter from './routes/aiImportPdf';
 import { apiKeyAuth } from './middleware/auth';
 
 const app = express();
@@ -21,6 +23,8 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/send', apiKeyAuth, sendRouter);
+app.use('/ai/import-image', apiKeyAuth, aiImportRouter);
+app.use('/ai/import-pdf', apiKeyAuth, aiImportPdfRouter);
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);

@@ -83,6 +83,74 @@
           <textarea #importTextarea rows="6" placeholder="Paste a JSON document or MJML markup here, then click Import."
             class="m-0 p-4 text-xs font-mono border-0 outline-none resize-y bg-gray-50"></textarea>
         </div>
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shrink-0">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <h3 class="m-0 text-sm font-semibold">Import from Photo (AI)</h3>
+          </div>
+          <div class="p-4 flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-gray-600 shrink-0">OpenAI API key</label>
+              <input #aiKeyInput type="password" [value]="aiApiKey()" (change)="saveAiKey(aiKeyInput.value)"
+                placeholder="sk-..." class="flex-1 text-xs border border-gray-200 rounded px-2 py-1 font-mono" />
+              @if (aiApiKey()) {
+                <button hlmBtn variant="ghost" size="sm" (click)="clearAiKey()">Clear</button>
+              }
+            </div>
+            <p class="text-[11px] text-gray-500 m-0">
+              Stored only in this browser and sent to our server per-request to call GPT-4o on your behalf.
+              Get a key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" class="underline">platform.openai.com/api-keys</a>.
+            </p>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              <input #aiImageInput type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="hidden" (change)="onAiImageSelected($event)" />
+              <button hlmBtn variant="outline" size="sm" (click)="aiImageInput.click()">Choose photo&hellip;</button>
+              <span class="text-xs text-gray-500">{{ aiImageFile()?.name ?? 'No file selected' }}</span>
+              <button hlmBtn size="sm" [disabled]="!aiImageFile() || !aiApiKey() || aiImportLoading()" (click)="generateFromPhoto()">
+                {{ aiImportLoading() ? 'Generating…' : 'Generate template' }}
+              </button>
+            </div>
+
+            @if (aiImagePreviewUrl(); as previewUrl) {
+              <img [src]="previewUrl" alt="Selected template photo preview" class="max-h-40 rounded border border-gray-200 self-start" />
+            }
+
+            @if (aiImportError()) {
+              <p class="text-red-600 text-xs m-0">{{ aiImportError() }}</p>
+            }
+          </div>
+        </div>
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col shrink-0">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+            <h3 class="m-0 text-sm font-semibold">Import from PDF (AI)</h3>
+          </div>
+          <div class="p-4 flex flex-col gap-3">
+            <p class="text-[11px] text-gray-500 m-0">Uses the OpenAI key above.</p>
+
+            <div class="flex items-center gap-4 text-xs text-gray-700">
+              <label class="flex items-center gap-1.5">
+                <input type="radio" name="aiPdfMode" [checked]="aiPdfMode() === 'mockup'" (change)="aiPdfMode.set('mockup')" />
+                Match this design (it's a visual mockup)
+              </label>
+              <label class="flex items-center gap-1.5">
+                <input type="radio" name="aiPdfMode" [checked]="aiPdfMode() === 'brief'" (change)="aiPdfMode.set('brief')" />
+                Design from these instructions (it's a content brief)
+              </label>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              <input #aiPdfInput type="file" accept="application/pdf" class="hidden" (change)="onAiPdfSelected($event)" />
+              <button hlmBtn variant="outline" size="sm" (click)="aiPdfInput.click()">Choose PDF&hellip;</button>
+              <span class="text-xs text-gray-500">{{ aiPdfFile()?.name ?? 'No file selected' }}</span>
+              <button hlmBtn size="sm" [disabled]="!aiPdfFile() || !aiApiKey() || aiPdfImportLoading()" (click)="generateFromPdf()">
+                {{ aiPdfImportLoading() ? 'Generating…' : 'Generate template' }}
+              </button>
+            </div>
+
+            @if (aiPdfImportError()) {
+              <p class="text-red-600 text-xs m-0">{{ aiPdfImportError() }}</p>
+            }
+          </div>
+        </div>
         <div class="flex-1 grid grid-cols-2 gap-6 min-h-0">
           <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
