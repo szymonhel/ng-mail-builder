@@ -1,4 +1,4 @@
-import { EmailDoc, Row, Column, Block, BlockType, DocSettings, EmailVariable } from '../models/email-doc.model';
+import { EmailDoc, Row, Column, Block, BlockType, DocSettings, EmailVariable, Locale } from '../models/email-doc.model';
 import { uid } from './id.utils';
 
 const DEFAULT_SETTINGS: DocSettings = {
@@ -18,6 +18,26 @@ const KNOWN_BLOCK_TYPES: ReadonlySet<BlockType> = new Set([
   'text', 'image', 'button', 'divider', 'spacer', 'heading', 'social',
   'video', 'html', 'hero', 'table', 'accordion', 'navbar', 'carousel',
 ]);
+
+// Nested array props whose items need a stable id for translation-key targeting.
+// Legacy JSON (pre-translations) won't have these, so backfill them on import.
+const ITEM_ARRAY_FIELDS = ['links', 'rows', 'items', 'images'] as const;
+
+function backfillNestedItemIds(type: BlockType, props: any): any {
+  if (!props || typeof props !== 'object') return props ?? {};
+  let changed = false;
+  const next: any = { ...props };
+  for (const field of ITEM_ARRAY_FIELDS) {
+    if (Array.isArray(next[field])) {
+      next[field] = next[field].map((item: any) => {
+        if (item && typeof item === 'object' && typeof item.id === 'string') return item;
+        changed = true;
+        return { ...item, id: uid() };
+      });
+    }
+  }
+  return changed ? next : props;
+}
 
 // Backfills ids/defaults for a doc coming from outside the app (hand-edited or
 // exported from an older version) so the rest of the app can rely on the invariants
@@ -42,13 +62,37 @@ export function normalizeImportedDoc(input: any): EmailDoc {
                 .map((b: any): Block => ({
                   id: typeof b?.id === 'string' ? b.id : uid(),
                   type: b.type,
-                  props: b?.props ?? {},
+                  props: backfillNestedItemIds(b.type, b?.props ?? {}),
                   condition: b?.condition ?? null,
                 }))
             : [],
         }))
       : [],
   }));
+
+  const locales: Locale[] = Array.isArray(input.locales)
+    ? input.locales.map((l: any): Locale => ({
+        id: typeof l?.id === 'string' ? l.id : uid(),
+        code: typeof l?.code === 'string' ? l.code : '',
+        label: typeof l?.label === 'string' ? l.label : '',
+      }))
+    : [];
+
+  const validLocaleIds = new Set(locales.map(l => l.id));
+  const translations: Record<string, Record<string, string>> = {};
+  if (input.translations && typeof input.translations === 'object') {
+    for (const [localeId, map] of Object.entries(input.translations as Record<string, unknown>)) {
+      if (!validLocaleIds.has(localeId) || !map || typeof map !== 'object') continue;
+      const nextMap: Record<string, string> = {};
+      for (const [key, value] of Object.entries(map as Record<string, unknown>)) {
+        if (typeof value === 'string') nextMap[key] = value;
+      }
+      translations[localeId] = nextMap;
+    }
+  }
+  for (const locale of locales) {
+    if (!translations[locale.id]) translations[locale.id] = {};
+  }
 
   return {
     version: typeof input.version === 'number' ? input.version : 1,
@@ -60,6 +104,8 @@ export function normalizeImportedDoc(input: any): EmailDoc {
           defaultValue: typeof v?.defaultValue === 'string' ? v.defaultValue : '',
         }))
       : [],
+    locales,
+    translations,
     rows,
   };
 }

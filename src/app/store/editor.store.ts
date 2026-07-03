@@ -1,6 +1,20 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { EmailDoc, Block, BlockType, Row, Column, EmailVariable, VisibilityCondition } from '../models/email-doc.model';
+import { EmailDoc, Block, BlockType, Row, Column, EmailVariable, VisibilityCondition, Locale } from '../models/email-doc.model';
 import { uid } from '../utils/id.utils';
+
+// Nested array props whose items need a stable id (for translation-key targeting).
+// Block creation deep-clones these via cloneBlockProps so every instance gets fresh ids.
+const ITEM_ARRAY_FIELDS = ['links', 'rows', 'items', 'images'] as const;
+
+function cloneBlockProps(type: BlockType): any {
+  const base: any = { ...BLOCK_DEFAULTS[type] };
+  for (const field of ITEM_ARRAY_FIELDS) {
+    if (Array.isArray(base[field])) {
+      base[field] = base[field].map((item: any) => ({ ...item, id: uid() }));
+    }
+  }
+  return base;
+}
 
 const BLOCK_DEFAULTS: Record<BlockType, any> = {
   text: { html: '<p>Your text here</p>', align: 'left', fontSize: 14, color: '#333333', padding: '10px 25px' },
@@ -95,9 +109,11 @@ const BLOCK_DEFAULTS: Record<BlockType, any> = {
 
 function initialDoc(): EmailDoc {
   return {
-    version: 1,
+    version: 2,
     settings: { contentWidth: 600, backgroundColor: '#f4f4f4', bodyColor: '#ffffff', bodyBorderWidth: 0, bodyBorderColor: '#dddddd', bodyBorderStyle: 'solid', fontFamily: 'Arial, sans-serif', previewText: '', googleFontName: '', googleFontUrl: '' },
     variables: [],
+    locales: [],
+    translations: {},
     rows: [
       {
         id: uid(),
@@ -127,7 +143,7 @@ export class EditorStore {
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
   private _selectedColumnId = signal<string | null>(null);
-  private _activeTab = signal<'editor' | 'preview' | 'json' | 'settings'>('editor');
+  private _activeTab = signal<'editor' | 'preview' | 'json' | 'settings' | 'translations'>('editor');
 
   private _past = signal<EmailDoc[]>([]);
   private _future = signal<EmailDoc[]>([]);
@@ -199,7 +215,7 @@ export class EditorStore {
     this._selectedColumnId.set(null);
   }
 
-  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'settings') { this._activeTab.set(tab); }
+  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'settings' | 'translations') { this._activeTab.set(tab); }
   selectBlock(id: string | null) {
     this._selectedBlockId.set(id);
     if (id) this._selectedColumnId.set(null);
@@ -264,7 +280,7 @@ export class EditorStore {
     const row = this._doc().rows.find(r => r.id === rowId);
     const col = row?.columns[0];
     if (!row || !col) return;
-    const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
+    const block: Block = { id: uid(), type, props: cloneBlockProps(type) };
     this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -279,7 +295,7 @@ export class EditorStore {
     const row = this._doc().rows.find(r => r.id === rowId);
     const col = row?.columns.find(c => c.id === colId);
     if (!row || !col) return;
-    const block: Block = { id: uid(), type, props: { ...BLOCK_DEFAULTS[type] } };
+    const block: Block = { id: uid(), type, props: cloneBlockProps(type) };
     const nextBlocks = [...col.blocks.slice(0, index), block, ...col.blocks.slice(index)];
     this.commit(d => ({
       ...d,
@@ -300,6 +316,7 @@ export class EditorStore {
       }))
     }));
     if (this._selectedBlockId() === blockId) this._selectedBlockId.set(null);
+    this.pruneTranslationsForItem(blockId);
   }
 
   updateBlockProps(blockId: string, props: Partial<any>) {
@@ -370,6 +387,70 @@ export class EditorStore {
 
   removeVariable(id: string) {
     this.commit(d => ({ ...d, variables: d.variables.filter(v => v.id !== id) }));
+  }
+
+  addLocale(code: string, label: string) {
+    const locale: Locale = { id: uid(), code, label };
+    this.commit(d => ({
+      ...d,
+      locales: [...d.locales, locale],
+      translations: { ...d.translations, [locale.id]: {} },
+    }));
+  }
+
+  updateLocale(id: string, props: Partial<Pick<Locale, 'code' | 'label'>>) {
+    this.commit(d => ({
+      ...d,
+      locales: d.locales.map(l => l.id !== id ? l : { ...l, ...props })
+    }));
+  }
+
+  removeLocale(id: string) {
+    this.commit(d => {
+      if (!(id in d.translations) && !d.locales.some(l => l.id === id)) return d;
+      const { [id]: _removed, ...restTranslations } = d.translations;
+      return { ...d, locales: d.locales.filter(l => l.id !== id), translations: restTranslations };
+    });
+  }
+
+  // '' clears the override so the field falls back to its source value, mirroring
+  // how an unset custom variable falls back to leaving its {{token}} untouched.
+  setTranslation(localeId: string, fieldKey: string, value: string) {
+    this.commit(d => {
+      const map = d.translations[localeId] ?? {};
+      if (value === '') {
+        if (!(fieldKey in map)) return d;
+        const { [fieldKey]: _dropped, ...rest } = map;
+        return { ...d, translations: { ...d.translations, [localeId]: rest } };
+      }
+      if (map[fieldKey] === value) return d;
+      return { ...d, translations: { ...d.translations, [localeId]: { ...map, [fieldKey]: value } } };
+    });
+  }
+
+  clearTranslation(localeId: string, fieldKey: string) {
+    this.setTranslation(localeId, fieldKey, '');
+  }
+
+  // Strips every translation key (across all locales) scoped under blockId[:itemId],
+  // so deleting a block/row-item/table-row doesn't leave orphaned translation data
+  // that could later be silently misattributed to a different item reusing the slot.
+  pruneTranslationsForItem(blockId: string, itemId?: string) {
+    const prefix = itemId ? `${blockId}:${itemId}:` : `${blockId}:`;
+    this.commit(d => {
+      let changed = false;
+      const nextTranslations: Record<string, Record<string, string>> = {};
+      for (const [localeId, map] of Object.entries(d.translations)) {
+        const nextMap: Record<string, string> = {};
+        let localeChanged = false;
+        for (const [key, val] of Object.entries(map)) {
+          if (key.startsWith(prefix)) { localeChanged = true; changed = true; continue; }
+          nextMap[key] = val;
+        }
+        nextTranslations[localeId] = localeChanged ? nextMap : map;
+      }
+      return changed ? { ...d, translations: nextTranslations } : d;
+    });
   }
 
   setRows(rows: Row[]) {

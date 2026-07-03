@@ -256,7 +256,7 @@ function heroElToBlock(el: Element): Block {
 function tableElToBlock(el: Element): Block {
   const tableEl = el.querySelector('table');
   const trEls = tableEl ? Array.from(tableEl.querySelectorAll('tr')) : [];
-  const rows = trEls.map(tr => ({ cells: Array.from(tr.children).map(cell => cell.textContent ?? '') }));
+  const rows = trEls.map(tr => ({ id: uid(), cells: Array.from(tr.children).map(cell => cell.textContent ?? '') }));
   const hasHeader = trEls.length > 0 && Array.from(trEls[0].children).some(c => c.tagName.toLowerCase() === 'th');
   const firstCellStyle = (trEls[0]?.children[0] as Element | undefined)?.getAttribute('style') ?? '';
   const borderMatch = firstCellStyle.match(/border:\s*1px solid ([^;]+)/);
@@ -287,7 +287,7 @@ function accordionElToBlock(el: Element): Block {
       titleBg = attr(titleEl, 'background-color', titleBg);
       titleColor = attr(titleEl, 'color', titleColor);
     }
-    return { title: titleEl ? innerXml(titleEl).trim() : '', content: textEl ? innerXml(textEl).trim() : '' };
+    return { id: uid(), title: titleEl ? innerXml(titleEl).trim() : '', content: textEl ? innerXml(textEl).trim() : '' };
   });
   return {
     id: uid(),
@@ -299,7 +299,7 @@ function accordionElToBlock(el: Element): Block {
 function navbarElToBlock(el: Element): Block {
   const linkEls = children(el, 'mj-navbar-link');
   const first = linkEls[0];
-  const links = linkEls.map(l => ({ label: innerXml(l).trim(), href: attr(l, 'href', '#') }));
+  const links = linkEls.map(l => ({ id: uid(), label: innerXml(l).trim(), href: attr(l, 'href', '#') }));
   return {
     id: uid(),
     type: 'navbar',
@@ -316,6 +316,7 @@ function navbarElToBlock(el: Element): Block {
 
 function carouselElToBlock(el: Element): Block {
   const images = children(el, 'mj-carousel-image').map(imgEl => ({
+    id: uid(),
     src: attr(imgEl, 'src'),
     alt: attr(imgEl, 'alt'),
     href: attr(imgEl, 'href'),
@@ -330,7 +331,7 @@ function carouselElToBlock(el: Element): Block {
 function socialElToBlock(el: Element): Block {
   const links = children(el, 'mj-social-element').map(l => {
     const iconUrl = l.getAttribute('src');
-    return { platform: attr(l, 'name') as any, href: attr(l, 'href'), ...(iconUrl ? { iconUrl } : {}) };
+    return { id: uid(), platform: attr(l, 'name') as any, href: attr(l, 'href'), ...(iconUrl ? { iconUrl } : {}) };
   });
   return {
     id: uid(),
@@ -468,5 +469,5 @@ export function mjmlToDoc(mjmlSource: string): EmailDoc {
     .map(elementToRow)
     .filter((r): r is Row => r !== null);
 
-  return { version: 1, settings, variables: [], rows };
+  return { version: 2, settings, variables: [], locales: [], translations: {}, rows };
 }

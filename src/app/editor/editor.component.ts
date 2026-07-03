@@ -1,5 +1,6 @@
 import { Component, inject, computed, signal, HostListener } from '@angular/core';
 import { NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../store/editor.store';
 import { PaletteComponent } from './palette/palette.component';
 import { CanvasComponent } from './canvas/canvas.component';
@@ -7,24 +8,28 @@ import { InspectorComponent } from './inspector/inspector.component';
 import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
+import { TranslationsTabComponent } from './translations-tab/translations-tab.component';
 import { MailService } from '../services/mail.service';
 import { AiImportService, PdfImportMode } from '../services/ai-import.service';
+import { AiApiKeyService } from '../services/ai-api-key.service';
 import { docToMjml, mjmlToDoc } from '../utils/mjml-mapper';
 import { parseJsonImport, normalizeImportedDoc } from '../utils/import.utils';
 import { applyVariables } from '../utils/template-vars';
+import { resolveDocForLocale } from '../utils/translation-resolver';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, HlmButton, NgIcon],
+  imports: [NgClass, FormsModule, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, HlmButton, NgIcon],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {
   store = inject(EditorStore);
   private mail = inject(MailService);
   private aiImport = inject(AiImportService);
+  aiApiKeyService = inject(AiApiKeyService);
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(e: KeyboardEvent) {
@@ -45,7 +50,8 @@ export class EditorComponent {
   }
 
   jsonOutput = computed(() => JSON.stringify(this.store.doc(), null, 2));
-  mjmlOutput = computed(() => docToMjml(this.store.doc()));
+  exportLocaleId = signal<string | null>(null);
+  mjmlOutput = computed(() => docToMjml(resolveDocForLocale(this.store.doc(), this.exportLocaleId())));
 
   sendDialogOpen = signal(false);
   sendStatus = signal<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -53,8 +59,6 @@ export class EditorComponent {
 
   importError = signal<string | null>(null);
 
-  private static readonly AI_KEY_STORAGE_KEY = 'ngmb.openaiApiKey';
-  aiApiKey = signal(localStorage.getItem(EditorComponent.AI_KEY_STORAGE_KEY) ?? '');
   aiImageFile = signal<File | null>(null);
   aiImagePreviewUrl = signal<string | null>(null);
   aiImportLoading = signal(false);
@@ -62,21 +66,6 @@ export class EditorComponent {
 
   copyJson() { navigator.clipboard.writeText(this.jsonOutput()); }
   copyMjml() { navigator.clipboard.writeText(this.mjmlOutput()); }
-
-  saveAiKey(value: string) {
-    const trimmed = value.trim();
-    this.aiApiKey.set(trimmed);
-    if (trimmed) {
-      localStorage.setItem(EditorComponent.AI_KEY_STORAGE_KEY, trimmed);
-    } else {
-      localStorage.removeItem(EditorComponent.AI_KEY_STORAGE_KEY);
-    }
-  }
-
-  clearAiKey() {
-    this.aiApiKey.set('');
-    localStorage.removeItem(EditorComponent.AI_KEY_STORAGE_KEY);
-  }
 
   onAiImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -93,7 +82,7 @@ export class EditorComponent {
 
   generateFromPhoto() {
     const file = this.aiImageFile();
-    const apiKey = this.aiApiKey();
+    const apiKey = this.aiApiKeyService.key();
     if (!file || !apiKey) return;
 
     this.aiImportLoading.set(true);
@@ -130,7 +119,7 @@ export class EditorComponent {
 
   generateFromPdf() {
     const file = this.aiPdfFile();
-    const apiKey = this.aiApiKey();
+    const apiKey = this.aiApiKeyService.key();
     if (!file || !apiKey) return;
 
     this.aiPdfImportLoading.set(true);
@@ -210,7 +199,8 @@ export class EditorComponent {
     // Regenerated from the doc (rather than reusing mjmlOutput()) so block/row
     // visibility conditions are re-evaluated against this send's actual values,
     // not the defaults baked into the Export tab's preview.
-    const mjml = applyVariables(docToMjml(this.store.doc(), form.variableValues), form.variableValues);
+    const localizedDoc = resolveDocForLocale(this.store.doc(), form.localeId);
+    const mjml = applyVariables(docToMjml(localizedDoc, form.variableValues), form.variableValues);
     this.mail.send({
       to: form.to,
       toName: form.toName || undefined,

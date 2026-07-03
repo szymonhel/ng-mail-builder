@@ -51,6 +51,23 @@
           />
         </div>
 
+        @if (locales().length > 0) {
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-medium text-gray-600">Language</label>
+            <select
+              class="text-sm border border-gray-300 rounded-sm px-2 py-1.5"
+              [ngModel]="localeId()"
+              (ngModelChange)="setLocaleId($event)"
+              name="localeId"
+            >
+              <option [ngValue]="null">Source language</option>
+              @for (l of locales(); track l.id) {
+                <option [ngValue]="l.id">{{ l.label || l.code }}</option>
+              }
+            </select>
+          </div>
+        }
+
         @if (variables().length > 0) {
           <div class="flex flex-col gap-3 pt-1 border-t border-gray-200">
             <label class="text-xs font-medium text-gray-600 pt-3">Variables for this send</label>

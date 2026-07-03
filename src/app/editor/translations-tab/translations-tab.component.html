@@ -1,0 +1,126 @@
+<div class="flex-1 overflow-auto bg-gray-100 p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
+    <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Translations</h2>
+    <p class="text-xs text-gray-500 mt-0 mb-4">
+      Add a language, then fill in an override for any field below. Fields left blank fall back to the
+      template's source text. The canvas always shows the source language — pick a language in the
+      Preview tab or Send dialog to see the translated output.
+    </p>
+
+    <div class="flex items-end gap-2 mb-5 pb-5 border-b border-gray-200">
+      <div class="flex flex-col gap-1 flex-1 max-w-[280px]">
+        <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Language</label>
+        <select class="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm"
+                [ngModel]="newLocaleCode()" (ngModelChange)="newLocaleCode.set($event)">
+          <option value="" disabled>Select a language&hellip;</option>
+          @for (o of availableLocaleOptions(); track o.code) {
+            <option [value]="o.code">{{ o.label }}</option>
+          }
+        </select>
+      </div>
+      <button hlmBtn type="button"
+              [disabled]="!newLocaleCode()"
+              (click)="addLocale()">Add language</button>
+    </div>
+
+    @if (locales().length === 0) {
+      <div class="text-sm text-gray-400 text-center py-8">No languages yet. Add one above.</div>
+    } @else {
+      <div class="flex flex-wrap gap-2 mb-5 pb-5 border-b border-gray-200">
+        @for (c of coverage(); track c.locale.id) {
+          <div class="flex items-center gap-2 border rounded-sm px-3 py-1.5 cursor-pointer"
+               [class.border-blue-500]="selectedLocaleId() === c.locale.id"
+               [class.bg-blue-50]="selectedLocaleId() === c.locale.id"
+               [class.border-gray-200]="selectedLocaleId() !== c.locale.id"
+               (click)="selectLocale(c.locale.id)">
+            <span class="text-sm font-medium text-gray-800">{{ c.locale.label || c.locale.code }}</span>
+            <span class="text-[10px] text-gray-400">{{ c.translated }}/{{ c.total }}</span>
+            <button hlmBtn type="button" variant="ghost" size="icon-sm" class="text-destructive"
+                    (click)="$event.stopPropagation(); removeLocale(c.locale.id)">&#x2715;</button>
+          </div>
+        }
+      </div>
+
+      @if (!selectedLocale()) {
+        <div class="text-sm text-gray-400 text-center py-8">Select a language above to start translating.</div>
+      } @else {
+        <div class="flex items-end gap-2 mb-3">
+          <div class="flex flex-col gap-1 flex-1 max-w-[240px]">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Language name</label>
+            <input hlmInput type="text"
+                   [ngModel]="selectedLocale()!.label" (ngModelChange)="renameLocale(selectedLocale()!.id, $event)" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 mb-5 pb-5 border-b border-gray-200">
+          <div class="flex items-center gap-2">
+            <button hlmBtn type="button" variant="outline" size="sm"
+                    [disabled]="translating() || blankFields().length === 0 || !aiApiKeyService.key()"
+                    (click)="autoTranslate()">
+              {{ translating() ? 'Translating…' : '✨ Auto-translate with AI' + (blankFields().length > 0 ? ' (' + blankFields().length + ')' : '') }}
+            </button>
+            @if (!aiApiKeyService.key()) {
+              <span class="text-[11px] text-gray-400">Set an OpenAI API key in the Import / Export tab to enable this.</span>
+            } @else if (blankFields().length === 0) {
+              <span class="text-[11px] text-gray-400">Nothing left to auto-translate.</span>
+            }
+          </div>
+          @if (translateError()) {
+            <p class="text-red-600 text-xs m-0">{{ translateError() }}</p>
+          }
+          @if (pendingSuggestionCount() > 0) {
+            <div class="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-sm px-3 py-2">
+              <span class="text-xs text-blue-800 flex-1">{{ pendingSuggestionCount() }} AI suggestion(s) ready for review</span>
+              <button hlmBtn type="button" variant="ghost" size="sm" (click)="acceptAllSuggestions()">Accept all</button>
+              <button hlmBtn type="button" variant="ghost" size="sm" (click)="discardAllSuggestions()">Discard all</button>
+            </div>
+          }
+        </div>
+
+        @if (fields().length === 0) {
+          <div class="text-sm text-gray-400 text-center py-8">No translatable content in this template yet.</div>
+        } @else {
+          <div class="flex flex-col gap-5">
+            @for (group of groups(); track group.blockId) {
+              <div>
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ group.label }}</div>
+                <div class="flex flex-col gap-3">
+                  @for (f of group.entries; track f.key) {
+                    <div class="flex flex-col gap-1 border border-gray-200 rounded-sm px-3 py-2">
+                      <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{{ f.groupLabel }}</span>
+                        @if (overrideValue(f.key)) {
+                          <button hlmBtn type="button" variant="ghost" size="sm" (click)="clearOverride(f.key)">Reset to source</button>
+                        }
+                      </div>
+                      <div class="text-xs text-gray-400 bg-gray-50 rounded-sm px-2 py-1 whitespace-pre-wrap">{{ f.sourceValue || '(empty)' }}</div>
+                      @if (f.multiline) {
+                        <textarea hlmTextarea rows="3" class="resize-y"
+                                  [ngModel]="overrideValue(f.key)" (ngModelChange)="setOverride(f.key, $event)"
+                                  placeholder="Translation..."></textarea>
+                      } @else {
+                        <input hlmInput type="text"
+                               [ngModel]="overrideValue(f.key)" (ngModelChange)="setOverride(f.key, $event)"
+                               placeholder="Translation..." />
+                      }
+                      @if (pendingSuggestions()[f.key] !== undefined && !overrideValue(f.key)) {
+                        <div class="flex flex-col gap-1 bg-blue-50 border border-blue-200 rounded-sm px-2 py-1.5 mt-1">
+                          <span class="text-[10px] font-semibold text-blue-700 uppercase tracking-wider">AI suggestion</span>
+                          <div class="text-xs text-blue-900 whitespace-pre-wrap">{{ pendingSuggestions()[f.key] }}</div>
+                          <div class="flex gap-2">
+                            <button hlmBtn type="button" variant="ghost" size="sm" (click)="useSuggestion(f.key)">Use this</button>
+                            <button hlmBtn type="button" variant="ghost" size="sm" (click)="dismissSuggestion(f.key)">Dismiss</button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+</div>

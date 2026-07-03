@@ -3,6 +3,7 @@ import { TitleCasePipe } from '@angular/common';
 import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
 import { Block, Row, Column, VisibilityCondition } from '../../models/email-doc.model';
+import { uid } from '../../utils/id.utils';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { VariablePickerComponent } from '../../shared/variable-picker/variable-picker.component';
 import { ConditionEditorComponent } from '../../shared/condition-editor/condition-editor.component';
@@ -199,15 +200,18 @@ export class InspectorComponent {
     if (!this.block) return;
     const items = [
       ...(this.block.props as any).items,
-      { title: 'New question', content: 'Answer here' },
+      { id: uid(), title: 'New question', content: 'Answer here' },
     ];
     this.store.updateBlockProps(this.block.id, { items });
   }
 
   removeAccordionItem(index: number) {
     if (!this.block) return;
+    const blockId = this.block.id;
+    const removed = (this.block.props as any).items[index];
     const items = (this.block.props as any).items.filter((_: any, i: number) => i !== index);
-    this.store.updateBlockProps(this.block.id, { items });
+    this.store.updateBlockProps(blockId, { items });
+    if (removed?.id) this.store.pruneTranslationsForItem(blockId, removed.id);
   }
 
   updateNavbarLink(index: number, field: 'label' | 'href', value: string) {
@@ -219,14 +223,17 @@ export class InspectorComponent {
 
   addNavbarLink() {
     if (!this.block) return;
-    const links = [...(this.block.props as any).links, { label: 'Link', href: '#' }];
+    const links = [...(this.block.props as any).links, { id: uid(), label: 'Link', href: '#' }];
     this.store.updateBlockProps(this.block.id, { links });
   }
 
   removeNavbarLink(index: number) {
     if (!this.block) return;
+    const blockId = this.block.id;
+    const removed = (this.block.props as any).links[index];
     const links = (this.block.props as any).links.filter((_: any, i: number) => i !== index);
-    this.store.updateBlockProps(this.block.id, { links });
+    this.store.updateBlockProps(blockId, { links });
+    if (removed?.id) this.store.pruneTranslationsForItem(blockId, removed.id);
   }
 
   updateTableCell(rowIndex: number, cellIndex: number, value: string) {
@@ -234,7 +241,7 @@ export class InspectorComponent {
     const rows = (this.block.props as any).rows.map((r: any, ri: number) =>
       ri !== rowIndex
         ? r
-        : { cells: r.cells.map((c: string, ci: number) => (ci !== cellIndex ? c : value)) },
+        : { ...r, cells: r.cells.map((c: string, ci: number) => (ci !== cellIndex ? c : value)) },
     );
     this.store.updateBlockProps(this.block.id, { rows });
   }
@@ -243,28 +250,40 @@ export class InspectorComponent {
     if (!this.block) return;
     const existing = (this.block.props as any).rows as any[];
     const numCols = existing[0]?.cells.length ?? 1;
-    const rows = [...existing, { cells: Array(numCols).fill('') }];
+    const rows = [...existing, { id: uid(), cells: Array(numCols).fill('') }];
     this.store.updateBlockProps(this.block.id, { rows });
   }
 
   removeTableRow(index: number) {
     if (!this.block) return;
+    const blockId = this.block.id;
+    const removed = (this.block.props as any).rows[index];
     const rows = (this.block.props as any).rows.filter((_: any, i: number) => i !== index);
-    this.store.updateBlockProps(this.block.id, { rows });
+    this.store.updateBlockProps(blockId, { rows });
+    if (removed?.id) this.store.pruneTranslationsForItem(blockId, removed.id);
   }
 
+  // Column add/remove shifts every subsequent cell's index within its row, and cells
+  // have no id of their own (only the row does) — so cell-keyed translations can't be
+  // reattached safely. Wipe this block's cell translations rather than risk silently
+  // misattributing a translation to the wrong column.
   addTableColumn() {
     if (!this.block) return;
-    const rows = (this.block.props as any).rows.map((r: any) => ({ cells: [...r.cells, ''] }));
-    this.store.updateBlockProps(this.block.id, { rows });
+    const blockId = this.block.id;
+    const rows = (this.block.props as any).rows.map((r: any) => ({ ...r, cells: [...r.cells, ''] }));
+    this.store.updateBlockProps(blockId, { rows });
+    this.store.pruneTranslationsForItem(blockId);
   }
 
   removeTableColumn(colIndex: number) {
     if (!this.block) return;
+    const blockId = this.block.id;
     const rows = (this.block.props as any).rows.map((r: any) => ({
+      ...r,
       cells: r.cells.filter((_: any, i: number) => i !== colIndex),
     }));
-    this.store.updateBlockProps(this.block.id, { rows });
+    this.store.updateBlockProps(blockId, { rows });
+    this.store.pruneTranslationsForItem(blockId);
   }
 
   updateCarouselImage(index: number, field: 'src' | 'alt' | 'href', value: string) {
@@ -278,14 +297,17 @@ export class InspectorComponent {
     if (!this.block) return;
     const images = [
       ...(this.block.props as any).images,
-      { src: 'https://placehold.co/600x400', alt: 'Slide', href: '' },
+      { id: uid(), src: 'https://placehold.co/600x400', alt: 'Slide', href: '' },
     ];
     this.store.updateBlockProps(this.block.id, { images });
   }
 
   removeCarouselImage(index: number) {
     if (!this.block) return;
+    const blockId = this.block.id;
+    const removed = (this.block.props as any).images[index];
     const images = (this.block.props as any).images.filter((_: any, i: number) => i !== index);
-    this.store.updateBlockProps(this.block.id, { images });
+    this.store.updateBlockProps(blockId, { images });
+    if (removed?.id) this.store.pruneTranslationsForItem(blockId, removed.id);
   }
 }

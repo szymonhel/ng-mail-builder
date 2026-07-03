@@ -63,6 +63,7 @@ export interface HeadingProps {
 export type SocialPlatform = 'facebook' | 'instagram' | 'twitter' | 'linkedin' | 'youtube' | 'tiktok' | 'pinterest' | 'github' | 'discord' | 'reddit' | 'whatsapp' | 'telegram';
 
 export interface SocialLink {
+  id: string;
   platform: SocialPlatform;
   href: string;
   // Overrides MJML's built-in icon; required for platforms MJML doesn't ship an icon for
@@ -111,6 +112,7 @@ export interface HeroProps {
 }
 
 export interface TableRow {
+  id: string;
   cells: string[];
 }
 
@@ -125,6 +127,7 @@ export interface TableProps {
 }
 
 export interface AccordionItem {
+  id: string;
   title: string;
   content: string;
 }
@@ -138,6 +141,7 @@ export interface AccordionProps {
 }
 
 export interface NavbarLink {
+  id: string;
   label: string;
   href: string;
 }
@@ -152,6 +156,7 @@ export interface NavbarProps {
 }
 
 export interface CarouselImage {
+  id: string;
   src: string;
   alt: string;
   href: string;
@@ -205,9 +210,22 @@ export interface EmailVariable {
   defaultValue: string;
 }
 
+export interface Locale {
+  id: string;
+  // free text, e.g. 'es', 'fr-CA' — not validated against ISO/BCP-47
+  code: string;
+  // display name, e.g. 'Spanish'
+  label: string;
+}
+
+// fieldKey -> override value. Missing key or '' means "fall back to source value".
+export type TranslationMap = Record<string, string>;
+
 export interface EmailDoc {
   version: number;
   settings: DocSettings;
   variables: EmailVariable[];
   rows: Row[];
+  locales: Locale[];
+  translations: Record<string /* localeId */, TranslationMap>;
 }

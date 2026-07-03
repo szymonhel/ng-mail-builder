@@ -1,6 +1,6 @@
 import { Component, input, output, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { EmailVariable } from '../../models/email-doc.model';
+import { EmailVariable, Locale } from '../../models/email-doc.model';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmButton } from '@spartan-ng/helm/button';
 
@@ -9,6 +9,7 @@ export interface SendFormValue {
   toName: string;
   subject: string;
   variableValues: Record<string, string>;
+  localeId: string | null;
 }
 
 const TO_STORAGE_KEY = 'sendDialog.to';
@@ -23,6 +24,7 @@ export class SendDialogComponent {
   status = input<'idle' | 'sending' | 'success' | 'error'>('idle');
   errorMessage = input<string>('');
   variables = input<EmailVariable[]>([]);
+  locales = input<Locale[]>([]);
 
   closed = output<void>();
   submitted = output<SendFormValue>();
@@ -31,6 +33,7 @@ export class SendDialogComponent {
   toName = '';
   subject = '';
   variableValues = signal<Record<string, string>>({});
+  localeId = signal<string | null>(null);
 
   constructor() {
     // Pre-fill with each variable's default the moment the dialog opens with a doc;
@@ -52,9 +55,19 @@ export class SendDialogComponent {
     this.variableValues.update(values => ({ ...values, [name]: value }));
   }
 
+  setLocaleId(id: string | null) {
+    this.localeId.set(id);
+  }
+
   submit() {
     if (!this.to || !this.subject) return;
-    this.submitted.emit({ to: this.to, toName: this.toName, subject: this.subject, variableValues: this.variableValues() });
+    this.submitted.emit({
+      to: this.to,
+      toName: this.toName,
+      subject: this.subject,
+      variableValues: this.variableValues(),
+      localeId: this.localeId(),
+    });
   }
 
   close() {
