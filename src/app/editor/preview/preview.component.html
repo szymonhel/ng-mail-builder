@@ -4,7 +4,7 @@
       <button hlmBtn size="sm" [variant]="mode === 'desktop' ? 'default' : 'outline'" (click)="setMode('desktop')">Desktop</button>
       <button hlmBtn size="sm" [variant]="mode === 'mobile' ? 'default' : 'outline'" (click)="setMode('mobile')">Mobile</button>
     </div>
-    @if (store.doc().locales.length > 0) {
+    @if (!hideLocalePicker() && store.doc().locales.length > 0) {
       <select class="text-sm border border-gray-300 rounded-sm px-2 py-1"
               [ngModel]="locale()" (ngModelChange)="setLocale($event)">
         <option [ngValue]="null">Source language</option>
@@ -17,7 +17,7 @@
   <div class="flex-1 overflow-auto bg-gray-200 p-6 flex justify-center">
     <div class="w-full bg-white shadow-lg rounded-sm overflow-hidden transition-all duration-300"
          [style.maxWidth]="mode === 'mobile' ? '375px' : '700px'">
-      <iframe [src]="iframeSrc()" class="w-full h-[600px] border-0 block" title="Email preview"></iframe>
+      <iframe #iframeEl [src]="iframeSrc()" (load)="onIframeLoad()" class="w-full h-full border-0 block" title="Email preview"></iframe>
     </div>
   </div>
 </div>

@@ -1,10 +1,10 @@
-<div class="flex-1 overflow-auto bg-gray-100 p-6">
-  <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
+<div class="flex flex-1 h-full overflow-hidden">
+<div class="w-[46%] min-w-[380px] max-w-[600px] overflow-auto bg-gray-100 p-6 border-r border-gray-200">
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
     <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Translations</h2>
     <p class="text-xs text-gray-500 mt-0 mb-4">
       Add a language, then fill in an override for any field below. Fields left blank fall back to the
-      template's source text. The canvas always shows the source language — pick a language in the
-      Preview tab or Send dialog to see the translated output.
+      template's source text — the preview on the right always reflects the selected language.
     </p>
 
     <div class="flex items-end gap-2 mb-5 pb-5 border-b border-gray-200">
@@ -83,12 +83,27 @@
           <div class="flex flex-col gap-5">
             @for (group of groups(); track group.blockId) {
               <div>
-                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ group.label }}</div>
+                <div class="flex items-center gap-1.5 mb-2">
+                  <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{{ group.label }}</span>
+                  @if (unfilledCount(group.entries) > 0) {
+                    <span class="flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-semibold"
+                          [title]="unfilledCount(group.entries) + ' field(s) not translated yet'">
+                      {{ unfilledCount(group.entries) }}
+                    </span>
+                  }
+                </div>
                 <div class="flex flex-col gap-3">
                   @for (f of group.entries; track f.key) {
-                    <div class="flex flex-col gap-1 border border-gray-200 rounded-sm px-3 py-2">
+                    <div class="flex flex-col gap-1 border rounded-sm px-3 py-2"
+                         [class.border-blue-400]="focusedBlockId() === f.blockId"
+                         [class.border-gray-200]="focusedBlockId() !== f.blockId">
                       <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{{ f.groupLabel }}</span>
+                        <span class="flex items-center gap-1.5">
+                          <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{{ f.groupLabel }}</span>
+                          @if (isUnfilled(f)) {
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400" title="Not translated yet"></span>
+                          }
+                        </span>
                         @if (overrideValue(f.key)) {
                           <button hlmBtn type="button" variant="ghost" size="sm" (click)="clearOverride(f.key)">Reset to source</button>
                         }
@@ -97,10 +112,12 @@
                       @if (f.multiline) {
                         <textarea hlmTextarea rows="3" class="resize-y"
                                   [ngModel]="overrideValue(f.key)" (ngModelChange)="setOverride(f.key, $event)"
+                                  (focus)="onFieldFocus(f.blockId)" (blur)="onFieldBlur(f.blockId)"
                                   placeholder="Translation..."></textarea>
                       } @else {
                         <input hlmInput type="text"
                                [ngModel]="overrideValue(f.key)" (ngModelChange)="setOverride(f.key, $event)"
+                               (focus)="onFieldFocus(f.blockId)" (blur)="onFieldBlur(f.blockId)"
                                placeholder="Translation..." />
                       }
                       @if (pendingSuggestions()[f.key] !== undefined && !overrideValue(f.key)) {
@@ -123,4 +140,9 @@
       }
     }
   </div>
+</div>
+<app-preview class="flex-1 min-w-0 h-full block"
+             [lockedLocale]="selectedLocaleId()"
+             [hideLocalePicker]="true"
+             [highlightBlockId]="focusedBlockId()" />
 </div>

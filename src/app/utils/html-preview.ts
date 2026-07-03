@@ -106,7 +106,8 @@ export function docToHtml(doc: EmailDoc, values?: Record<string, string>): strin
     .map(row => {
       const rowBg = row.backgroundColor ?? 'transparent';
       const cols = row.columns.map(col => {
-        const blocks = col.blocks.filter(b => evaluateCondition(b.condition, vals)).map(blockToHtml).join('');
+        const blocks = col.blocks.filter(b => evaluateCondition(b.condition, vals))
+          .map(b => `<div data-email-block-id="${b.id}">${blockToHtml(b)}</div>`).join('');
         const colBg = col.backgroundColor ?? 'transparent';
         return `<div style="flex:1;min-width:0;background:${colBg}">${blocks}</div>`;
       }).join('');
@@ -125,10 +126,33 @@ export function docToHtml(doc: EmailDoc, values?: Record<string, string>): strin
 <style>
   body { margin: 0; background: ${doc.settings.backgroundColor}; font-family: ${doc.settings.fontFamily}; }
   .email-wrapper { max-width: ${doc.settings.contentWidth}px; margin: 0 auto; background: ${doc.settings.bodyColor}; ${border} box-sizing: border-box; }
+  .email-block-highlight { outline: 2px solid #3b82f6; outline-offset: 2px; transition: outline-color 0.15s ease; }
 </style>
 </head>
 <body>
 <div class="email-wrapper">${rows}</div>
+<script>
+(function () {
+  var current = null;
+  function highlight(id, scroll) {
+    if (current) {
+      var prev = document.querySelector('[data-email-block-id="' + CSS.escape(current) + '"]');
+      if (prev) prev.classList.remove('email-block-highlight');
+    }
+    current = id;
+    if (id) {
+      var el = document.querySelector('[data-email-block-id="' + CSS.escape(id) + '"]');
+      if (el) {
+        el.classList.add('email-block-highlight');
+        if (scroll) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }
+  window.addEventListener('message', function (e) {
+    if (e.data && e.data.type === 'email-preview-highlight') highlight(e.data.blockId, e.data.scroll);
+  });
+})();
+</script>
 </body>
 </html>`;
 }

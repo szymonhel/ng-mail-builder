@@ -5,6 +5,7 @@ import { listTranslatableFields, TranslatableFieldEntry } from '../../utils/tran
 import { LOCALE_OPTIONS } from '../../utils/locale-options';
 import { AiApiKeyService } from '../../services/ai-api-key.service';
 import { AiTranslateService } from '../../services/ai-translate.service';
+import { PreviewComponent } from '../preview/preview.component';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmTextarea } from '@spartan-ng/helm/textarea';
@@ -22,7 +23,7 @@ function blockTypeLabel(type: string): string {
 @Component({
   selector: 'app-translations-tab',
   standalone: true,
-  imports: [FormsModule, HlmInput, HlmButton, HlmTextarea],
+  imports: [FormsModule, HlmInput, HlmButton, HlmTextarea, PreviewComponent],
   templateUrl: './translations-tab.component.html',
 })
 export class TranslationsTabComponent {
@@ -129,6 +130,25 @@ export class TranslationsTabComponent {
   clearOverride(fieldKey: string) {
     const localeId = this.selectedLocaleId();
     if (localeId) this.store.clearTranslation(localeId, fieldKey);
+  }
+
+  // Drives the outline shown around the corresponding block in the live preview.
+  focusedBlockId = signal<string | null>(null);
+
+  onFieldFocus(blockId: string) {
+    this.focusedBlockId.set(blockId);
+  }
+
+  onFieldBlur(blockId: string) {
+    if (this.focusedBlockId() === blockId) this.focusedBlockId.set(null);
+  }
+
+  isUnfilled(f: TranslatableFieldEntry): boolean {
+    return f.sourceValue.trim() !== '' && !this.overrideValue(f.key).trim();
+  }
+
+  unfilledCount(entries: TranslatableFieldEntry[]): number {
+    return entries.filter(f => this.isUnfilled(f)).length;
   }
 
   translating = signal(false);
