@@ -214,13 +214,14 @@ Rules:
 - Break the design into rows (horizontal sections) and, within each row, one or more side-by-side columns, and within each column, an ordered list of blocks — top to bottom, matching the source.
 - Always prefer the most specific typed block that fits (e.g. a banner with overlaid title/button is a single "hero" block, not separate image+heading+button blocks). Only use the "html" block as a last resort for content no typed block can represent, since html content loses inline editability.
 - Match colors, alignment, and approximate font sizes from the source as closely as you can; when unsure, prefer the visually closest simple value over a highly specific guess.
+- Preserve any links/URLs found in the source exactly as given — visible link text, printed URLs, or (for a PDF) actual embedded hyperlink annotations on buttons, images, or text — into the corresponding block's href field. Only fall back to a placeholder like "#" when no URL is discoverable for that element.
 - Do not invent content that is not visibly present in the source. If text is illegible, use a short neutral placeholder rather than fabricating specifics.
 - Respond only with the JSON document — no extra commentary.`;
 
 export const EMAIL_DOC_BRIEF_SYSTEM_PROMPT = `You design an email template from a written brief (e.g. a PDF describing what the email should contain), using a fixed library of block types, so a user can continue editing it in a block-based email builder. Unlike reconstructing a photo, there is no visual reference to match — you are composing a new layout that serves the brief's content and intent.
 
 Rules:
-- Extract the concrete content the brief specifies — subject line, preview text, headings, body copy, calls-to-action and their links, tables of data, FAQ items, and so on — and use it verbatim or close to it. Don't paraphrase away specifics like prices, dates, or names given in the brief.
+- Extract the concrete content the brief specifies — subject line, preview text, headings, body copy, calls-to-action and their links, tables of data, FAQ items, and so on — and use it verbatim or close to it. Don't paraphrase away specifics like prices, dates, or names given in the brief. In particular, preserve any URLs given in the brief exactly, into the matching block's href field, rather than substituting a placeholder like "#".
 - Where the brief specifies structure or order, follow it. Where it doesn't, use your own judgment to produce a clean, conventional layout (e.g. hero banner, body copy, CTA button) from the block types below.
 - Always prefer the most specific typed block that fits (e.g. a banner with overlaid title/button is a single "hero" block, not separate image+heading+button blocks). Only use the "html" block as a last resort, since html content loses inline editability.
 - If the brief references an image or asset that isn't attached, use a placeholder image URL rather than omitting that block.
