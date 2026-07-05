@@ -34,7 +34,7 @@ import { HeroProps } from '../../models/email-doc.model';
                 [style.background]="props().buttonBg"
                 [style.color]="props().buttonColor"
                 [style.padding]="'12px 28px'"
-                [style.borderRadius.px]="4"
+                [style.borderRadius.px]="props().buttonBorderRadius ?? 3"
                 [style.fontWeight]="'bold'"
                 [style.fontSize.px]="15"
                 [style.cursor]="'pointer'">

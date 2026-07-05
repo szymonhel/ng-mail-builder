@@ -60,7 +60,7 @@
               {{ translating() ? 'Translating…' : '✨ Auto-translate with AI' + (blankFields().length > 0 ? ' (' + blankFields().length + ')' : '') }}
             </button>
             @if (!aiApiKeyService.key()) {
-              <span class="text-[11px] text-gray-400">Set an OpenAI API key in the Import / Export tab to enable this.</span>
+              <span class="text-[11px] text-gray-400">Set an OpenAI API key in <button class="underline" (click)="store.setActiveTab('settings')">Settings</button> to enable this.</span>
             } @else if (blankFields().length === 0) {
               <span class="text-[11px] text-gray-400">Nothing left to auto-translate.</span>
             }

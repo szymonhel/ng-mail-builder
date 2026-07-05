@@ -399,6 +399,11 @@
             <app-color-picker [value]="$any(block.props).buttonBg" (valueChange)="update({ buttonBg: $event })" />
           </div>
           <div class="flex flex-col gap-1">
+            <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Button radius (px)</label>
+            <input hlmInput type="number" min="0"
+                   [value]="$any(block.props).buttonBorderRadius ?? 3" (change)="update({ buttonBorderRadius: +$any($event.target).value })" />
+          </div>
+          <div class="flex flex-col gap-1">
             <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Vertical align</label>
             <select hlmInput
                     [value]="$any(block.props).verticalAlign" (change)="update({ verticalAlign: $any($event.target).value })">

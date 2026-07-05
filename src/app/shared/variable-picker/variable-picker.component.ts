@@ -1,5 +1,6 @@
 import { Component, ElementRef, HostListener, computed, inject, output, signal } from '@angular/core';
 import { EditorStore } from '../../store/editor.store';
+import { UserSettingsService } from '../../services/user-settings.service';
 import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
@@ -10,11 +11,19 @@ import { HlmButton } from '@spartan-ng/helm/button';
 })
 export class VariablePickerComponent {
   private store = inject(EditorStore);
+  private userSettings = inject(UserSettingsService);
   private host = inject(ElementRef<HTMLElement>);
 
   insert = output<string>();
 
   variables = computed(() => this.store.doc().variables);
+  // Account-level global data names, excluding any shadowed by a doc variable.
+  globalNames = computed(() => {
+    const docNames = new Set(this.variables().map(v => v.name));
+    return this.userSettings.globalData()
+      .map(d => d.name.trim())
+      .filter(name => name && !docNames.has(name));
+  });
   open = signal(false);
 
   toggle() {

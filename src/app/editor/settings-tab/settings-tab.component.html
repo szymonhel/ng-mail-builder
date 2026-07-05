@@ -92,6 +92,82 @@
       </div>
 
     </div>
+
+    <!-- Account-level settings (stored per user, apply to every email) -->
+    <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 flex flex-col gap-5 mt-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Account settings</div>
+          <p class="text-xs text-gray-400 m-0">Saved to your account — shared across all your emails and devices.</p>
+        </div>
+        <app-settings-save-bar />
+      </div>
+
+      @if (userSettings.error()) {
+        <div class="flex items-center justify-between gap-4 px-4 py-2 bg-red-50 border border-red-200 rounded-sm">
+          <p class="text-red-600 text-xs m-0">{{ userSettings.error() }}</p>
+          <button class="text-red-600 text-xs underline shrink-0" (click)="userSettings.error.set(null)">Dismiss</button>
+        </div>
+      }
+
+      <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">AI</div>
+        <div class="flex flex-col gap-2">
+          <label class="text-xs text-gray-600">OpenAI API key</label>
+          <input hlmInput type="password" autocomplete="off"
+                 [value]="userSettings.openaiKey()"
+                 (change)="userSettings.setOpenaiKey($any($event.target).value)"
+                 placeholder="sk-..." />
+          <p class="text-[10px] text-gray-400 m-0">Used by AI import and auto-translate. Sent to our server per request and forwarded to OpenAI.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Button defaults</div>
+        <p class="text-[10px] text-gray-400 mt-0 mb-2">Applied to new button blocks (and hero buttons) you add — existing blocks keep their styling.</p>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-gray-600">Background</label>
+            <app-color-picker [value]="userSettings.buttonDefaults().bg"
+                   (valueChange)="userSettings.updateButtonDefaults({ bg: $event })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-gray-600">Text color</label>
+            <app-color-picker [value]="userSettings.buttonDefaults().color"
+                   (valueChange)="userSettings.updateButtonDefaults({ color: $event })" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-gray-600">Border radius (px)</label>
+            <input hlmInput type="number" min="0"
+                   [value]="userSettings.buttonDefaults().borderRadius"
+                   (change)="userSettings.updateButtonDefaults({ borderRadius: +$any($event.target).value })" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500">Global data</div>
+          <button hlmBtn variant="outline" size="xs" (click)="userSettings.addGlobalData()">+ Add</button>
+        </div>
+        <p class="text-[10px] text-gray-400 mt-0 mb-2">Reusable values available as {{ '{{name}}' }} in every email. An email variable with the same name wins.</p>
+        @if (userSettings.globalData().length === 0) {
+          <p class="text-xs text-gray-400 m-0">No global data yet — e.g. companyName, supportEmail, websiteUrl.</p>
+        } @else {
+          <div class="flex flex-col gap-2">
+            @for (item of userSettings.globalData(); track item.id) {
+              <div class="flex gap-2 items-center">
+                <input hlmInput type="text" class="w-48" placeholder="name"
+                       [value]="item.name" (change)="userSettings.updateGlobalData(item.id, { name: $any($event.target).value })" />
+                <input hlmInput type="text" class="flex-1 min-w-0" placeholder="value"
+                       [value]="item.value" (change)="userSettings.updateGlobalData(item.id, { value: $any($event.target).value })" />
+                <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive shrink-0" (click)="userSettings.removeGlobalData(item.id)">✕</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
   </div>
 
   <!-- Colors tab -->

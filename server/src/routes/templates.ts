@@ -1,14 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { randomUUID } from 'crypto';
 import { getTemplatesTable } from '../lib/azureTables';
+import { chunkJson, unchunkJson } from '../lib/tableJson';
 
 const router = Router();
-
-// Table storage caps string properties at 64 KB (32 K UTF-16 chars), so the
-// doc JSON is split across doc0..docN properties and reassembled on read.
-const CHUNK_CHARS = 30000;
-// Whole-entity limit is 1 MB; reject docs that would blow past it.
-const MAX_DOC_CHARS = 800000;
 
 // The Auth0 user id partitions the table, so users only ever touch their own rows.
 function partitionKey(req: Request): string {
@@ -18,29 +13,18 @@ function partitionKey(req: Request): string {
 }
 
 function toEntity(pk: string, id: string, name: string, doc: unknown, createdAt: string) {
-  const json = JSON.stringify(doc);
-  if (json.length > MAX_DOC_CHARS) {
-    throw Object.assign(new Error('Email is too large to save.'), { status: 413 });
-  }
-  const entity: Record<string, unknown> = {
+  return {
     partitionKey: pk,
     rowKey: id,
     name,
     createdAt,
     updatedAt: new Date().toISOString(),
-    docChunks: Math.ceil(json.length / CHUNK_CHARS) || 1,
-  };
-  for (let i = 0; i * CHUNK_CHARS < json.length || i === 0; i++) {
-    entity[`doc${i}`] = json.slice(i * CHUNK_CHARS, (i + 1) * CHUNK_CHARS);
-  }
-  return entity;
+    ...chunkJson(doc),
+  } as Record<string, unknown>;
 }
 
 function docFromEntity(entity: Record<string, unknown>): unknown {
-  const chunks = Number(entity.docChunks ?? 1);
-  let json = '';
-  for (let i = 0; i < chunks; i++) json += (entity[`doc${i}`] as string) ?? '';
-  return JSON.parse(json);
+  return unchunkJson(entity);
 }
 
 function metaFromEntity(entity: Record<string, unknown>) {

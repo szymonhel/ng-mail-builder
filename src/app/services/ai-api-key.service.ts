@@ -1,28 +1,21 @@
-import { Injectable, signal } from '@angular/core';
-
-const STORAGE_KEY = 'ngmb.openaiApiKey';
+import { Injectable, inject } from '@angular/core';
+import { UserSettingsService } from './user-settings.service';
 
 // Single source of truth for the user's OpenAI key so any feature that calls the AI
 // routes (import, auto-translate, ...) can read/set it without prop-drilling it through
-// component inputs. Never sent anywhere except per-request to our own server, which
-// forwards it straight to OpenAI and never persists it.
+// component inputs. Persisted per user in the settings table; forwarded per-request
+// to our own server, which passes it straight to OpenAI.
 @Injectable({ providedIn: 'root' })
 export class AiApiKeyService {
-  private _key = signal(localStorage.getItem(STORAGE_KEY) ?? '');
-  key = this._key.asReadonly();
+  private settings = inject(UserSettingsService);
+
+  key = this.settings.openaiKey.asReadonly();
 
   set(value: string) {
-    const trimmed = value.trim();
-    this._key.set(trimmed);
-    if (trimmed) {
-      localStorage.setItem(STORAGE_KEY, trimmed);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    this.settings.setOpenaiKey(value);
   }
 
   clear() {
-    this._key.set('');
-    localStorage.removeItem(STORAGE_KEY);
+    this.settings.setOpenaiKey('');
   }
 }

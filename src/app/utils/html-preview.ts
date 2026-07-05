@@ -56,7 +56,7 @@ function blockToHtml(b: Block): string {
         : `background:${p.backgroundColor}`;
       const justify = p.verticalAlign === 'top' ? 'flex-start' : p.verticalAlign === 'bottom' ? 'flex-end' : 'center';
       const subtitle = p.subtitle ? `<div style="color:${p.subtitleColor};font-size:16px;margin-bottom:20px">${p.subtitle}</div>` : '';
-      const button = p.buttonLabel ? `<a href="${p.buttonHref}" style="display:inline-block;background:${p.buttonBg};color:${p.buttonColor};padding:12px 28px;border-radius:4px;font-weight:bold;text-decoration:none;font-size:15px">${p.buttonLabel}</a>` : '';
+      const button = p.buttonLabel ? `<a href="${p.buttonHref}" style="display:inline-block;background:${p.buttonBg};color:${p.buttonColor};padding:12px 28px;border-radius:${p.buttonBorderRadius ?? 3}px;font-weight:bold;text-decoration:none;font-size:15px">${p.buttonLabel}</a>` : '';
       return `<div style="position:relative;min-height:${p.height};${bgStyle};display:flex;flex-direction:column;align-items:center;justify-content:${justify};padding:${p.padding};box-sizing:border-box"><div style="position:absolute;inset:0;background:rgba(0,0,0,0.35)"></div><div style="position:relative;text-align:center;width:100%"><div style="color:${p.titleColor};font-size:${p.titleSize}px;font-weight:700;line-height:1.2;margin-bottom:12px">${p.title}</div>${subtitle}${button}</div></div>`;
     }
     case 'table': {

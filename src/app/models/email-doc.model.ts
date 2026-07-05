@@ -108,6 +108,7 @@ export interface HeroProps {
   buttonHref: string;
   buttonBg: string;
   buttonColor: string;
+  buttonBorderRadius: number;
   padding: string;
 }
 

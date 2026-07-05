@@ -1,13 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SavedColorsService } from '../../services/saved-colors.service';
+import { SettingsSaveBarComponent } from '../../shared/settings-save-bar/settings-save-bar.component';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-colors-tab',
   standalone: true,
-  imports: [FormsModule, HlmInput, HlmButton],
+  imports: [FormsModule, SettingsSaveBarComponent, HlmInput, HlmButton],
   templateUrl: './colors-tab.component.html',
 })
 export class ColorsTabComponent {

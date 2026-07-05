@@ -1,13 +1,14 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { EmailDoc, Block, BlockType, Row, Column, EmailVariable, VisibilityCondition, Locale } from '../models/email-doc.model';
+import { UserSettingsService } from '../services/user-settings.service';
 import { uid } from '../utils/id.utils';
 
 // Nested array props whose items need a stable id (for translation-key targeting).
 // Block creation deep-clones these via cloneBlockProps so every instance gets fresh ids.
 const ITEM_ARRAY_FIELDS = ['links', 'rows', 'items', 'images'] as const;
 
-function cloneBlockProps(type: BlockType): any {
-  const base: any = { ...BLOCK_DEFAULTS[type] };
+function cloneBlockProps(type: BlockType, overrides: Record<string, unknown> = {}): any {
+  const base: any = { ...BLOCK_DEFAULTS[type], ...overrides };
   for (const field of ITEM_ARRAY_FIELDS) {
     if (Array.isArray(base[field])) {
       base[field] = base[field].map((item: any) => ({ ...item, id: uid() }));
@@ -60,6 +61,7 @@ const BLOCK_DEFAULTS: Record<BlockType, any> = {
     buttonHref: '#',
     buttonBg: '#1a73e8',
     buttonColor: '#ffffff',
+    buttonBorderRadius: 3,
     padding: '40px 25px',
   },
   table: {
@@ -139,7 +141,34 @@ const HISTORY_LIMIT = 100;
 
 @Injectable({ providedIn: 'root' })
 export class EditorStore {
+  private userSettings = inject(UserSettingsService);
   private _doc = signal<EmailDoc>(initialDoc());
+
+  // Account-level style defaults applied on top of BLOCK_DEFAULTS when a new
+  // block is created; existing blocks are never touched.
+  private userDefaultsFor(type: BlockType): Record<string, unknown> {
+    const btn = this.userSettings.buttonDefaults();
+    switch (type) {
+      case 'button': return { bg: btn.bg, color: btn.color, borderRadius: btn.borderRadius };
+      case 'hero': return { buttonBg: btn.bg, buttonColor: btn.color, buttonBorderRadius: btn.borderRadius };
+      default: return {};
+    }
+  }
+
+  // Section presets carry fully-styled blocks; restyle their buttons with the
+  // account defaults so presets match individually added blocks.
+  private applyUserDefaultsToRow(row: Row): Row {
+    return {
+      ...row,
+      columns: row.columns.map(c => ({
+        ...c,
+        blocks: c.blocks.map(b => {
+          const overrides = this.userDefaultsFor(b.type);
+          return Object.keys(overrides).length ? { ...b, props: { ...b.props, ...overrides } as Block['props'] } : b;
+        }),
+      })),
+    };
+  }
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
   private _selectedColumnId = signal<string | null>(null);
@@ -235,12 +264,14 @@ export class EditorStore {
     this.commit(d => ({ ...d, rows: [...d.rows, row] }));
   }
 
-  addPresetRow(row: Row) {
+  addPresetRow(presetRow: Row) {
+    const row = this.applyUserDefaultsToRow(presetRow);
     this.commit(d => ({ ...d, rows: [...d.rows, row] }));
     this._selectedRowId.set(row.id);
   }
 
-  insertPresetRowAt(index: number, row: Row) {
+  insertPresetRowAt(index: number, presetRow: Row) {
+    const row = this.applyUserDefaultsToRow(presetRow);
     this.commit(d => {
       const rows = [...d.rows];
       rows.splice(index, 0, row);
@@ -280,7 +311,7 @@ export class EditorStore {
     const row = this._doc().rows.find(r => r.id === rowId);
     const col = row?.columns[0];
     if (!row || !col) return;
-    const block: Block = { id: uid(), type, props: cloneBlockProps(type) };
+    const block: Block = { id: uid(), type, props: cloneBlockProps(type, this.userDefaultsFor(type)) };
     this.commit(d => ({
       ...d,
       rows: d.rows.map(r => r.id !== rowId ? r : {
@@ -295,7 +326,7 @@ export class EditorStore {
     const row = this._doc().rows.find(r => r.id === rowId);
     const col = row?.columns.find(c => c.id === colId);
     if (!row || !col) return;
-    const block: Block = { id: uid(), type, props: cloneBlockProps(type) };
+    const block: Block = { id: uid(), type, props: cloneBlockProps(type, this.userDefaultsFor(type)) };
     const nextBlocks = [...col.blocks.slice(0, index), block, ...col.blocks.slice(index)];
     this.commit(d => ({
       ...d,

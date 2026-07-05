@@ -106,7 +106,7 @@ function blockToMjml(b: Block): string {
 function heroToMjml(b: Block): string {
   const p = b.props as any;
   const subtitle = p.subtitle ? `\n      <mj-text align="center" color="${p.subtitleColor}" font-size="16px" padding="0 25px 16px">${p.subtitle}</mj-text>` : '';
-  const button = p.buttonLabel ? `\n      <mj-button href="${p.buttonHref}" background-color="${p.buttonBg}" color="${p.buttonColor}">${p.buttonLabel}</mj-button>` : '';
+  const button = p.buttonLabel ? `\n      <mj-button href="${p.buttonHref}" background-color="${p.buttonBg}" color="${p.buttonColor}" border-radius="${p.buttonBorderRadius ?? 3}px">${p.buttonLabel}</mj-button>` : '';
   return `    <mj-hero mode="fixed-height" height="${p.height}" background-width="${p.backgroundWidth}" background-height="${p.backgroundHeight}" background-url="${p.backgroundUrl}" background-color="${p.backgroundColor}" vertical-align="${p.verticalAlign}" padding="${p.padding}">
       <mj-text align="center" color="${p.titleColor}" font-size="${p.titleSize}px" font-weight="700" padding="0 25px 12px">${p.title}</mj-text>${subtitle}${button}
     </mj-hero>`;
@@ -248,6 +248,7 @@ function heroElToBlock(el: Element): Block {
       buttonHref: attr(buttonEl, 'href', '#'),
       buttonBg: attr(buttonEl, 'background-color', '#1a73e8'),
       buttonColor: attr(buttonEl, 'color', '#ffffff'),
+      buttonBorderRadius: intAttr(buttonEl, 'border-radius', 3),
       padding: attr(el, 'padding', '40px 25px'),
     },
   };

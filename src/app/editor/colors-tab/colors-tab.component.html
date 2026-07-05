@@ -1,10 +1,15 @@
 <div class="flex-1 overflow-auto bg-gray-100 p-6">
   <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
-    <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Saved Colors</h2>
-    <p class="text-xs text-gray-500 mt-0 mb-4">
-      Colors you save here show up as quick picks in every color picker across the editor.
-      Stored locally in this browser for now.
-    </p>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Saved Colors</h2>
+        <p class="text-xs text-gray-500 mt-0 mb-4">
+          Colors you save here show up as quick picks in every color picker across the editor.
+          Saved to your account.
+        </p>
+      </div>
+      <app-settings-save-bar />
+    </div>
 
     <div class="flex items-end gap-2 mb-5 pb-5 border-b border-gray-200">
       <div class="flex flex-col gap-1">

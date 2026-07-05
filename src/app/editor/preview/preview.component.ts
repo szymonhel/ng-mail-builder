@@ -4,6 +4,7 @@ import { debounceTime } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../../store/editor.store';
+import { UserSettingsService } from '../../services/user-settings.service';
 import { docToHtml } from '../../utils/html-preview';
 import { docToMjml } from '../../utils/mjml-mapper';
 import { applyVariables, defaultVariableValues } from '../../utils/template-vars';
@@ -19,6 +20,13 @@ import { HlmButton } from '@spartan-ng/helm/button';
 export class PreviewComponent {
   store = inject(EditorStore);
   sanitizer = inject(DomSanitizer);
+  private userSettings = inject(UserSettingsService);
+
+  // Account-level global data participates in previews; a doc variable with
+  // the same name wins.
+  private variableValues(docVariables: Parameters<typeof defaultVariableValues>[0]): Record<string, string> {
+    return { ...this.userSettings.globalValues(), ...defaultVariableValues(docVariables) };
+  }
 
   // When set (e.g. embedded in the Translations tab), the locale is driven by
   // the host and the picker is hidden instead of using the internal `locale` signal.
@@ -38,7 +46,7 @@ export class PreviewComponent {
 
   previewHtml = computed(() => {
     const doc = this.localizedDoc();
-    const html = applyVariables(docToHtml(doc), defaultVariableValues(doc.variables));
+    const html = applyVariables(docToHtml(doc), this.variableValues(doc.variables));
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 
@@ -53,7 +61,7 @@ export class PreviewComponent {
 
   iframeSrc = computed(() => {
     const doc = this.debouncedLocalizedDoc();
-    const html = applyVariables(docToHtml(doc), defaultVariableValues(doc.variables));
+    const html = applyVariables(docToHtml(doc), this.variableValues(doc.variables));
     const blob = new Blob([html], { type: 'text/html' });
     return this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(blob));
   });

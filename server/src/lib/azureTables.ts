@@ -1,29 +1,37 @@
 import { TableClient } from '@azure/data-tables';
 
-let ensured: Promise<TableClient> | null = null;
+const clients = new Map<string, Promise<TableClient>>();
 
 // Lazily connects so the server can boot without Azure configured; requests to
-// /templates fail with a clear error instead. Reuses the blob storage account.
-export function getTemplatesTable(): Promise<TableClient> {
-  if (ensured) return ensured;
+// table-backed routes fail with a clear error instead. Reuses the blob storage account.
+function getTable(tableName: string): Promise<TableClient> {
+  const existing = clients.get(tableName);
+  if (existing) return existing;
 
   const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
   if (!connectionString) {
     return Promise.reject(new Error('AZURE_STORAGE_CONNECTION_STRING is not set.'));
   }
 
-  const tableName = process.env.AZURE_TABLE_NAME ?? 'emails';
   const client = TableClient.fromConnectionString(connectionString, tableName);
-
-  ensured = client
+  const ensured = client
     .createTable()
     .catch(err => {
       // 409 TableAlreadyExists is the normal case after first boot.
       if (err?.statusCode !== 409) {
-        ensured = null;
+        clients.delete(tableName);
         throw err;
       }
     })
     .then(() => client);
+  clients.set(tableName, ensured);
   return ensured;
+}
+
+export function getTemplatesTable(): Promise<TableClient> {
+  return getTable(process.env.AZURE_TABLE_NAME ?? 'emails');
+}
+
+export function getSettingsTable(): Promise<TableClient> {
+  return getTable(process.env.AZURE_SETTINGS_TABLE ?? 'usersettings');
 }

@@ -13,6 +13,7 @@ import { TranslationsTabComponent } from './translations-tab/translations-tab.co
 import { AssetsTabComponent } from './assets-tab/assets-tab.component';
 import { EmailsDialogComponent } from './emails-dialog/emails-dialog.component';
 import { TemplatesService, EmailTemplateMeta } from '../services/templates.service';
+import { UserSettingsService } from '../services/user-settings.service';
 import { MailService } from '../services/mail.service';
 import { AiImportService, PdfImportMode } from '../services/ai-import.service';
 import { AiApiKeyService } from '../services/ai-api-key.service';
@@ -35,6 +36,7 @@ export class EditorComponent {
   private mail = inject(MailService);
   private aiImport = inject(AiImportService);
   private templates = inject(TemplatesService);
+  private userSettings = inject(UserSettingsService);
   aiApiKeyService = inject(AiApiKeyService);
 
   logout() {
@@ -253,7 +255,9 @@ export class EditorComponent {
     // visibility conditions are re-evaluated against this send's actual values,
     // not the defaults baked into the Export tab's preview.
     const localizedDoc = resolveDocForLocale(this.store.doc(), form.localeId);
-    const mjml = applyVariables(docToMjml(localizedDoc, form.variableValues), form.variableValues);
+    // Account-level global data participates too; per-send values win on name clashes.
+    const values = { ...this.userSettings.globalValues(), ...form.variableValues };
+    const mjml = applyVariables(docToMjml(localizedDoc, values), values);
     this.mail.send({
       to: form.to,
       toName: form.toName || undefined,
