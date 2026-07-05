@@ -10,6 +10,7 @@ import { PreviewComponent } from './preview/preview.component';
 import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.component';
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { TranslationsTabComponent } from './translations-tab/translations-tab.component';
+import { AssetsTabComponent } from './assets-tab/assets-tab.component';
 import { MailService } from '../services/mail.service';
 import { AiImportService, PdfImportMode } from '../services/ai-import.service';
 import { AiApiKeyService } from '../services/ai-api-key.service';
@@ -23,7 +24,7 @@ import { NgIcon } from '@ng-icons/core';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, AsyncPipe, FormsModule, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, HlmButton, NgIcon],
+  imports: [NgClass, AsyncPipe, FormsModule, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, AssetsTabComponent, HlmButton, NgIcon],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {

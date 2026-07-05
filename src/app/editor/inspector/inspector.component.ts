@@ -7,6 +7,7 @@ import { uid } from '../../utils/id.utils';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { VariablePickerComponent } from '../../shared/variable-picker/variable-picker.component';
 import { ConditionEditorComponent } from '../../shared/condition-editor/condition-editor.component';
+import { ImageUrlInputComponent } from '../../shared/image-url-input/image-url-input.component';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { HlmLabel } from '@spartan-ng/helm/label';
@@ -22,6 +23,7 @@ import { HlmTextarea } from '@spartan-ng/helm/textarea';
     ColorPickerComponent,
     VariablePickerComponent,
     ConditionEditorComponent,
+    ImageUrlInputComponent,
     HlmInput,
     HlmCheckbox,
     HlmLabel,

@@ -1,0 +1,66 @@
+<div class="flex-1 overflow-y-auto bg-gray-50 p-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-lg font-semibold m-0">Assets</h2>
+        <p class="text-xs text-gray-500 m-0">Images uploaded here get a public URL you can use in any block.</p>
+      </div>
+      <div class="flex gap-2">
+        <button hlmBtn variant="outline" size="sm" [disabled]="loading()" (click)="refresh()">Refresh</button>
+        <button hlmBtn size="sm" [disabled]="uploading()" (click)="fileInput.click()">
+          {{ uploading() ? 'Uploading…' : 'Upload images' }}
+        </button>
+        <input #fileInput type="file" class="hidden" multiple
+               accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+               (change)="onFileSelected($event)" />
+      </div>
+    </div>
+
+    @if (error()) {
+      <div class="flex items-center justify-between gap-4 px-4 py-2 mb-4 bg-red-50 border border-red-200 rounded-sm">
+        <p class="text-red-600 text-xs m-0">{{ error() }}</p>
+        <button class="text-red-600 text-xs underline shrink-0" (click)="error.set(null)">Dismiss</button>
+      </div>
+    }
+
+    <div class="border-2 border-dashed rounded-md p-6 mb-6 text-center text-sm transition-colors"
+         [class.border-blue-400]="dragOver()"
+         [class.bg-blue-50]="dragOver()"
+         [class.border-gray-300]="!dragOver()"
+         [class.text-gray-500]="!dragOver()"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave()"
+         (drop)="onDrop($event)">
+      Drag &amp; drop images here, or use the Upload button
+      <span class="block text-[10px] text-gray-400 mt-1">JPEG, PNG, GIF, WEBP or SVG — max 5 MB each</span>
+    </div>
+
+    @if (loading()) {
+      <p class="text-sm text-gray-500">Loading assets…</p>
+    } @else if (assets().length === 0) {
+      <p class="text-sm text-gray-500">No assets yet. Upload your first image above.</p>
+    } @else {
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        @for (asset of assets(); track asset.name) {
+          <div class="bg-white border border-gray-200 rounded-md overflow-hidden flex flex-col">
+            <div class="h-28 bg-[repeating-conic-gradient(#f3f4f6_0%_25%,#ffffff_0%_50%)] bg-[length:16px_16px] flex items-center justify-center overflow-hidden">
+              <img [src]="asset.url" [alt]="displayName(asset)" loading="lazy" class="max-h-full max-w-full object-contain" />
+            </div>
+            <div class="p-2 flex flex-col gap-1">
+              <span class="text-[11px] font-medium truncate" [title]="displayName(asset)">{{ displayName(asset) }}</span>
+              <span class="text-[10px] text-gray-400">
+                {{ formatSize(asset.size) }}@if (asset.width && asset.height) { · {{ asset.width }}×{{ asset.height }}}
+              </span>
+              <div class="flex gap-1 mt-1">
+                <button hlmBtn variant="outline" size="xs" class="flex-1" (click)="copyUrl(asset)">
+                  {{ copiedUrl() === asset.url ? 'Copied!' : 'Copy URL' }}
+                </button>
+                <button hlmBtn variant="ghost" size="xs" class="text-destructive shrink-0" (click)="delete(asset)">✕</button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

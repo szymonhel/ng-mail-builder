@@ -5,6 +5,7 @@ import sendRouter from './routes/send';
 import aiImportRouter from './routes/aiImport';
 import aiImportPdfRouter from './routes/aiImportPdf';
 import aiTranslateRouter from './routes/aiTranslate';
+import assetsRouter from './routes/assets';
 import { checkJwt } from './middleware/auth';
 
 const app = express();
@@ -13,7 +14,7 @@ const port = process.env.PORT ?? 3000;
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGIN ?? 'http://localhost:4200',
-    methods: ['POST'],
+    methods: ['GET', 'POST', 'DELETE'],
   })
 );
 
@@ -27,6 +28,7 @@ app.use('/send', checkJwt, sendRouter);
 app.use('/ai/import-image', checkJwt, aiImportRouter);
 app.use('/ai/import-pdf', checkJwt, aiImportPdfRouter);
 app.use('/ai/translate', checkJwt, aiTranslateRouter);
+app.use('/assets', checkJwt, assetsRouter);
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);

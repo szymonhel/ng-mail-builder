@@ -143,7 +143,7 @@ export class EditorStore {
   private _selectedBlockId = signal<string | null>(null);
   private _selectedRowId = signal<string | null>(null);
   private _selectedColumnId = signal<string | null>(null);
-  private _activeTab = signal<'editor' | 'preview' | 'json' | 'settings' | 'translations'>('editor');
+  private _activeTab = signal<'editor' | 'preview' | 'json' | 'settings' | 'translations' | 'assets'>('editor');
 
   private _past = signal<EmailDoc[]>([]);
   private _future = signal<EmailDoc[]>([]);
@@ -215,7 +215,7 @@ export class EditorStore {
     this._selectedColumnId.set(null);
   }
 
-  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'settings' | 'translations') { this._activeTab.set(tab); }
+  setActiveTab(tab: 'editor' | 'preview' | 'json' | 'settings' | 'translations' | 'assets') { this._activeTab.set(tab); }
   selectBlock(id: string | null) {
     this._selectedBlockId.set(id);
     if (id) this._selectedColumnId.set(null);

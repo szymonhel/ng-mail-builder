@@ -79,8 +79,7 @@
       @case ('image') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Image URL</label>
-          <input hlmInput type="text" [value]="imageProps.src"
-                 (change)="update({ src: $any($event.target).value })" placeholder="https://..." />
+          <app-image-url-input [value]="imageProps.src" (valueChange)="update({ src: $event })" />
         </div>
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Alt text</label>
@@ -323,8 +322,7 @@
       @case ('hero') {
         <div class="mb-3 flex flex-col gap-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Background Image URL</label>
-          <input hlmInput type="text"
-                 [value]="$any(block.props).backgroundUrl" (change)="update({ backgroundUrl: $any($event.target).value })" placeholder="https://..." />
+          <app-image-url-input [value]="$any(block.props).backgroundUrl" (valueChange)="update({ backgroundUrl: $event })" />
         </div>
         <div class="grid grid-cols-2 gap-2 mb-3">
           <div class="flex flex-col gap-1">
@@ -545,8 +543,9 @@
               <span class="text-[10px] text-gray-400">Slide {{ i + 1 }}</span>
               <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="removeCarouselImage(i)">✕</button>
             </div>
-            <input hlmInput type="text" class="mb-1"
-                   [value]="img.src" placeholder="Image URL" (change)="updateCarouselImage(i, 'src', $any($event.target).value)" />
+            <div class="mb-1">
+              <app-image-url-input [value]="img.src" placeholder="Image URL" (valueChange)="updateCarouselImage(i, 'src', $event)" />
+            </div>
             <input hlmInput type="text" class="mb-1"
                    [value]="img.alt" placeholder="Alt text" (change)="updateCarouselImage(i, 'alt', $any($event.target).value)" />
             <input hlmInput type="text"
