@@ -1,6 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAuth0, authHttpInterceptorFn } from '@auth0/auth0-angular';
 import { provideIcons } from '@ng-icons/core';
 import {
   lucideType,
@@ -30,12 +31,25 @@ import {
 } from '@ng-icons/lucide';
 
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([authHttpInterceptorFn])),
+    provideAuth0({
+      domain: environment.auth0.domain,
+      clientId: environment.auth0.clientId,
+      authorizationParams: {
+        redirect_uri: window.location.origin,
+        audience: environment.auth0.audience,
+      },
+      httpInterceptor: {
+        // Attach the Auth0 access token to every call to our API
+        allowedList: [`${environment.apiUrl}/*`],
+      },
+    }),
     provideIcons({
       lucideType,
       lucideImage,

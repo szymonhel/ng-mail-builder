@@ -1,5 +1,9 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000',
-  apiKey: 'zQsdVL8lpOZVP7zOhniDKb+laYFDX8JczsOIU+vLoa5o/jorQVOI0x77NoVpBRJD',
+  auth0: {
+    domain: 'YOUR_TENANT.eu.auth0.com',
+    clientId: 'YOUR_AUTH0_CLIENT_ID',
+    audience: 'https://ng-mail-builder-api',
+  },
 };

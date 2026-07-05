@@ -5,7 +5,7 @@ import sendRouter from './routes/send';
 import aiImportRouter from './routes/aiImport';
 import aiImportPdfRouter from './routes/aiImportPdf';
 import aiTranslateRouter from './routes/aiTranslate';
-import { apiKeyAuth } from './middleware/auth';
+import { checkJwt } from './middleware/auth';
 
 const app = express();
 const port = process.env.PORT ?? 3000;
@@ -23,10 +23,10 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.use('/send', apiKeyAuth, sendRouter);
-app.use('/ai/import-image', apiKeyAuth, aiImportRouter);
-app.use('/ai/import-pdf', apiKeyAuth, aiImportPdfRouter);
-app.use('/ai/translate', apiKeyAuth, aiTranslateRouter);
+app.use('/send', checkJwt, sendRouter);
+app.use('/ai/import-image', checkJwt, aiImportRouter);
+app.use('/ai/import-pdf', checkJwt, aiImportPdfRouter);
+app.use('/ai/translate', checkJwt, aiTranslateRouter);
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);

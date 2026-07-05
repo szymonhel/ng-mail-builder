@@ -1,10 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { auth } from 'express-oauth2-jwt-bearer';
 
-export function apiKeyAuth(req: Request, res: Response, next: NextFunction): void {
-  const key = req.headers['x-api-key'];
-  if (!key || key !== process.env.API_KEY) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
-  next();
-}
+// Validates Auth0-issued access tokens (RS256, checked against the tenant JWKS).
+// Requires AUTH0_DOMAIN and AUTH0_AUDIENCE in the environment.
+export const checkJwt = auth({
+  audience: process.env.AUTH0_AUDIENCE,
+  issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}`,
+});

@@ -21,7 +21,6 @@ export class AiTranslateService {
     openaiApiKey: string
   ): Observable<Record<string, string>> {
     const headers = new HttpHeaders({
-      'x-api-key': environment.apiKey,
       'x-openai-key': openaiApiKey,
     });
 

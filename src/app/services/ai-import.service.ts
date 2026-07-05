@@ -18,7 +18,6 @@ export class AiImportService {
     formData.append('image', file);
 
     const headers = new HttpHeaders({
-      'x-api-key': environment.apiKey,
       'x-openai-key': openaiApiKey,
     });
 
@@ -35,7 +34,6 @@ export class AiImportService {
     formData.append('mode', mode);
 
     const headers = new HttpHeaders({
-      'x-api-key': environment.apiKey,
       'x-openai-key': openaiApiKey,
     });
 

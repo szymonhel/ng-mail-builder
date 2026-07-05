@@ -1,5 +1,6 @@
 import { Component, inject, computed, signal, HostListener } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { AuthService } from '@auth0/auth0-angular';
 import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../store/editor.store';
 import { PaletteComponent } from './palette/palette.component';
@@ -22,14 +23,19 @@ import { NgIcon } from '@ng-icons/core';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, FormsModule, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, HlmButton, NgIcon],
+  imports: [NgClass, AsyncPipe, FormsModule, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, HlmButton, NgIcon],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent {
   store = inject(EditorStore);
+  auth = inject(AuthService);
   private mail = inject(MailService);
   private aiImport = inject(AiImportService);
   aiApiKeyService = inject(AiApiKeyService);
+
+  logout() {
+    this.auth.logout({ logoutParams: { returnTo: window.location.origin } });
+  }
 
   @HostListener('document:keydown', ['$event'])
   onKeydown(e: KeyboardEvent) {
