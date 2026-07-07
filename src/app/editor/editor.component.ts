@@ -40,7 +40,7 @@ export class EditorComponent {
   aiApiKeyService = inject(AiApiKeyService);
 
   logout() {
-    this.auth.logout({ logoutParams: { returnTo: window.location.origin } });
+    this.auth.logout({ logoutParams: { returnTo: document.baseURI } });
   }
 
   emailsDialogOpen = signal(false);
