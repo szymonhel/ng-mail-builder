@@ -86,7 +86,11 @@
       "Bash(gh run *)",
       "Bash(brew list *)",
       "Bash(grep -i \"^gh$\")",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "Read(//Users/szymonhelmecki/**)",
+      "Bash(npm config *)",
+      "Bash(npm -v)",
+      "Bash(python3 *)"
     ]
   }
 }
