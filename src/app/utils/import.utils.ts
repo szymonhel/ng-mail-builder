@@ -1,4 +1,4 @@
-import { EmailDoc, Row, Column, Block, BlockType, DocSettings, EmailVariable, Locale } from '../models/email-doc.model';
+import { EmailDoc, Row, Column, Block, BlockType, DocSettings, EmailCollection, EmailVariable, Locale } from '../models/email-doc.model';
 import { uid } from './id.utils';
 
 const DEFAULT_SETTINGS: DocSettings = {
@@ -52,6 +52,7 @@ export function normalizeImportedDoc(input: any): EmailDoc {
     backgroundColor: row?.backgroundColor ?? null,
     padding: typeof row?.padding === 'string' ? row.padding : '0px',
     condition: row?.condition ?? null,
+    repeat: typeof row?.repeat?.collectionName === 'string' ? { collectionName: row.repeat.collectionName } : null,
     columns: Array.isArray(row?.columns)
       ? row.columns.map((col: any): Column => ({
           id: typeof col?.id === 'string' ? col.id : uid(),
@@ -103,6 +104,25 @@ export function normalizeImportedDoc(input: any): EmailDoc {
           name: typeof v?.name === 'string' ? v.name : '',
           defaultValue: typeof v?.defaultValue === 'string' ? v.defaultValue : '',
         }))
+      : [],
+    collections: Array.isArray(input.collections)
+      ? input.collections.map((c: any): EmailCollection => {
+          const fields: string[] = Array.isArray(c?.fields) ? c.fields.filter((f: any) => typeof f === 'string') : [];
+          return {
+            id: typeof c?.id === 'string' ? c.id : uid(),
+            name: typeof c?.name === 'string' ? c.name : '',
+            fields,
+            sampleItems: Array.isArray(c?.sampleItems)
+              ? c.sampleItems.map((item: any) => {
+                  const next: Record<string, string> = {};
+                  for (const field of fields) {
+                    if (typeof item?.[field] === 'string') next[field] = item[field];
+                  }
+                  return next;
+                })
+              : [],
+          };
+        })
       : [],
     locales,
     translations,

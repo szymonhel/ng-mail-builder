@@ -41,4 +41,98 @@
       </div>
     }
   </div>
+
+  <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 mt-6">
+    <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Collections</h2>
+    <p class="text-xs text-gray-500 mt-0 mb-4">
+      A collection is a list of items with a fixed set of fields (e.g. order items with name and price).
+      Set a row to repeat over a collection in the row inspector, then use tokens like
+      {{ '{{items.price}}' }} inside it. The sample items below fill the Preview tab; real items come
+      from the send request.
+    </p>
+
+    <div class="flex items-end gap-2 mb-5 pb-5 border-b border-gray-200">
+      <div class="flex flex-col gap-1 flex-1">
+        <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Name</label>
+        <input hlmInput type="text"
+               placeholder="e.g. items" [ngModel]="newCollectionName()" (ngModelChange)="newCollectionName.set($event)" (keydown.enter)="addCollection()" />
+      </div>
+      <button hlmBtn type="button"
+              [disabled]="!newCollectionName().trim()"
+              (click)="addCollection()">Add collection</button>
+    </div>
+
+    @if (collections().length === 0) {
+      <div class="text-sm text-gray-400 text-center py-8">No collections yet. Add one above.</div>
+    } @else {
+      <div class="flex flex-col gap-4">
+        @for (c of collections(); track c.id) {
+          <div class="border border-gray-200 rounded-sm p-3">
+            <div class="flex items-center justify-between mb-2">
+              <code class="text-xs font-mono bg-gray-100 text-blue-700 px-2 py-1 rounded-sm">{{ c.name }}</code>
+              <button hlmBtn type="button" variant="ghost" size="icon-sm" class="text-destructive" (click)="removeCollection(c.id)">&#x2715;</button>
+            </div>
+
+            <div class="mb-2">
+              <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Fields</label>
+              <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                @for (f of c.fields; track f) {
+                  <span class="inline-flex items-center gap-1 bg-gray-100 rounded-sm pl-2 pr-1 py-0.5">
+                    <button type="button" class="text-xs font-mono text-blue-700 bg-transparent border-0 p-0 cursor-pointer"
+                            title="Copy token"
+                            (click)="copyItemToken(c.id, c.name, f)">{{ copiedId() === c.id + ':' + f ? 'Copied!' : '{{' + c.name + '.' + f + '}}' }}</button>
+                    <button type="button" class="text-gray-400 hover:text-red-600 bg-transparent border-0 p-0 cursor-pointer text-xs" title="Remove field"
+                            (click)="removeField(c, f)">&#x2715;</button>
+                  </span>
+                }
+                <input hlmInput type="text" class="w-32 h-7 text-xs"
+                       placeholder="+ field name"
+                       [ngModel]="newFieldNames()[c.id] ?? ''"
+                       (ngModelChange)="setNewFieldName(c.id, $event)"
+                       (keydown.enter)="addField(c)" />
+              </div>
+            </div>
+
+            @if (c.fields.length > 0) {
+              <div class="flex items-center justify-between mb-1 mt-3">
+                <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Sample items (preview data)</label>
+                <button hlmBtn type="button" variant="outline" size="xs" (click)="addItem(c)">+ Add item</button>
+              </div>
+              @if (c.sampleItems.length === 0) {
+                <div class="text-xs text-gray-400 py-2">No sample items — repeated rows will render zero times in the preview.</div>
+              } @else {
+                <div class="overflow-x-auto">
+                  <table class="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        @for (f of c.fields; track f) {
+                          <th class="text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wider px-1 py-1">{{ f }}</th>
+                        }
+                        <th class="w-8"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (item of c.sampleItems; track $index; let i = $index) {
+                        <tr>
+                          @for (f of c.fields; track f) {
+                            <td class="px-1 py-0.5">
+                              <input hlmInput type="text" class="w-full h-8 text-xs"
+                                     [ngModel]="item[f] ?? ''" (ngModelChange)="updateItemField(c, i, f, $event)" [placeholder]="f" />
+                            </td>
+                          }
+                          <td class="px-1 text-center">
+                            <button hlmBtn type="button" variant="ghost" size="icon-sm" class="text-destructive" (click)="removeItem(c, i)">&#x2715;</button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
 </div>

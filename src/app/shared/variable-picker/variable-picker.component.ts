@@ -17,6 +17,11 @@ export class VariablePickerComponent {
   insert = output<string>();
 
   variables = computed(() => this.store.doc().variables);
+  // Flattened {{collection.field}} tokens; only meaningful inside a repeated row,
+  // but always offered since the picker doesn't know where its host field lives.
+  collectionTokens = computed(() =>
+    (this.store.doc().collections ?? []).flatMap(c => c.fields.map(f => `${c.name}.${f}`))
+  );
   // Account-level global data names, excluding any shadowed by a doc variable.
   globalNames = computed(() => {
     const docNames = new Set(this.variables().map(v => v.name));

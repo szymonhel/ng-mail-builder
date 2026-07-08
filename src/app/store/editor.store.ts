@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { EmailDoc, Block, BlockType, Row, Column, EmailVariable, VisibilityCondition, Locale } from '../models/email-doc.model';
+import { EmailDoc, Block, BlockType, Row, Column, EmailCollection, EmailVariable, RowRepeat, VisibilityCondition, Locale } from '../models/email-doc.model';
 import { UserSettingsService } from '../services/user-settings.service';
 import { uid } from '../utils/id.utils';
 
@@ -114,6 +114,7 @@ function initialDoc(): EmailDoc {
     version: 2,
     settings: { contentWidth: 600, backgroundColor: '#f4f4f4', bodyColor: '#ffffff', bodyBorderWidth: 0, bodyBorderColor: '#dddddd', bodyBorderStyle: 'solid', fontFamily: 'Arial, sans-serif', previewText: '', googleFontName: '', googleFontUrl: '' },
     variables: [],
+    collections: [],
     locales: [],
     translations: {},
     rows: [
@@ -377,6 +378,13 @@ export class EditorStore {
     }));
   }
 
+  updateRowRepeat(rowId: string, repeat: RowRepeat | null) {
+    this.commit(d => ({
+      ...d,
+      rows: d.rows.map(r => r.id !== rowId ? r : { ...r, repeat })
+    }));
+  }
+
   updateBlockCondition(blockId: string, condition: VisibilityCondition | null) {
     this.commit(d => ({
       ...d,
@@ -418,6 +426,32 @@ export class EditorStore {
 
   removeVariable(id: string) {
     this.commit(d => ({ ...d, variables: d.variables.filter(v => v.id !== id) }));
+  }
+
+  addCollection(name: string) {
+    const collection: EmailCollection = { id: uid(), name, fields: [], sampleItems: [] };
+    this.commit(d => ({ ...d, collections: [...(d.collections ?? []), collection] }));
+  }
+
+  updateCollection(id: string, props: Partial<Pick<EmailCollection, 'fields' | 'sampleItems'>>) {
+    this.commit(d => ({
+      ...d,
+      collections: (d.collections ?? []).map(c => c.id !== id ? c : { ...c, ...props })
+    }));
+  }
+
+  // Also detaches any rows repeating over the removed collection, so they don't
+  // silently vanish from the output (an unknown collection expands to zero copies).
+  removeCollection(id: string) {
+    this.commit(d => {
+      const removed = (d.collections ?? []).find(c => c.id === id);
+      if (!removed) return d;
+      return {
+        ...d,
+        collections: (d.collections ?? []).filter(c => c.id !== id),
+        rows: d.rows.map(r => r.repeat?.collectionName === removed.name ? { ...r, repeat: null } : r),
+      };
+    });
   }
 
   addLocale(code: string, label: string) {

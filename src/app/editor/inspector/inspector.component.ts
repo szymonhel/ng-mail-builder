@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 import { EditorStore } from '../../store/editor.store';
 import { FormsModule } from '@angular/forms';
-import { Block, Row, Column, VisibilityCondition } from '../../models/email-doc.model';
+import { Block, Row, Column, RowRepeat, VisibilityCondition } from '../../models/email-doc.model';
 import { uid } from '../../utils/id.utils';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { VariablePickerComponent } from '../../shared/variable-picker/variable-picker.component';
 import { ConditionEditorComponent } from '../../shared/condition-editor/condition-editor.component';
+import { RepeatEditorComponent } from '../../shared/repeat-editor/repeat-editor.component';
 import { ImageUrlInputComponent } from '../../shared/image-url-input/image-url-input.component';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
@@ -23,6 +24,7 @@ import { HlmTextarea } from '@spartan-ng/helm/textarea';
     ColorPickerComponent,
     VariablePickerComponent,
     ConditionEditorComponent,
+    RepeatEditorComponent,
     ImageUrlInputComponent,
     HlmInput,
     HlmCheckbox,
@@ -159,6 +161,12 @@ export class InspectorComponent {
   updateRowCondition(condition: VisibilityCondition | null) {
     if (this.row) {
       this.store.updateRowCondition(this.row.id, condition);
+    }
+  }
+
+  updateRowRepeat(repeat: RowRepeat | null) {
+    if (this.row) {
+      this.store.updateRowRepeat(this.row.id, repeat);
     }
   }
 

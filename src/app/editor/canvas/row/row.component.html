@@ -10,6 +10,9 @@
       @if (row().condition) {
         <span class="ml-1.5 inline-block bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-sm text-[10px] font-semibold align-middle" title="Only rendered when its condition is met">conditional</span>
       }
+      @if (row().repeat; as repeat) {
+        <span class="ml-1.5 inline-block bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-sm text-[10px] font-semibold align-middle" title="Rendered once per item of this collection">&#x21bb; {{ repeat.collectionName }}</span>
+      }
     </span>
     <div class="flex items-center gap-1">
       <button hlmBtn variant="outline" size="xs" (click)="addColumn($event)" title="Add column">+ col</button>

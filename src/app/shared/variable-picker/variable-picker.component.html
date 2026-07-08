@@ -4,7 +4,7 @@
 
   @if (open()) {
     <div class="absolute z-20 right-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg p-2">
-      @if (variables().length || globalNames().length) {
+      @if (variables().length || globalNames().length || collectionTokens().length) {
         <div class="flex flex-col gap-0.5 max-h-48 overflow-y-auto">
           @for (v of variables(); track v.id) {
             <button hlmBtn type="button" variant="ghost" size="sm" class="justify-start w-full font-mono"
@@ -13,6 +13,13 @@
           @if (globalNames().length) {
             <div class="text-[10px] text-gray-400 uppercase tracking-wider px-2 pt-1">Global data</div>
             @for (name of globalNames(); track name) {
+              <button hlmBtn type="button" variant="ghost" size="sm" class="justify-start w-full font-mono"
+                      (click)="pick(name)">{{ '{{' + name + '}}' }}</button>
+            }
+          }
+          @if (collectionTokens().length) {
+            <div class="text-[10px] text-gray-400 uppercase tracking-wider px-2 pt-1" title="Only resolved inside a row that repeats over the collection">Collection items</div>
+            @for (name of collectionTokens(); track name) {
               <button hlmBtn type="button" variant="ghost" size="sm" class="justify-start w-full font-mono"
                       (click)="pick(name)">{{ '{{' + name + '}}' }}</button>
             }

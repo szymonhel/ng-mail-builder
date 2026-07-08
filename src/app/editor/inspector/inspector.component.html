@@ -28,6 +28,7 @@
       }
     </div>
     <app-condition-editor label="Only show this row when..." [condition]="row.condition" (conditionChange)="updateRowCondition($event)" />
+    <app-repeat-editor label="Repeat for each item of..." [repeat]="row.repeat" (repeatChange)="updateRowRepeat($event)" />
   } @else if (!block) {
     <div class="flex flex-col items-center justify-center h-48 text-gray-400 text-sm gap-2 text-center">
       <div class="text-4xl">&#x2196;</div>

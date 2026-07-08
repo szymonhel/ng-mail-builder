@@ -178,6 +178,12 @@ export interface VisibilityCondition {
   value?: string;
 }
 
+// Repeats a row once per item of the named collection. Inside the repeated row,
+// {{collectionName.field}} tokens resolve to the current item's field values.
+export interface RowRepeat {
+  collectionName: string;
+}
+
 export interface Block {
   id: string;
   type: BlockType;
@@ -203,12 +209,25 @@ export interface Row {
   columns: Column[];
   // same semantics as Block.condition, but drops the whole row/section
   condition?: VisibilityCondition | null;
+  // null/undefined = render once; otherwise the row is expanded at render time,
+  // once per item of the referenced collection (see RowRepeat)
+  repeat?: RowRepeat | null;
 }
 
 export interface EmailVariable {
   id: string;
   name: string;
   defaultValue: string;
+}
+
+// An array-typed part of the email's data contract: a named list of items whose
+// shape is `fields`. `sampleItems` plays the same role as EmailVariable.defaultValue —
+// it fills the preview and in-editor sends; a future send endpoint provides real items.
+export interface EmailCollection {
+  id: string;
+  name: string;
+  fields: string[];
+  sampleItems: Record<string, string>[];
 }
 
 export interface Locale {
@@ -226,6 +245,8 @@ export interface EmailDoc {
   version: number;
   settings: DocSettings;
   variables: EmailVariable[];
+  // optional so docs saved before collections existed still load; treat missing as []
+  collections?: EmailCollection[];
   rows: Row[];
   locales: Locale[];
   translations: Record<string /* localeId */, TranslationMap>;

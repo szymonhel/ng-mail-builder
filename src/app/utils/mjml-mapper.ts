@@ -1,5 +1,5 @@
 import { EmailDoc, Block, Row, Column, DocSettings, SocialPlatform, BorderStyle } from '../models/email-doc.model';
-import { defaultVariableValues, evaluateCondition } from './template-vars';
+import { defaultCollectionItems, defaultVariableValues, evaluateCondition, expandRepeats } from './template-vars';
 import { uid } from './id.utils';
 
 // MJML's mj-social ships built-in icons/colors only for a fixed set of networks. These
@@ -133,9 +133,10 @@ function rowToMjml(row: Row): string {
   return `    <mj-section${bg} padding="${row.padding}"${fullWidth}>\n${cols}\n    </mj-section>`;
 }
 
-export function docToMjml(doc: EmailDoc, values?: Record<string, string>): string {
+export function docToMjml(doc: EmailDoc, values?: Record<string, string>, collectionItems?: Record<string, Record<string, string>[]>): string {
   const vals = values ?? defaultVariableValues(doc.variables);
-  const visibleRows = doc.rows
+  const items = collectionItems ?? defaultCollectionItems(doc.collections ?? []);
+  const visibleRows = expandRepeats(doc.rows, items)
     .filter(row => evaluateCondition(row.condition, vals))
     .map(row => ({
       ...row,
@@ -470,5 +471,5 @@ export function mjmlToDoc(mjmlSource: string): EmailDoc {
     .map(elementToRow)
     .filter((r): r is Row => r !== null);
 
-  return { version: 2, settings, variables: [], locales: [], translations: {}, rows };
+  return { version: 2, settings, variables: [], collections: [], locales: [], translations: {}, rows };
 }

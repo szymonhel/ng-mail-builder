@@ -1,5 +1,5 @@
 import { EmailDoc, Block } from '../models/email-doc.model';
-import { defaultVariableValues, evaluateCondition } from './template-vars';
+import { defaultCollectionItems, defaultVariableValues, evaluateCondition, expandRepeats } from './template-vars';
 
 function blockToHtml(b: Block): string {
   switch (b.type) {
@@ -99,9 +99,10 @@ function blockToHtml(b: Block): string {
   }
 }
 
-export function docToHtml(doc: EmailDoc, values?: Record<string, string>): string {
+export function docToHtml(doc: EmailDoc, values?: Record<string, string>, collectionItems?: Record<string, Record<string, string>[]>): string {
   const vals = values ?? defaultVariableValues(doc.variables);
-  const rows = doc.rows
+  const items = collectionItems ?? defaultCollectionItems(doc.collections ?? []);
+  const rows = expandRepeats(doc.rows, items)
     .filter(row => evaluateCondition(row.condition, vals))
     .map(row => {
       const rowBg = row.backgroundColor ?? 'transparent';
