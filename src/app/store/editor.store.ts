@@ -433,15 +433,51 @@ export class EditorStore {
     this.commit(d => ({ ...d, collections: [...(d.collections ?? []), collection] }));
   }
 
-  updateCollection(id: string, props: Partial<Pick<EmailCollection, 'fields' | 'sampleItems'>>) {
+  // Collection edits derive the next arrays from the doc inside commit() rather than
+  // taking them from the component: under zoneless CD a template-captured collection
+  // can be one render behind, and building on that snapshot silently reverts the
+  // previous edit (observed as fields/sample values disappearing on quick edits).
+  private updateCollectionIn(id: string, updater: (c: EmailCollection) => EmailCollection) {
     this.commit(d => ({
       ...d,
-      collections: (d.collections ?? []).map(c => c.id !== id ? c : { ...c, ...props })
+      collections: (d.collections ?? []).map(c => c.id !== id ? c : updater(c))
     }));
   }
 
-  // Also detaches any rows repeating over the removed collection, so they don't
-  // silently vanish from the output (an unknown collection expands to zero copies).
+  addCollectionField(id: string, field: string) {
+    this.updateCollectionIn(id, c => c.fields.includes(field) ? c : { ...c, fields: [...c.fields, field] });
+  }
+
+  removeCollectionField(id: string, field: string) {
+    this.updateCollectionIn(id, c => ({
+      ...c,
+      fields: c.fields.filter(f => f !== field),
+      sampleItems: c.sampleItems.map(({ [field]: _dropped, ...rest }) => rest),
+    }));
+  }
+
+  addCollectionItem(id: string) {
+    this.updateCollectionIn(id, c => {
+      const item: Record<string, string> = {};
+      for (const f of c.fields) item[f] = '';
+      return { ...c, sampleItems: [...c.sampleItems, item] };
+    });
+  }
+
+  removeCollectionItem(id: string, index: number) {
+    this.updateCollectionIn(id, c => ({ ...c, sampleItems: c.sampleItems.filter((_, i) => i !== index) }));
+  }
+
+  updateCollectionItemField(id: string, index: number, field: string, value: string) {
+    this.updateCollectionIn(id, c => ({
+      ...c,
+      sampleItems: c.sampleItems.map((item, i) => i !== index ? item : { ...item, [field]: value }),
+    }));
+  }
+
+  // Also detaches any rows and blocks (tables/accordions) repeating over the removed
+  // collection, so they don't silently vanish from the output (an unknown collection
+  // expands to zero copies).
   removeCollection(id: string) {
     this.commit(d => {
       const removed = (d.collections ?? []).find(c => c.id === id);
@@ -449,7 +485,18 @@ export class EditorStore {
       return {
         ...d,
         collections: (d.collections ?? []).filter(c => c.id !== id),
-        rows: d.rows.map(r => r.repeat?.collectionName === removed.name ? { ...r, repeat: null } : r),
+        rows: d.rows.map(r => ({
+          ...r,
+          repeat: r.repeat?.collectionName === removed.name ? null : r.repeat,
+          columns: r.columns.map(c => ({
+            ...c,
+            blocks: c.blocks.map(b =>
+              (b.props as any)?.repeat?.collectionName === removed.name
+                ? { ...b, props: { ...b.props, repeat: null } as Block['props'] }
+                : b
+            ),
+          })),
+        })),
       };
     });
   }

@@ -63,32 +63,25 @@ export class VariablesTabComponent {
 
   addField(c: EmailCollection) {
     const name = (this.newFieldNames()[c.id] ?? '').trim().replace(/\s+/g, '_');
-    if (!name || c.fields.includes(name)) return;
-    this.store.updateCollection(c.id, { fields: [...c.fields, name] });
+    if (!name) return;
+    this.store.addCollectionField(c.id, name);
     this.setNewFieldName(c.id, '');
   }
 
   removeField(c: EmailCollection, field: string) {
-    this.store.updateCollection(c.id, {
-      fields: c.fields.filter(f => f !== field),
-      sampleItems: c.sampleItems.map(({ [field]: _dropped, ...rest }) => rest),
-    });
+    this.store.removeCollectionField(c.id, field);
   }
 
   addItem(c: EmailCollection) {
-    const item: Record<string, string> = {};
-    for (const f of c.fields) item[f] = '';
-    this.store.updateCollection(c.id, { sampleItems: [...c.sampleItems, item] });
+    this.store.addCollectionItem(c.id);
   }
 
   removeItem(c: EmailCollection, index: number) {
-    this.store.updateCollection(c.id, { sampleItems: c.sampleItems.filter((_, i) => i !== index) });
+    this.store.removeCollectionItem(c.id, index);
   }
 
   updateItemField(c: EmailCollection, index: number, field: string, value: string) {
-    this.store.updateCollection(c.id, {
-      sampleItems: c.sampleItems.map((item, i) => i !== index ? item : { ...item, [field]: value }),
-    });
+    this.store.updateCollectionItemField(c.id, index, field, value);
   }
 
   copyItemToken(collectionId: string, collectionName: string, field: string) {

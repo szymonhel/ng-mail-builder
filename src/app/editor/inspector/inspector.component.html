@@ -461,6 +461,14 @@
           </div>
         </div>
 
+        <app-repeat-editor label="Repeat body rows for each item of..." [repeat]="$any(block.props).repeat" (repeatChange)="update({ repeat: $event })" />
+        @if ($any(block.props).repeat) {
+          <p class="text-[11px] text-gray-500 mt-0 mb-2">
+            {{ $any(block.props).hasHeader ? 'Row 1 stays as the header; the rows below it are' : 'The rows below are' }}
+            a template rendered once per collection item.
+          </p>
+        }
+
         <div class="flex items-center justify-between mb-1">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Rows</label>
           <button hlmBtn variant="outline" size="xs" (click)="addTableRow()">+ Add row</button>
@@ -503,6 +511,11 @@
             <app-color-picker [value]="$any(block.props).titleColor" (valueChange)="update({ titleColor: $event })" />
           </div>
         </div>
+        <app-repeat-editor label="Repeat items for each item of..." [repeat]="$any(block.props).repeat" (repeatChange)="update({ repeat: $event })" />
+        @if ($any(block.props).repeat) {
+          <p class="text-[11px] text-gray-500 mt-0 mb-2">The items below are a template rendered once per collection item.</p>
+        }
+
         <div class="flex items-center justify-between mb-2">
           <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Items</label>
           <div class="flex gap-2">

@@ -96,7 +96,9 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code} -> %{redirect_url}\\\\n\" \"https://flatrenty.eu.auth0.com/authorize?client_id=VoJy3DRb6xH1lLcEQLERgJPHvuWDEzkJ&redirect_uri=https%3A%2F%2Fszymonhel.github.io%2Fng-mail-builder%2F&response_type=code&scope=openid%20profile%20email&audience=https%3A%2F%2Fmail-sender-backend-beeud5f5h5fncta0.polandcentral-01.azurewebsites.net&state=test123&nonce=test123&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 10 \"https://flatrenty-dev.eu.auth0.com/.well-known/openid-configuration\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 10 \"https://flatrenty.eu.auth0.com/.well-known/openid-configuration\")",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(npm i *)",
+      "Bash(lsof -i :4200 -sTCP:LISTEN)"
     ]
   }
 }

@@ -125,6 +125,9 @@ export interface TableProps {
   fontSize: number;
   borderColor: string;
   padding: string;
+  // When set, the header row (if hasHeader) stays fixed and the remaining rows act
+  // as a template rendered once per item of the collection (see RowRepeat).
+  repeat?: RowRepeat | null;
 }
 
 export interface AccordionItem {
@@ -139,6 +142,9 @@ export interface AccordionProps {
   titleBg: string;
   titleColor: string;
   padding: string;
+  // When set, the defined items act as a template rendered once per item of the
+  // collection (see RowRepeat).
+  repeat?: RowRepeat | null;
 }
 
 export interface NavbarLink {

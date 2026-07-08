@@ -1,4 +1,4 @@
-import { Block, Column, EmailCollection, EmailVariable, Row, VisibilityCondition } from '../models/email-doc.model';
+import { AccordionProps, Block, Column, EmailCollection, EmailVariable, Row, TableProps, VisibilityCondition } from '../models/email-doc.model';
 
 // Dots allowed so collection item tokens ({{items.price}}) share the same syntax.
 const TOKEN_RE = /\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g;
@@ -51,21 +51,68 @@ function copyId(id: string, copyIndex: number): string {
 // {{collection.field}} tokens and any conditions that reference them. Conditions on
 // plain variables are left in place for the caller's usual condition filtering, and
 // unknown tokens survive substitution, so this composes with applyVariables downstream.
+// Block-level repeats (table body rows, accordion items) are expanded in the same pass.
 export function expandRepeats(rows: Row[], collectionItems: Record<string, Record<string, string>[]>): Row[] {
   const out: Row[] = [];
   for (const row of rows) {
     if (!row.repeat) {
-      out.push(row);
+      out.push(expandBlockRepeats(row, collectionItems));
       continue;
     }
     const items = collectionItems[row.repeat.collectionName] ?? [];
     items.forEach((item, i) => {
       const scoped = itemScopedValues(row.repeat!.collectionName, item);
       const copy = instantiateRow(row, scoped, i);
-      if (copy) out.push(copy);
+      if (copy) out.push(expandBlockRepeats(copy, collectionItems));
     });
   }
   return out;
+}
+
+// Runs after any row-level expansion (whose scoped substitution leaves this block's
+// collection tokens untouched), so a repeated table can even live inside a repeated row.
+function expandBlockRepeats(row: Row, collectionItems: Record<string, Record<string, string>[]>): Row {
+  return {
+    ...row,
+    columns: row.columns.map(col => ({
+      ...col,
+      blocks: col.blocks.map(b => expandBlockItems(b, collectionItems)),
+    })),
+  };
+}
+
+function expandBlockItems(block: Block, collectionItems: Record<string, Record<string, string>[]>): Block {
+  if (block.type === 'table') {
+    const p = block.props as TableProps;
+    if (!p.repeat?.collectionName) return block;
+    const items = collectionItems[p.repeat.collectionName] ?? [];
+    const header = p.hasHeader ? p.rows.slice(0, 1) : [];
+    const templates = p.hasHeader ? p.rows.slice(1) : p.rows;
+    const body = items.flatMap((item, i) => {
+      const scoped = itemScopedValues(p.repeat!.collectionName, item);
+      return templates.map(t => ({
+        id: copyId(t.id, i),
+        cells: t.cells.map(c => applyVariables(c, scoped)),
+      }));
+    });
+    return { ...block, props: { ...p, repeat: null, rows: [...header, ...body] } };
+  }
+  if (block.type === 'accordion') {
+    const p = block.props as AccordionProps;
+    if (!p.repeat?.collectionName) return block;
+    const items = collectionItems[p.repeat.collectionName] ?? [];
+    const expanded = items.flatMap((item, i) => {
+      const scoped = itemScopedValues(p.repeat!.collectionName, item);
+      return p.items.map(t => ({
+        ...t,
+        id: copyId(t.id, i),
+        title: applyVariables(t.title, scoped),
+        content: applyVariables(t.content, scoped),
+      }));
+    });
+    return { ...block, props: { ...p, repeat: null, items: expanded } };
+  }
+  return block;
 }
 
 function instantiateRow(row: Row, scoped: Record<string, string>, copyIndex: number): Row | null {
