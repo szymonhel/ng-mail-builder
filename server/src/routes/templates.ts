@@ -57,6 +57,42 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// The email's data contract, for API consumers preparing a send request: which
+// variables it accepts, which collections (and item fields) it iterates over, and
+// which languages it supports. Deliberately excludes the doc itself — use GET /:id
+// for the full document.
+router.get('/:id/contract', async (req: Request, res: Response) => {
+  try {
+    const table = await getTemplatesTable();
+    const entity = await table.getEntity(partitionKey(req), req.params.id as string);
+    const doc = docFromEntity(entity as Record<string, unknown>) as any;
+    res.json({
+      ...metaFromEntity(entity as Record<string, unknown>),
+      variables: Array.isArray(doc?.variables)
+        ? doc.variables.map((v: any) => ({ name: v?.name ?? '', defaultValue: v?.defaultValue ?? '' }))
+        : [],
+      collections: Array.isArray(doc?.collections)
+        ? doc.collections.map((c: any) => ({
+            name: c?.name ?? '',
+            fields: Array.isArray(c?.fields) ? c.fields.filter((f: any) => typeof f === 'string') : [],
+          }))
+        : [],
+      // `code` is what a send request should use to pick a language; the default
+      // (untranslated) language is always available and signalled by omitting it.
+      languages: Array.isArray(doc?.locales)
+        ? doc.locales.map((l: any) => ({ code: l?.code ?? '', label: l?.label ?? '' }))
+        : [],
+    });
+  } catch (err: any) {
+    if (err?.statusCode === 404) {
+      res.status(404).json({ error: 'Saved email not found.' });
+      return;
+    }
+    console.error('Template contract error:', err?.message ?? err);
+    res.status(502).json({ error: 'Failed to load saved email contract.' });
+  }
+});
+
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const table = await getTemplatesTable();
