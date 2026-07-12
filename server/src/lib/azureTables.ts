@@ -35,3 +35,7 @@ export function getTemplatesTable(): Promise<TableClient> {
 export function getSettingsTable(): Promise<TableClient> {
   return getTable(process.env.AZURE_SETTINGS_TABLE ?? 'usersettings');
 }
+
+export function getCategoriesTable(): Promise<TableClient> {
+  return getTable(process.env.AZURE_CATEGORIES_TABLE ?? 'categories');
+}

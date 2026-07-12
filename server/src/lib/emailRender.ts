@@ -87,6 +87,12 @@ export interface EmailDoc {
   rows: Row[];
   locales: Locale[];
   translations: Record<string /* localeId */, Record<string, string>>;
+  // When true and the email belongs to a category, the category's default settings
+  // replace `settings` at render time (see send.ts). Colors/palette fields are
+  // editor-only and don't affect rendering.
+  inheritSettings?: boolean;
+  inheritColors?: boolean;
+  savedColors?: { id: string; name: string; value: string }[];
 }
 
 export type CollectionItems = Record<string, Record<string, string>[]>;

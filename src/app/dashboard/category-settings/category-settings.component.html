@@ -1,0 +1,70 @@
+<div class="flex flex-col h-screen overflow-hidden font-sans bg-gray-100">
+  <!-- Top bar -->
+  <header class="flex items-center px-4 h-[52px] bg-[#1a1a2e] text-white shrink-0 gap-4">
+    <a routerLink="/" class="flex items-center gap-2 font-bold text-base mr-2 text-white no-underline hover:opacity-80 transition-opacity">
+      <span class="text-xl">&#x2709;</span>
+      <span>Email Builder</span>
+    </a>
+    <a routerLink="/" class="text-xs text-white/60 hover:text-white no-underline">&larr; Emails</a>
+    <span class="text-sm text-white/80 truncate">📁 {{ name() || 'Category' }}</span>
+    <div class="flex-1"></div>
+    @if (dirty()) {
+      <span class="text-[11px] text-amber-300">Unsaved changes</span>
+    }
+    <button hlmBtn size="sm" [disabled]="saveState() === 'saving' || !name().trim()" (click)="save()">
+      {{ saveState() === 'saving' ? 'Saving…' : saveState() === 'saved' ? 'Saved ✓' : saveState() === 'error' ? 'Save failed' : 'Save' }}
+    </button>
+  </header>
+
+  @if (error()) {
+    <div class="flex items-center justify-between gap-4 px-4 py-2 bg-red-50 border-b border-red-200">
+      <p class="text-red-600 text-xs m-0">{{ error() }}</p>
+      <button class="text-red-600 text-xs underline shrink-0" (click)="error.set(null)">Dismiss</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="text-sm text-gray-400 text-center py-16">Loading category…</div>
+  } @else {
+    <div hlmTabs tab="global" class="flex flex-col flex-1 overflow-hidden">
+      <div hlmTabsList class="w-full max-w-4xl mx-auto mt-6 shrink-0 rounded-none border-b border-gray-200 bg-white h-auto p-0">
+        <button hlmTabsTrigger="global" class="flex-1 py-2 rounded-none">Global defaults</button>
+        <button hlmTabsTrigger="colors" class="flex-1 py-2 rounded-none">Colors</button>
+        <button hlmTabsTrigger="assets" class="flex-1 py-2 rounded-none">Assets</button>
+      </div>
+
+      <div hlmTabsContent="global" class="flex-1 overflow-auto p-6">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 flex flex-col gap-5">
+          <div>
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Category</div>
+            <div class="flex flex-col gap-2">
+              <label class="text-xs text-gray-600">Name</label>
+              <input hlmInput type="text" [ngModel]="name()" (ngModelChange)="setName($event)" />
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 m-0">
+            These defaults apply to every email in this category that hasn't overridden them —
+            changes here update those emails automatically.
+          </p>
+          <app-settings-form [settings]="settings()" (settingsChange)="updateSettings($event)" />
+        </div>
+      </div>
+
+      <div hlmTabsContent="colors" class="flex-1 overflow-auto p-6">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
+          <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Category palette</h2>
+          <p class="text-xs text-gray-500 mt-0 mb-4">
+            Quick-pick colors for every color picker in this category's emails (unless an email overrides them).
+          </p>
+          <app-color-palette-editor [colors]="savedColors()"
+                                    (added)="addColor($event)"
+                                    (removed)="removeColor($event)" />
+        </div>
+      </div>
+
+      <div hlmTabsContent="assets" class="flex-1 overflow-hidden flex">
+        <app-assets-tab class="flex flex-1 overflow-hidden" />
+      </div>
+    </div>
+  }
+</div>

@@ -1,8 +1,12 @@
-import { Component, inject, computed, signal, HostListener } from '@angular/core';
+import { Component, inject, computed, effect, signal, HostListener, OnDestroy } from '@angular/core';
 import { NgClass, AsyncPipe } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '@auth0/auth0-angular';
 import { FormsModule } from '@angular/forms';
 import { EditorStore } from '../store/editor.store';
+import { CategoriesService } from '../services/categories.service';
+import { WorkspaceContextService } from '../services/workspace-context.service';
+import { defaultCategorySettings } from '../models/category.model';
 import { PaletteComponent } from './palette/palette.component';
 import { CanvasComponent } from './canvas/canvas.component';
 import { InspectorComponent } from './inspector/inspector.component';
@@ -27,15 +31,19 @@ import { NgIcon } from '@ng-icons/core';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, AsyncPipe, FormsModule, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, AssetsTabComponent, EmailsDialogComponent, HlmButton, NgIcon],
+  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, AssetsTabComponent, EmailsDialogComponent, HlmButton, NgIcon],
   templateUrl: './editor.component.html'
 })
-export class EditorComponent {
+export class EditorComponent implements OnDestroy {
   store = inject(EditorStore);
   auth = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private mail = inject(MailService);
   private aiImport = inject(AiImportService);
   private templates = inject(TemplatesService);
+  private categories = inject(CategoriesService);
+  private workspace = inject(WorkspaceContextService);
   private userSettings = inject(UserSettingsService);
   aiApiKeyService = inject(AiApiKeyService);
 
@@ -46,16 +54,74 @@ export class EditorComponent {
   emailsDialogOpen = signal(false);
   currentTemplateId = signal<string | null>(null);
   currentTemplateName = signal('');
+  currentCategoryId = signal<string | null>(null);
   saveState = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  constructor() {
+    // Asset scope and color-picker swatches follow the open email's category/palette.
+    effect(() => {
+      this.workspace.categoryId.set(this.currentCategoryId());
+      this.workspace.palette.set(this.store.effectivePalette());
+    });
+
+    // /emails/new starts a fresh doc (optionally pre-assigned to ?category=…);
+    // /emails/:id loads the saved email and its category defaults.
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (!id) {
+        this.store.newDoc();
+        this.currentTemplateId.set(null);
+        this.currentTemplateName.set('');
+        this.setCategoryContext(this.route.snapshot.queryParamMap.get('category'));
+        return;
+      }
+      // URL updated to an email that's already loaded (e.g. right after first save).
+      if (id === this.currentTemplateId()) return;
+      this.templates.get(id).subscribe({
+        next: template => {
+          this.store.loadDoc(template.doc);
+          this.currentTemplateId.set(template.id);
+          this.currentTemplateName.set(template.name);
+          this.setCategoryContext(template.categoryId ?? null);
+        },
+        error: () => this.router.navigate(['/']),
+      });
+    });
+  }
+
+  private setCategoryContext(categoryId: string | null) {
+    this.currentCategoryId.set(categoryId);
+    if (!categoryId) {
+      this.store.setCategory(null);
+      return;
+    }
+    this.categories.get(categoryId).subscribe({
+      next: cat => this.store.setCategory({ ...cat, settings: cat.settings ?? defaultCategorySettings() }),
+      // Dangling assignment (deleted category): behave as uncategorized.
+      error: () => {
+        this.store.setCategory(null);
+        this.currentCategoryId.set(null);
+      },
+    });
+  }
+
+  ngOnDestroy() {
+    this.workspace.reset();
+    this.store.setCategory(null);
+  }
 
   onTemplateSaved(meta: EmailTemplateMeta) {
     this.currentTemplateId.set(meta.id);
     this.currentTemplateName.set(meta.name);
+    // Reflect the saved email in the URL so a refresh reopens it.
+    this.router.navigate(['/emails', meta.id], { replaceUrl: true });
   }
 
   onTemplateOpened(meta: EmailTemplateMeta) {
     this.currentTemplateId.set(meta.id);
     this.currentTemplateName.set(meta.name);
+    this.setCategoryContext(meta.categoryId ?? null);
+    this.router.navigate(['/emails', meta.id], { replaceUrl: true });
   }
 
   onTemplateDeleted(id: string) {
@@ -106,7 +172,7 @@ export class EditorComponent {
 
   jsonOutput = computed(() => JSON.stringify(this.store.doc(), null, 2));
   exportLocaleId = signal<string | null>(null);
-  mjmlOutput = computed(() => docToMjml(resolveDocForLocale(this.store.doc(), this.exportLocaleId())));
+  mjmlOutput = computed(() => docToMjml(resolveDocForLocale(this.store.effectiveDoc(), this.exportLocaleId())));
 
   sendDialogOpen = signal(false);
   sendStatus = signal<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -254,7 +320,7 @@ export class EditorComponent {
     // Regenerated from the doc (rather than reusing mjmlOutput()) so block/row
     // visibility conditions are re-evaluated against this send's actual values,
     // not the defaults baked into the Export tab's preview.
-    const localizedDoc = resolveDocForLocale(this.store.doc(), form.localeId);
+    const localizedDoc = resolveDocForLocale(this.store.effectiveDoc(), form.localeId);
     // Account-level global data participates too; per-send values win on name clashes.
     const values = { ...this.userSettings.globalValues(), ...form.variableValues };
     const mjml = applyVariables(docToMjml(localizedDoc, values), values);

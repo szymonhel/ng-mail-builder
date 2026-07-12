@@ -8,6 +8,7 @@ import { EmailDoc } from '../models/email-doc.model';
 export interface EmailTemplateMeta {
   id: string;
   name: string;
+  categoryId?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -30,12 +31,20 @@ export class TemplatesService {
     return this.http.get<EmailTemplate>(`${environment.apiUrl}/templates/${encodeURIComponent(id)}`);
   }
 
-  create(name: string, doc: EmailDoc): Observable<EmailTemplateMeta> {
-    return this.http.post<EmailTemplateMeta>(`${environment.apiUrl}/templates`, { name, doc });
+  create(name: string, doc: EmailDoc, categoryId?: string | null): Observable<EmailTemplateMeta> {
+    return this.http.post<EmailTemplateMeta>(`${environment.apiUrl}/templates`, { name, doc, categoryId: categoryId ?? null });
   }
 
-  update(id: string, name: string, doc: EmailDoc): Observable<EmailTemplateMeta> {
-    return this.http.put<EmailTemplateMeta>(`${environment.apiUrl}/templates/${encodeURIComponent(id)}`, { name, doc });
+  // categoryId omitted = keep the stored assignment (server-side default).
+  update(id: string, name: string, doc: EmailDoc, categoryId?: string | null): Observable<EmailTemplateMeta> {
+    const body: Record<string, unknown> = { name, doc };
+    if (categoryId !== undefined) body['categoryId'] = categoryId;
+    return this.http.put<EmailTemplateMeta>(`${environment.apiUrl}/templates/${encodeURIComponent(id)}`, body);
+  }
+
+  // Reassigns the email's category without re-uploading the doc.
+  moveToCategory(id: string, categoryId: string | null): Observable<{ success: boolean }> {
+    return this.http.put<{ success: boolean }>(`${environment.apiUrl}/templates/${encodeURIComponent(id)}/category`, { categoryId });
   }
 
   delete(id: string): Observable<{ success: boolean }> {

@@ -42,7 +42,7 @@ export class PreviewComponent {
   private internalLocale = signal<string | null>(null);
   locale = computed(() => this.lockedLocale() !== undefined ? this.lockedLocale()! : this.internalLocale());
 
-  private localizedDoc = computed(() => resolveDocForLocale(this.store.doc(), this.locale()));
+  private localizedDoc = computed(() => resolveDocForLocale(this.store.effectiveDoc(), this.locale()));
 
   previewHtml = computed(() => {
     const doc = this.localizedDoc();

@@ -98,7 +98,16 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" --max-time 10 \"https://flatrenty.eu.auth0.com/.well-known/openid-configuration\")",
       "Bash(git check-ignore *)",
       "Bash(npm i *)",
-      "Bash(lsof -i :4200 -sTCP:LISTEN)"
+      "Bash(lsof -i :4200 -sTCP:LISTEN)",
+      "Bash(perl -0pi -e \"s|import templatesRouter from './routes/templates';|import templatesRouter from './routes/templates';\\\\nimport categoriesRouter from './routes/categories';|; s|app.use\\\\\\('/templates', checkJwt, templatesRouter\\\\\\);|app.use\\('/templates', checkJwt, templatesRouter\\);\\\\napp.use\\('/categories', checkJwt, categoriesRouter\\);|\" src/index.ts)",
+      "Bash(perl -0pi -e 's/store\\\\.doc\\\\\\(\\\\\\)\\\\.settings/store.effectiveDoc\\(\\).settings/g' src/app/editor/canvas/canvas.component.html src/app/editor/canvas/row/row.component.html src/app/editor/inspector/inspector.component.html)",
+      "Bash(perl -pi -e 's/resolveDocForLocale\\\\\\(this\\\\.store\\\\.doc\\\\\\(\\\\\\), this\\\\.locale\\\\\\(\\\\\\)\\\\\\)/resolveDocForLocale\\(this.store.effectiveDoc\\(\\), this.locale\\(\\)\\)/' src/app/editor/preview/preview.component.ts)",
+      "Bash(perl -pi -e 's/docToMjml\\\\\\(resolveDocForLocale\\\\\\(this\\\\.store\\\\.doc\\\\\\(\\\\\\), this\\\\.exportLocaleId\\\\\\(\\\\\\)\\\\\\)\\\\\\)/docToMjml\\(resolveDocForLocale\\(this.store.effectiveDoc\\(\\), this.exportLocaleId\\(\\)\\)\\)/; s/const localizedDoc = resolveDocForLocale\\\\\\(this\\\\.store\\\\.doc\\\\\\(\\\\\\), form\\\\.localeId\\\\\\);/const localizedDoc = resolveDocForLocale\\(this.store.effectiveDoc\\(\\), form.localeId\\);/' src/app/editor/editor.component.ts)",
+      "Bash(perl -pi -e \"s|provideHttpClient\\\\\\(withInterceptors\\\\\\(\\\\[authHttpInterceptorFn\\\\]\\\\\\)\\\\\\),|// TEMP: auth interceptor disabled for local UI testing — restore!\\\\n    provideHttpClient\\(withInterceptors\\([]\\)\\),|\" src/app/app.config.ts)",
+      "Bash(perl -pi -e 's/div\\\\[data-state=\"active\"\\\\] app-settings-form input\\\\[type=\"number\"\\\\]/app-settings-form input[type=\"number\"]:visible/g; s/div\\\\[data-state=\"active\"\\\\] button:has-text\\\\\\(\"Add color\"\\\\\\)/button:has-text\\(\"Add color\"\\):visible/g; s/div\\\\[data-state=\"active\"\\\\] >> text=Brand Gold/text=Brand Gold >> visible=true/g; s/div\\\\[data-state=\"active\"\\\\] button:has-text\\\\\\(\"Override for this email\"\\\\\\)/button:has-text\\(\"Override for this email\"\\):visible/g; s/div\\\\[data-state=\"active\"\\\\] button:has-text\\\\\\(\"Use category defaults\"\\\\\\)/button:has-text\\(\"Use category defaults\"\\):visible/g' drive-dashboard.js)",
+      "Bash(perl -pi -e \"s/await page.click\\\\\\('button:has-text\\\\\\(\\\\\"Override for this email\\\\\"\\\\\\)'\\\\\\);/await page.click\\('button:has-text\\(\\\\\"Override for this email\\\\\"\\):visible'\\);/\" drive-dashboard.js)",
+      "Bash(perl -0pi -e \"s|// TEMP: auth interceptor disabled for local UI testing — restore!\\\\n    provideHttpClient\\\\\\(withInterceptors\\\\\\(\\\\[\\\\]\\\\\\)\\\\\\),|provideHttpClient\\(withInterceptors\\([authHttpInterceptorFn]\\)\\),|\" src/app/app.config.ts)",
+      "Bash(pkill -f \"ng serve --port 4299\")"
     ]
   }
 }

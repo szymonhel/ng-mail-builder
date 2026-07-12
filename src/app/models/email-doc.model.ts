@@ -256,4 +256,22 @@ export interface EmailDoc {
   rows: Row[];
   locales: Locale[];
   translations: Record<string /* localeId */, TranslationMap>;
+  // Category inheritance. When true and the email lives in a category, the category's
+  // defaults are used at render time (live — category edits flow into the email) and
+  // `settings`/`savedColors` below are just the last local copy, kept so the email
+  // still renders sensibly if its category is deleted. Missing (docs saved before
+  // categories existed) means false: the email keeps its own settings.
+  inheritSettings?: boolean;
+  inheritColors?: boolean;
+  // Per-email color palette, used only when inheritColors is false. Missing means
+  // "no palette of its own" (falls back to category, then account colors).
+  savedColors?: SavedColor[];
+}
+
+// Mirrors user-settings.service's SavedColor; redeclared here because palettes are
+// now part of the persisted doc/category payloads, not just account settings.
+export interface SavedColor {
+  id: string;
+  name: string;
+  value: string;
 }

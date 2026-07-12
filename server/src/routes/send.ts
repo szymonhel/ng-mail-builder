@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import Mailjet from 'node-mailjet';
 import mjml2html from 'mjml';
-import { getTemplatesTable } from '../lib/azureTables';
+import { getTemplatesTable, getCategoriesTable } from '../lib/azureTables';
 import { unchunkJson } from '../lib/tableJson';
 import { applyVariables, defaultVariableValues, docToMjml, resolveDocForLocale, CollectionItems, EmailDoc } from '../lib/emailRender';
 
@@ -142,12 +142,14 @@ router.post('/template', async (req: Request, res: Response) => {
   }
 
   let doc: EmailDoc;
+  let categoryId: string | null = null;
   try {
     const table = await getTemplatesTable();
     const sub = req.auth?.payload.sub;
     if (!sub) throw new Error('Token has no sub claim.');
     const entity = await table.getEntity(sub, templateId);
     doc = unchunkJson(entity as Record<string, unknown>) as EmailDoc;
+    categoryId = (entity.categoryId as string) || null;
   } catch (err: any) {
     if (err?.statusCode === 404) {
       res.status(404).json({ error: 'Saved email not found.' });
@@ -156,6 +158,20 @@ router.post('/template', async (req: Request, res: Response) => {
     console.error('Template load error:', err?.message ?? err);
     res.status(502).json({ error: 'Failed to load saved email.' });
     return;
+  }
+
+  // Emails that inherit their global settings render with the category's current
+  // defaults, matching what the editor's preview shows. A missing/deleted category
+  // falls back to the doc's own last-saved settings rather than failing the send.
+  if (doc.inheritSettings && categoryId) {
+    try {
+      const categories = await getCategoriesTable();
+      const catEntity = await categories.getEntity(req.auth!.payload.sub!, categoryId);
+      const payload = unchunkJson(catEntity as Record<string, unknown>) as { settings?: EmailDoc['settings'] | null } | null;
+      if (payload?.settings) doc = { ...doc, settings: payload.settings };
+    } catch (err: any) {
+      if (err?.statusCode !== 404) console.error('Category settings load error:', err?.message ?? err);
+    }
   }
 
   let localeId: string | null = null;

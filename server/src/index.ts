@@ -7,6 +7,7 @@ import aiImportPdfRouter from './routes/aiImportPdf';
 import aiTranslateRouter from './routes/aiTranslate';
 import assetsRouter from './routes/assets';
 import templatesRouter from './routes/templates';
+import categoriesRouter from './routes/categories';
 import settingsRouter from './routes/settings';
 import { checkJwt } from './middleware/auth';
 
@@ -32,6 +33,7 @@ app.use('/ai/import-pdf', checkJwt, aiImportPdfRouter);
 app.use('/ai/translate', checkJwt, aiTranslateRouter);
 app.use('/assets', checkJwt, assetsRouter);
 app.use('/templates', checkJwt, templatesRouter);
+app.use('/categories', checkJwt, categoriesRouter);
 app.use('/settings', checkJwt, settingsRouter);
 
 app.listen(port, () => {

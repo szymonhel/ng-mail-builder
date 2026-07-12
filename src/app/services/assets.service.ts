@@ -7,6 +7,8 @@ import { environment } from '../../environments/environment';
 export interface Asset {
   name: string;
   url: string;
+  // 'category' = scoped to a category container; 'account' = the user-wide pool
+  scope?: 'account' | 'category';
   size?: number;
   contentType?: string;
   lastModified?: string;
@@ -18,15 +20,19 @@ export interface Asset {
 export class AssetsService {
   private http = inject(HttpClient);
 
-  upload(file: File): Observable<Asset> {
+  // With a categoryId, the upload lands in that category's shared asset scope and the
+  // listing returns category assets plus the account pool.
+  upload(file: File, categoryId?: string | null): Observable<Asset> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<Asset>(`${environment.apiUrl}/assets`, formData);
+    return this.http.post<Asset>(`${environment.apiUrl}/assets`, formData, {
+      params: categoryId ? { category: categoryId } : {},
+    });
   }
 
-  list(): Observable<Asset[]> {
+  list(categoryId?: string | null): Observable<Asset[]> {
     return this.http
-      .get<{ assets: Asset[] }>(`${environment.apiUrl}/assets`)
+      .get<{ assets: Asset[] }>(`${environment.apiUrl}/assets`, { params: categoryId ? { category: categoryId } : {} })
       .pipe(map(res => res.assets));
   }
 

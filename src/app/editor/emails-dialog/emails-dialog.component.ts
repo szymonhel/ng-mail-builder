@@ -20,6 +20,8 @@ export class EmailsDialogComponent {
 
   currentId = input<string | null>(null);
   currentName = input<string>('');
+  // Category the email being saved belongs to (new saves inherit it).
+  categoryId = input<string | null>(null);
 
   closed = output<void>();
   saved = output<EmailTemplateMeta>();
@@ -65,7 +67,7 @@ export class EmailsDialogComponent {
     const id = this.currentId();
     const request = !asNew && id
       ? this.templates.update(id, name, this.store.doc())
-      : this.templates.create(name, this.store.doc());
+      : this.templates.create(name, this.store.doc(), this.categoryId());
 
     request.subscribe({
       next: meta => {

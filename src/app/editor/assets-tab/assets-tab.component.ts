@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { AssetsService, Asset } from '../../services/assets.service';
+import { WorkspaceContextService } from '../../services/workspace-context.service';
 import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
@@ -10,6 +11,9 @@ import { HlmButton } from '@spartan-ng/helm/button';
 })
 export class AssetsTabComponent {
   private assetsService = inject(AssetsService);
+  // Scopes uploads/listings to the active category (shared by all its emails);
+  // null means the account-wide pool.
+  workspace = inject(WorkspaceContextService);
 
   assets = signal<Asset[]>([]);
   loading = signal(false);
@@ -25,7 +29,7 @@ export class AssetsTabComponent {
   refresh() {
     this.loading.set(true);
     this.error.set(null);
-    this.assetsService.list().subscribe({
+    this.assetsService.list(this.workspace.categoryId()).subscribe({
       next: assets => {
         this.assets.set(assets);
         this.loading.set(false);
@@ -67,7 +71,7 @@ export class AssetsTabComponent {
 
     let remaining = files.length;
     for (const file of files) {
-      this.assetsService.upload(file).subscribe({
+      this.assetsService.upload(file, this.workspace.categoryId()).subscribe({
         next: asset => {
           this.assets.update(list => [asset, ...list]);
           if (--remaining === 0) this.uploading.set(false);

@@ -1,5 +1,6 @@
-import { Component, ElementRef, HostListener, inject, input, output, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, computed, inject, input, output, signal } from '@angular/core';
 import { SavedColorsService } from '../../services/saved-colors.service';
+import { WorkspaceContextService } from '../../services/workspace-context.service';
 import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
@@ -10,12 +11,15 @@ import { HlmButton } from '@spartan-ng/helm/button';
 })
 export class ColorPickerComponent {
   private savedColorsService = inject(SavedColorsService);
+  private workspace = inject(WorkspaceContextService);
   private host = inject(ElementRef<HTMLElement>);
 
   value = input<string>('#000000');
   valueChange = output<string>();
 
-  savedColors = this.savedColorsService.colors;
+  // The active workspace palette (open email's effective colors, or the category
+  // being edited) wins over the account-level saved colors.
+  savedColors = computed(() => this.workspace.palette() ?? this.savedColorsService.colors());
   open = signal(false);
 
   toggle() {

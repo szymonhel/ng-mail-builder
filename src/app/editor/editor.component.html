@@ -1,10 +1,14 @@
 <div class="flex flex-col h-screen overflow-hidden font-sans">
   <!-- Top bar -->
   <header class="flex items-center px-4 h-[52px] bg-[#1a1a2e] text-white shrink-0 gap-4">
-    <div class="flex items-center gap-2 font-bold text-base mr-4">
+    <a routerLink="/" class="flex items-center gap-2 font-bold text-base mr-4 text-white no-underline hover:opacity-80 transition-opacity" title="Back to your emails">
       <span class="text-xl">&#x2709;</span>
       <span>Email Builder</span>
-    </div>
+    </a>
+    <a routerLink="/" class="text-xs text-white/60 hover:text-white -ml-2 mr-2 no-underline">&larr; Emails</a>
+    @if (currentTemplateName()) {
+      <span class="text-xs text-white/70 max-w-[160px] truncate -ml-2" [title]="currentTemplateName()">{{ currentTemplateName() }}</span>
+    }
     <nav class="flex gap-1 flex-1">
       <button
         class="border-0 px-4 py-1.5 rounded-sm cursor-pointer text-sm transition-all"
@@ -76,6 +80,7 @@
     <app-emails-dialog
       [currentId]="currentTemplateId()"
       [currentName]="currentTemplateName()"
+      [categoryId]="currentCategoryId()"
       (closed)="emailsDialogOpen.set(false)"
       (saved)="onTemplateSaved($event)"
       (opened)="onTemplateOpened($event)"

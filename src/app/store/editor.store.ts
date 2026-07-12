@@ -1,5 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { EmailDoc, Block, BlockType, Row, Column, EmailCollection, EmailVariable, RowRepeat, VisibilityCondition, Locale } from '../models/email-doc.model';
+import { EmailDoc, Block, BlockType, Row, Column, EmailCollection, EmailVariable, RowRepeat, SavedColor, VisibilityCondition, Locale } from '../models/email-doc.model';
+import { Category } from '../models/category.model';
 import { UserSettingsService } from '../services/user-settings.service';
 import { uid } from '../utils/id.utils';
 
@@ -117,6 +118,10 @@ function initialDoc(): EmailDoc {
     collections: [],
     locales: [],
     translations: {},
+    // New emails follow their category's defaults until explicitly overridden;
+    // without a category these flags are inert (own settings/account colors apply).
+    inheritSettings: true,
+    inheritColors: true,
     rows: [
       {
         id: uid(),
@@ -180,6 +185,65 @@ export class EditorStore {
   private _lastCommitAt = 0;
 
   doc = this._doc.asReadonly();
+
+  // The open email's category container (null when uncategorized). Set by the editor
+  // when it loads a template; provides inherited defaults, not part of undo history.
+  private _category = signal<Category | null>(null);
+  category = this._category.asReadonly();
+  setCategory(category: Category | null) { this._category.set(category); }
+
+  // What preview/export/send should render: the doc with its settings swapped for the
+  // category defaults while the email inherits them. The raw doc() keeps its own copy
+  // so overriding later starts from something sensible.
+  effectiveDoc = computed<EmailDoc>(() => {
+    const d = this._doc();
+    const cat = this._category();
+    return d.inheritSettings && cat?.settings ? { ...d, settings: cat.settings } : d;
+  });
+
+  // Palette for the color pickers: email override > category palette > account
+  // colors (signalled by null so the picker can fall back itself).
+  effectivePalette = computed<SavedColor[] | null>(() => {
+    const d = this._doc();
+    const cat = this._category();
+    if (d.inheritColors && cat) return cat.savedColors;
+    if (d.inheritColors === false && d.savedColors) return d.savedColors;
+    return null;
+  });
+
+  // Copies the category defaults into the doc first, so overriding starts from what
+  // the email currently renders with instead of jumping to a stale local copy.
+  overrideSettings() {
+    const cat = this._category();
+    this.commit(d => ({ ...d, inheritSettings: false, settings: cat?.settings ? { ...cat.settings } : d.settings }));
+  }
+
+  useCategorySettings() {
+    this.commit(d => ({ ...d, inheritSettings: true }));
+  }
+
+  overrideColors() {
+    const cat = this._category();
+    this.commit(d => ({ ...d, inheritColors: false, savedColors: d.savedColors ?? (cat ? cat.savedColors.map(c => ({ ...c })) : []) }));
+  }
+
+  useCategoryColors() {
+    this.commit(d => ({ ...d, inheritColors: true }));
+  }
+
+  addDocColor(name: string, value: string) {
+    this.commit(d => ({ ...d, savedColors: [...(d.savedColors ?? []), { id: uid(), name, value }] }));
+  }
+
+  removeDocColor(id: string) {
+    this.commit(d => ({ ...d, savedColors: (d.savedColors ?? []).filter(c => c.id !== id) }));
+  }
+
+  // Fresh document for the "new email" route; the old doc stays one undo away.
+  newDoc() {
+    this.loadDoc(initialDoc());
+  }
+
   selectedBlockId = this._selectedBlockId.asReadonly();
   selectedRowId = this._selectedRowId.asReadonly();
   selectedColumnId = this._selectedColumnId.asReadonly();
