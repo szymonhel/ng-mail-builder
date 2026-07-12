@@ -2,8 +2,19 @@ import { Router, Request, Response } from 'express';
 import { randomUUID } from 'crypto';
 import { getTemplatesTable } from '../lib/azureTables';
 import { chunkJson, unchunkJson } from '../lib/tableJson';
+import { isApiKeyAuth, apiKeyAllowsCategory } from '../middleware/apiKeyAuth';
 
 const router = Router();
+
+// API keys exist so external services can send — they may read a template's contract
+// (to know its variables/collections/languages) but never list, read, or modify docs.
+router.use((req: Request, res: Response, next) => {
+  if (isApiKeyAuth(req) && !(req.method === 'GET' && /\/contract\/?$/.test(req.path))) {
+    res.status(403).json({ error: 'API keys may only use GET /templates/:id/contract.' });
+    return;
+  }
+  next();
+});
 
 // The Auth0 user id partitions the table, so users only ever touch their own rows.
 function partitionKey(req: Request): string {
@@ -73,6 +84,10 @@ router.get('/:id/contract', async (req: Request, res: Response) => {
   try {
     const table = await getTemplatesTable();
     const entity = await table.getEntity(partitionKey(req), req.params.id as string);
+    if (!apiKeyAllowsCategory(req, ((entity.categoryId as string) || null))) {
+      res.status(403).json({ error: 'This API key is scoped to a different category.' });
+      return;
+    }
     const doc = docFromEntity(entity as Record<string, unknown>) as any;
     res.json({
       ...metaFromEntity(entity as Record<string, unknown>),

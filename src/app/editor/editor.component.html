@@ -217,7 +217,7 @@
       <app-translations-tab class="flex flex-1 overflow-hidden" />
     }
     @if (store.activeTab() === 'settings') {
-      <app-settings-tab class="flex flex-1 overflow-hidden" />
+      <app-settings-tab class="flex flex-1 overflow-hidden" [templateId]="currentTemplateId()" />
     }
   </div>
 </div>

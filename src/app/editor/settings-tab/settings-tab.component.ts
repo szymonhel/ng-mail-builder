@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { EditorStore } from '../../store/editor.store';
 import { UserSettingsService } from '../../services/user-settings.service';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
@@ -20,6 +20,17 @@ import { HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent } from '@spartan-n
 export class SettingsTabComponent {
   store = inject(EditorStore);
   userSettings = inject(UserSettingsService);
+
+  // The saved email's id (null until first save), shown so API consumers can copy
+  // the templateId for POST /send/template.
+  templateId = input<string | null>(null);
+  copiedId = signal(false);
+
+  copyTemplateId(id: string) {
+    navigator.clipboard.writeText(id);
+    this.copiedId.set(true);
+    setTimeout(() => this.copiedId.set(false), 1500);
+  }
 
   // The inherited settings form is display-only (pointer-events disabled in the
   // template), so edits can't happen; the handler exists to satisfy the binding.

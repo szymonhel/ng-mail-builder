@@ -150,10 +150,11 @@ export class EditorStore {
   private userSettings = inject(UserSettingsService);
   private _doc = signal<EmailDoc>(initialDoc());
 
-  // Account-level style defaults applied on top of BLOCK_DEFAULTS when a new
-  // block is created; existing blocks are never touched.
+  // Style defaults applied on top of BLOCK_DEFAULTS when a new block is created
+  // (category button defaults win over the account-level ones); existing blocks
+  // are never touched.
   private userDefaultsFor(type: BlockType): Record<string, unknown> {
-    const btn = this.userSettings.buttonDefaults();
+    const btn = this._category()?.buttonDefaults ?? this.userSettings.buttonDefaults();
     switch (type) {
       case 'button': return { bg: btn.bg, color: btn.color, borderRadius: btn.borderRadius };
       case 'hero': return { buttonBg: btn.bg, buttonColor: btn.color, buttonBorderRadius: btn.borderRadius };
@@ -199,6 +200,18 @@ export class EditorStore {
     const d = this._doc();
     const cat = this._category();
     return d.inheritSettings && cat?.settings ? { ...d, settings: cat.settings } : d;
+  });
+
+  // Ambient {{token}} values for previews and in-app sends, layered account global
+  // data < category global data. Email variables (and per-send form values) are
+  // merged on top by the callers, so they win on name clashes.
+  globalValues = computed<Record<string, string>>(() => {
+    const categoryValues = Object.fromEntries(
+      (this._category()?.globalData ?? [])
+        .filter(d => d.name.trim())
+        .map(d => [d.name.trim(), d.value])
+    );
+    return { ...this.userSettings.globalValues(), ...categoryValues };
   });
 
   // Palette for the color pickers: email override > category palette > account

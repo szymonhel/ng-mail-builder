@@ -56,18 +56,6 @@
       }
 
       <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">AI</div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs text-gray-600">OpenAI API key</label>
-          <input hlmInput type="password" autocomplete="off"
-                 [value]="userSettings.openaiKey()"
-                 (change)="userSettings.setOpenaiKey($any($event.target).value)"
-                 placeholder="sk-..." />
-          <p class="text-[10px] text-gray-400 m-0">Used by AI import and auto-translate. Sent to our server per request and forwarded to OpenAI.</p>
-        </div>
-      </div>
-
-      <div>
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Button defaults</div>
         <p class="text-[10px] text-gray-400 mt-0 mb-2">Applied to new button blocks (and hero buttons) you add — existing blocks keep their styling.</p>
         <div class="grid grid-cols-3 gap-2">
@@ -112,6 +100,20 @@
           </div>
         }
       </div>
+    </div>
+
+    <!-- Static info for API consumers: which id to send with POST /send/template -->
+    <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 mt-6">
+      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Email ID</div>
+      @if (templateId(); as id) {
+        <p class="text-[10px] text-gray-400 mt-0 mb-2">Use this as the <code class="bg-gray-100 px-1 rounded">templateId</code> when sending this email through the API. API keys are managed in the category container settings.</p>
+        <div class="flex items-center gap-2">
+          <code class="text-[11px] bg-gray-50 border border-gray-200 rounded-sm px-2 py-1.5">{{ id }}</code>
+          <button hlmBtn variant="outline" size="sm" (click)="copyTemplateId(id)">{{ copiedId() ? 'Copied ✓' : 'Copy' }}</button>
+        </div>
+      } @else {
+        <p class="text-xs text-gray-400 m-0">Save this email to get its ID for API sends.</p>
+      }
     </div>
   </div>
 

@@ -322,7 +322,7 @@ export class EditorComponent implements OnDestroy {
     // not the defaults baked into the Export tab's preview.
     const localizedDoc = resolveDocForLocale(this.store.effectiveDoc(), form.localeId);
     // Account-level global data participates too; per-send values win on name clashes.
-    const values = { ...this.userSettings.globalValues(), ...form.variableValues };
+    const values = { ...this.store.globalValues(), ...form.variableValues };
     const mjml = applyVariables(docToMjml(localizedDoc, values), values);
     this.mail.send({
       to: form.to,

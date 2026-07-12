@@ -107,7 +107,9 @@
       "Bash(perl -pi -e 's/div\\\\[data-state=\"active\"\\\\] app-settings-form input\\\\[type=\"number\"\\\\]/app-settings-form input[type=\"number\"]:visible/g; s/div\\\\[data-state=\"active\"\\\\] button:has-text\\\\\\(\"Add color\"\\\\\\)/button:has-text\\(\"Add color\"\\):visible/g; s/div\\\\[data-state=\"active\"\\\\] >> text=Brand Gold/text=Brand Gold >> visible=true/g; s/div\\\\[data-state=\"active\"\\\\] button:has-text\\\\\\(\"Override for this email\"\\\\\\)/button:has-text\\(\"Override for this email\"\\):visible/g; s/div\\\\[data-state=\"active\"\\\\] button:has-text\\\\\\(\"Use category defaults\"\\\\\\)/button:has-text\\(\"Use category defaults\"\\):visible/g' drive-dashboard.js)",
       "Bash(perl -pi -e \"s/await page.click\\\\\\('button:has-text\\\\\\(\\\\\"Override for this email\\\\\"\\\\\\)'\\\\\\);/await page.click\\('button:has-text\\(\\\\\"Override for this email\\\\\"\\):visible'\\);/\" drive-dashboard.js)",
       "Bash(perl -0pi -e \"s|// TEMP: auth interceptor disabled for local UI testing — restore!\\\\n    provideHttpClient\\\\\\(withInterceptors\\\\\\(\\\\[\\\\]\\\\\\)\\\\\\),|provideHttpClient\\(withInterceptors\\([authHttpInterceptorFn]\\)\\),|\" src/app/app.config.ts)",
-      "Bash(pkill -f \"ng serve --port 4299\")"
+      "Bash(pkill -f \"ng serve --port 4299\")",
+      "Bash(perl -0pi -e \"s/const \\\\{ name, settings, savedColors \\\\} = req\\\\.body \\\\?\\\\? \\\\{\\\\};/const { name } = req.body ?? {};/g; s/toEntity\\\\\\(partitionKey\\\\\\(req\\\\\\), id, name\\\\.trim\\\\\\(\\\\\\), \\\\{ settings: settings \\\\?\\\\? null, savedColors: savedColors \\\\?\\\\? \\\\[\\\\] \\\\}, new Date\\\\\\(\\\\\\)\\\\.toISOString\\\\\\(\\\\\\)\\\\\\)/toEntity\\(partitionKey\\(req\\), id, name.trim\\(\\), payloadFromBody\\(req.body\\), new Date\\(\\).toISOString\\(\\)\\)/; s/toEntity\\\\\\(pk, id, name\\\\.trim\\\\\\(\\\\\\), \\\\{ settings: settings \\\\?\\\\? null, savedColors: savedColors \\\\?\\\\? \\\\[\\\\] \\\\}, createdAt\\\\\\)/toEntity\\(pk, id, name.trim\\(\\), payloadFromBody\\(req.body\\), createdAt\\)/\" src/routes/categories.ts)",
+      "Bash(dotnet --version)"
     ]
   }
 }

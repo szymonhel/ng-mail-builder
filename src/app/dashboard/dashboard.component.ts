@@ -89,7 +89,7 @@ export class DashboardComponent {
     const name = this.newCategoryName().trim();
     if (!name) return;
     this.creatingCategory.set(true);
-    this.categoriesService.create(name, defaultCategorySettings(), []).subscribe({
+    this.categoriesService.create(name, { settings: defaultCategorySettings(), savedColors: [] }).subscribe({
       next: category => {
         this.categories.update(list => [...list, category].sort((a, b) => a.name.localeCompare(b.name)));
         this.newCategoryName.set('');
@@ -111,7 +111,13 @@ export class DashboardComponent {
     const name = this.renameValue().trim();
     this.renamingCategoryId.set(null);
     if (!name || name === category.name) return;
-    this.categoriesService.update(category.id, name, category.settings ?? defaultCategorySettings(), category.savedColors).subscribe({
+    // Passes the full stored payload back so a rename can't wipe the other defaults.
+    this.categoriesService.update(category.id, name, {
+      settings: category.settings ?? defaultCategorySettings(),
+      savedColors: category.savedColors,
+      buttonDefaults: category.buttonDefaults ?? null,
+      globalData: category.globalData ?? [],
+    }).subscribe({
       next: updated => this.categories.update(list =>
         list.map(c => c.id === updated.id ? updated : c).sort((a, b) => a.name.localeCompare(b.name))),
       error: err => this.error.set(err?.error?.error ?? 'Failed to rename category.'),

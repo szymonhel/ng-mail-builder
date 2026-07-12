@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express';
 import Mailjet from 'node-mailjet';
 import mjml2html from 'mjml';
-import { getTemplatesTable, getCategoriesTable } from '../lib/azureTables';
+import { getTemplatesTable, getCategoriesTable, getSettingsTable } from '../lib/azureTables';
 import { unchunkJson } from '../lib/tableJson';
 import { applyVariables, defaultVariableValues, docToMjml, resolveDocForLocale, CollectionItems, EmailDoc } from '../lib/emailRender';
+import { isApiKeyAuth, apiKeyAllowsCategory } from '../middleware/apiKeyAuth';
 
 const router = Router();
 
@@ -31,6 +32,32 @@ interface SendTemplateBody {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// name -> value map from a globalData list ({ id, name, value }[]), skipping blank names.
+function globalDataValues(items: unknown): Record<string, string> {
+  if (!Array.isArray(items)) return {};
+  const out: Record<string, string> = {};
+  for (const item of items as any[]) {
+    const name = typeof item?.name === 'string' ? item.name.trim() : '';
+    if (name) out[name] = typeof item?.value === 'string' ? item.value : '';
+  }
+  return out;
+}
+
+// Account-level global data (companyName, supportEmail, ...) participates in template
+// sends the same way it does in the in-app preview/send. Missing settings just mean
+// no globals — never a failed send.
+async function loadAccountGlobalValues(sub: string): Promise<Record<string, string>> {
+  try {
+    const table = await getSettingsTable();
+    const entity = await table.getEntity(sub, 'settings');
+    const settings = unchunkJson(entity as Record<string, unknown>) as { globalData?: unknown } | null;
+    return globalDataValues(settings?.globalData);
+  } catch (err: any) {
+    if (err?.statusCode !== 404) console.error('Account settings load error:', err?.message ?? err);
+    return {};
+  }
 }
 
 // Returns null when the payload isn't a map of primitive values.
@@ -103,6 +130,13 @@ async function compileAndSend(res: Response, mjml: string, to: string, toName: s
 }
 
 router.post('/', async (req: Request, res: Response) => {
+  // Raw-MJML sends stay app-only: an API key is scoped to sending saved templates,
+  // not arbitrary content through the account's Mailjet.
+  if (isApiKeyAuth(req)) {
+    res.status(403).json({ error: 'API keys may only use POST /send/template.' });
+    return;
+  }
+
   const { to, toName, subject, mjml } = req.body as SendBody;
 
   if (!to || !subject || !mjml) {
@@ -160,15 +194,24 @@ router.post('/template', async (req: Request, res: Response) => {
     return;
   }
 
-  // Emails that inherit their global settings render with the category's current
-  // defaults, matching what the editor's preview shows. A missing/deleted category
-  // falls back to the doc's own last-saved settings rather than failing the send.
-  if (doc.inheritSettings && categoryId) {
+  // API keys are scoped to one category container — they can't send emails that
+  // live outside it.
+  if (!apiKeyAllowsCategory(req, categoryId)) {
+    res.status(403).json({ error: 'This API key is scoped to a different category.' });
+    return;
+  }
+
+  // The email's category contributes at render time: its default settings when the
+  // doc inherits them, and its global data always. A missing/deleted category falls
+  // back to the doc's own last-saved settings rather than failing the send.
+  let categoryGlobalValues: Record<string, string> = {};
+  if (categoryId) {
     try {
       const categories = await getCategoriesTable();
       const catEntity = await categories.getEntity(req.auth!.payload.sub!, categoryId);
-      const payload = unchunkJson(catEntity as Record<string, unknown>) as { settings?: EmailDoc['settings'] | null } | null;
-      if (payload?.settings) doc = { ...doc, settings: payload.settings };
+      const payload = unchunkJson(catEntity as Record<string, unknown>) as { settings?: EmailDoc['settings'] | null; globalData?: unknown } | null;
+      if (doc.inheritSettings && payload?.settings) doc = { ...doc, settings: payload.settings };
+      categoryGlobalValues = globalDataValues(payload?.globalData);
     } catch (err: any) {
       if (err?.statusCode !== 404) console.error('Category settings load error:', err?.message ?? err);
     }
@@ -185,9 +228,11 @@ router.post('/template', async (req: Request, res: Response) => {
     localeId = locale.id;
   }
 
-  // Provided variables override the doc's defaults; unprovided ones fall back to
-  // their defaultValue (same behavior as the in-app Send dialog's pre-filled form).
-  const values = { ...defaultVariableValues(doc.variables), ...variables };
+  // Precedence (lowest to highest): account global data < category global data <
+  // email variable defaults < values provided in this request — matching the
+  // in-app preview/send layering.
+  const accountGlobalValues = await loadAccountGlobalValues(req.auth!.payload.sub!);
+  const values = { ...accountGlobalValues, ...categoryGlobalValues, ...defaultVariableValues(doc.variables), ...variables };
   const localizedDoc = resolveDocForLocale(doc, localeId);
   const mjml = applyVariables(docToMjml(localizedDoc, values, collections), values);
 

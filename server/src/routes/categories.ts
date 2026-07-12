@@ -34,6 +34,18 @@ function fromEntity(entity: Record<string, unknown>) {
     updatedAt: entity.updatedAt as string | undefined,
     settings: payload.settings ?? null,
     savedColors: Array.isArray(payload.savedColors) ? payload.savedColors : [],
+    // null = the category defers to the account-level button defaults.
+    buttonDefaults: payload.buttonDefaults ?? null,
+    globalData: Array.isArray(payload.globalData) ? payload.globalData : [],
+  };
+}
+
+function payloadFromBody(body: any) {
+  return {
+    settings: body?.settings ?? null,
+    savedColors: body?.savedColors ?? [],
+    buttonDefaults: body?.buttonDefaults ?? null,
+    globalData: Array.isArray(body?.globalData) ? body.globalData : [],
   };
 }
 
@@ -72,7 +84,7 @@ router.get('/:id', async (req: Request, res: Response) => {
 });
 
 router.post('/', async (req: Request, res: Response) => {
-  const { name, settings, savedColors } = req.body ?? {};
+  const { name } = req.body ?? {};
   if (!name || typeof name !== 'string' || !name.trim()) {
     res.status(400).json({ error: '"name" is required.' });
     return;
@@ -80,7 +92,7 @@ router.post('/', async (req: Request, res: Response) => {
   try {
     const table = await getCategoriesTable();
     const id = randomUUID();
-    const entity = toEntity(partitionKey(req), id, name.trim(), { settings: settings ?? null, savedColors: savedColors ?? [] }, new Date().toISOString());
+    const entity = toEntity(partitionKey(req), id, name.trim(), payloadFromBody(req.body), new Date().toISOString());
     await table.createEntity(entity as any);
     res.status(201).json(fromEntity(entity));
   } catch (err: any) {
@@ -90,7 +102,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 router.put('/:id', async (req: Request, res: Response) => {
-  const { name, settings, savedColors } = req.body ?? {};
+  const { name } = req.body ?? {};
   if (!name || typeof name !== 'string' || !name.trim()) {
     res.status(400).json({ error: '"name" is required.' });
     return;
@@ -108,7 +120,7 @@ router.put('/:id', async (req: Request, res: Response) => {
       if (err?.statusCode !== 404) throw err;
     }
 
-    const entity = toEntity(pk, id, name.trim(), { settings: settings ?? null, savedColors: savedColors ?? [] }, createdAt);
+    const entity = toEntity(pk, id, name.trim(), payloadFromBody(req.body), createdAt);
     // Replace (not merge) so stale payload chunks from a previously larger payload are dropped.
     await table.upsertEntity(entity as any, 'Replace');
     res.json(fromEntity(entity));
