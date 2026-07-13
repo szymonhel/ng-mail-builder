@@ -8,6 +8,7 @@ import { TemplatesService, EmailTemplateMeta } from '../services/templates.servi
 import { WorkspaceContextService } from '../services/workspace-context.service';
 import { defaultCategorySettings } from '../models/category.model';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { HlmInput } from '@spartan-ng/helm/input';
 
 interface CategoryGroup {
@@ -20,7 +21,7 @@ interface CategoryGroup {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, HlmButton, HlmInput],
+  imports: [AsyncPipe, DatePipe, FormsModule, RouterLink, HlmButton, HlmInput, SpinnerComponent],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent {

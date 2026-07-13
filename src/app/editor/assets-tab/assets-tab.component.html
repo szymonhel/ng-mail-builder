@@ -36,7 +36,7 @@
     </div>
 
     @if (loading()) {
-      <p class="text-sm text-gray-500">Loading assets…</p>
+      <app-spinner label="Loading assets…" />
     } @else if (assets().length === 0) {
       <p class="text-sm text-gray-500">No assets yet. Upload your first image above.</p>
     } @else {

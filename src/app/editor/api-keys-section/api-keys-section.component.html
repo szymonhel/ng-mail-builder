@@ -39,7 +39,7 @@
   </div>
 
   @if (loading()) {
-    <p class="text-xs text-gray-400 m-0">Loading keys…</p>
+    <app-spinner label="Loading keys…" [size]="14" />
   } @else if (keys().length === 0) {
     <p class="text-xs text-gray-400 m-0">No API keys yet.</p>
   } @else {

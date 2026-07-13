@@ -32,7 +32,7 @@
       }
 
       @if (loading()) {
-        <p class="text-sm text-gray-500 m-0">Loading saved emails…</p>
+        <app-spinner label="Loading saved emails…" />
       } @else if (list().length === 0) {
         <p class="text-sm text-gray-500 m-0">No saved emails yet. Give this one a name and save it above.</p>
       } @else {

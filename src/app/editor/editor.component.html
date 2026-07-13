@@ -86,6 +86,11 @@
 
   <!-- Main workspace -->
   <div class="flex flex-1 overflow-hidden">
+    @if (templateLoading()) {
+      <div class="flex-1 flex items-center justify-center bg-gray-100">
+        <app-spinner label="Loading email…" [size]="24" />
+      </div>
+    } @else {
     @if (store.activeTab() === 'editor') {
       <aside class="w-48 shrink-0 overflow-y-auto border-r border-gray-200">
         <app-palette />
@@ -211,6 +216,7 @@
     }
     @if (store.activeTab() === 'settings') {
       <app-settings-tab class="flex flex-1 overflow-hidden" [templateId]="currentTemplateId()" />
+    }
     }
   </div>
 </div>

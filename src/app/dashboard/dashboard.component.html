@@ -42,7 +42,7 @@
       </div>
 
       @if (loading()) {
-        <div class="text-sm text-gray-400 text-center py-16">Loading your emails…</div>
+        <app-spinner label="Loading your emails…" [center]="true" />
       } @else {
         @for (group of groups(); track group.category?.id ?? 'uncategorized') {
           <section class="bg-white rounded-lg border border-gray-200 overflow-hidden">

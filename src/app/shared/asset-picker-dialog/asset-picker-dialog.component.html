@@ -23,7 +23,7 @@
       }
 
       @if (loading()) {
-        <p class="text-sm text-gray-500 m-0">Loading assets…</p>
+        <app-spinner label="Loading assets…" />
       } @else if (assets().length === 0) {
         <p class="text-sm text-gray-500 m-0">No assets yet — upload your first image with the button above.</p>
       } @else {

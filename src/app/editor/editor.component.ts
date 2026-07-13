@@ -25,12 +25,13 @@ import { parseJsonImport, normalizeImportedDoc } from '../utils/import.utils';
 import { applyVariables } from '../utils/template-vars';
 import { resolveDocForLocale } from '../utils/translation-resolver';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../shared/spinner/spinner.component';
 import { NgIcon } from '@ng-icons/core';
 
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, HlmButton, NgIcon],
+  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, HlmButton, NgIcon, SpinnerComponent],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent implements OnDestroy {
@@ -55,6 +56,9 @@ export class EditorComponent implements OnDestroy {
   currentTemplateName = signal('');
   currentCategoryId = signal<string | null>(null);
   saveState = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  // True while fetching a saved email for the /emails/:id route — the workspace
+  // shows a spinner instead of the stale/starter doc.
+  templateLoading = signal(false);
 
   constructor() {
     // Asset scope and color-picker swatches follow the open email's category/palette.
@@ -76,14 +80,19 @@ export class EditorComponent implements OnDestroy {
       }
       // URL updated to an email that's already loaded (e.g. right after first save).
       if (id === this.currentTemplateId()) return;
+      this.templateLoading.set(true);
       this.templates.get(id).subscribe({
         next: template => {
           this.store.loadDoc(template.doc);
           this.currentTemplateId.set(template.id);
           this.currentTemplateName.set(template.name);
           this.setCategoryContext(template.categoryId ?? null);
+          this.templateLoading.set(false);
         },
-        error: () => this.router.navigate(['/']),
+        error: () => {
+          this.templateLoading.set(false);
+          this.router.navigate(['/']);
+        },
       });
     });
   }

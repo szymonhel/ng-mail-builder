@@ -22,7 +22,7 @@
       }
 
       @if (loading()) {
-        <div class="text-sm text-gray-400 text-center py-16">Loading send history…</div>
+        <app-spinner label="Loading send history…" [center]="true" />
       } @else if (entries().length === 0) {
         <div class="bg-white rounded-lg border border-gray-200 text-sm text-gray-400 text-center py-16">
           Nothing sent yet — every send attempt (from the app or via API keys) will show up here.

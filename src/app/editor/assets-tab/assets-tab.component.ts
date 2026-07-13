@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { AssetsService, Asset } from '../../services/assets.service';
 import { WorkspaceContextService } from '../../services/workspace-context.service';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 @Component({
   selector: 'app-assets-tab',
   standalone: true,
-  imports: [HlmButton],
+  imports: [HlmButton, SpinnerComponent],
   templateUrl: './assets-tab.component.html',
 })
 export class AssetsTabComponent {

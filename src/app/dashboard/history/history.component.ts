@@ -3,13 +3,14 @@ import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SendHistoryService, SendHistoryEntry, DeliveryStatus } from '../../services/send-history.service';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 // Newest-first log of every send attempt (in-app and via API keys), including
 // failures with their error message. Read-only.
 @Component({
   selector: 'app-history',
   standalone: true,
-  imports: [DatePipe, RouterLink, HlmButton],
+  imports: [DatePipe, RouterLink, HlmButton, SpinnerComponent],
   templateUrl: './history.component.html',
 })
 export class HistoryComponent {

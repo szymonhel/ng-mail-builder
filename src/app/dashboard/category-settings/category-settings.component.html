@@ -39,7 +39,7 @@
   </ng-template>
 
   @if (loading()) {
-    <div class="text-sm text-gray-400 text-center py-16">Loading category…</div>
+    <app-spinner label="Loading category…" [center]="true" />
   } @else {
     <div hlmTabs tab="global" class="flex flex-col flex-1 overflow-hidden">
       <div hlmTabsList class="w-full max-w-4xl mx-auto mt-6 shrink-0 rounded-none border-b border-gray-200 bg-white h-auto p-0">
