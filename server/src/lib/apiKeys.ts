@@ -26,6 +26,8 @@ export interface ApiKeyMeta {
 export interface ResolvedApiKey {
   ownerSub: string;
   categoryId: string;
+  // For send-history attribution ("which integration sent this?").
+  name: string;
 }
 
 export function hashApiKey(key: string): string {
@@ -104,7 +106,7 @@ export async function resolveApiKey(key: string): Promise<ResolvedApiKey | null>
     if (!ownerSub) return null;
     // Fire-and-forget usage timestamp; a failed merge must never fail the send.
     table.updateEntity({ partitionKey: API_KEY_PARTITION, rowKey: hash, lastUsedAt: new Date().toISOString() } as any, 'Merge').catch(() => {});
-    return { ownerSub, categoryId: (entity.categoryId as string) ?? '' };
+    return { ownerSub, categoryId: (entity.categoryId as string) ?? '', name: (entity.name as string) ?? '' };
   } catch (err: any) {
     if (err?.statusCode === 404) return null;
     throw err;

@@ -10,6 +10,8 @@ declare global {
       apiKeyAuth?: boolean;
       // The key's category container; the key may only touch emails belonging to it.
       apiKeyCategoryId?: string;
+      // The key's display name, for send-history attribution.
+      apiKeyName?: string;
     }
   }
 }
@@ -44,6 +46,7 @@ export async function apiKeyOrJwt(req: Request, res: Response, next: NextFunctio
     }
     req.apiKeyAuth = true;
     req.apiKeyCategoryId = resolved.categoryId;
+    req.apiKeyName = resolved.name;
     (req as any).auth = { payload: { sub: resolved.ownerSub } };
     next();
   } catch (err: any) {

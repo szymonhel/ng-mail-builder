@@ -109,7 +109,10 @@
       "Bash(perl -0pi -e \"s|// TEMP: auth interceptor disabled for local UI testing — restore!\\\\n    provideHttpClient\\\\\\(withInterceptors\\\\\\(\\\\[\\\\]\\\\\\)\\\\\\),|provideHttpClient\\(withInterceptors\\([authHttpInterceptorFn]\\)\\),|\" src/app/app.config.ts)",
       "Bash(pkill -f \"ng serve --port 4299\")",
       "Bash(perl -0pi -e \"s/const \\\\{ name, settings, savedColors \\\\} = req\\\\.body \\\\?\\\\? \\\\{\\\\};/const { name } = req.body ?? {};/g; s/toEntity\\\\\\(partitionKey\\\\\\(req\\\\\\), id, name\\\\.trim\\\\\\(\\\\\\), \\\\{ settings: settings \\\\?\\\\? null, savedColors: savedColors \\\\?\\\\? \\\\[\\\\] \\\\}, new Date\\\\\\(\\\\\\)\\\\.toISOString\\\\\\(\\\\\\)\\\\\\)/toEntity\\(partitionKey\\(req\\), id, name.trim\\(\\), payloadFromBody\\(req.body\\), new Date\\(\\).toISOString\\(\\)\\)/; s/toEntity\\\\\\(pk, id, name\\\\.trim\\\\\\(\\\\\\), \\\\{ settings: settings \\\\?\\\\? null, savedColors: savedColors \\\\?\\\\? \\\\[\\\\] \\\\}, createdAt\\\\\\)/toEntity\\(pk, id, name.trim\\(\\), payloadFromBody\\(req.body\\), createdAt\\)/\" src/routes/categories.ts)",
-      "Bash(dotnet --version)"
+      "Bash(dotnet --version)",
+      "Bash(perl -0pi -e \"s|import apiKeysRouter from './routes/apikeys';|import apiKeysRouter from './routes/apikeys';\\\\nimport historyRouter from './routes/history';|; s|app.use\\\\\\('/apikeys', checkJwt, apiKeysRouter\\\\\\);|app.use\\('/apikeys', checkJwt, apiKeysRouter\\);\\\\napp.use\\('/history', checkJwt, historyRouter\\);|\" src/index.ts)",
+      "Bash(perl -pi -e \"s/'editor' \\\\| 'preview' \\\\| 'json' \\\\| 'settings' \\\\| 'translations' \\\\| 'assets'/'editor' | 'preview' | 'json' | 'settings' | 'translations'/g\" src/app/store/editor.store.ts)",
+      "Bash(perl -0pi -e \"s|import \\\\{ AssetsTabComponent \\\\} from './assets-tab/assets-tab.component';\\\\n||; s|, AssetsTabComponent||\" src/app/editor/editor.component.ts)"
     ]
   }
 }

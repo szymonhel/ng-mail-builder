@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard/category-settings/category-settings.component').then(m => m.CategorySettingsComponent),
   },
   {
+    path: 'history',
+    canActivate: [authGuardFn],
+    loadComponent: () => import('./dashboard/history/history.component').then(m => m.HistoryComponent),
+  },
+  {
     path: 'emails/new',
     canActivate: [authGuardFn],
     loadComponent: () => import('./editor/editor.component').then(m => m.EditorComponent),

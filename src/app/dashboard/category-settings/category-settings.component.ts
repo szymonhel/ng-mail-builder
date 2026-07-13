@@ -1,4 +1,5 @@
 import { Component, effect, inject, signal, OnDestroy } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CategoriesService } from '../../services/categories.service';
@@ -23,7 +24,7 @@ import { HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent } from '@spartan-n
 @Component({
   selector: 'app-category-settings',
   standalone: true,
-  imports: [FormsModule, RouterLink, SettingsFormComponent, ColorPaletteEditorComponent, ColorPickerComponent, SettingsSaveBarComponent, AssetsTabComponent, ApiKeysSectionComponent, HlmButton, HlmInput, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
+  imports: [NgTemplateOutlet, FormsModule, RouterLink, SettingsFormComponent, ColorPaletteEditorComponent, ColorPickerComponent, SettingsSaveBarComponent, AssetsTabComponent, ApiKeysSectionComponent, HlmButton, HlmInput, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
   templateUrl: './category-settings.component.html',
 })
 export class CategorySettingsComponent implements OnDestroy {

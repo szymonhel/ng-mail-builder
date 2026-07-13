@@ -6,6 +6,7 @@
       <span>Email Builder</span>
     </div>
     <div class="flex-1"></div>
+    <a hlmBtn variant="outline" size="sm" class="text-foreground" routerLink="/history">Sent history</a>
     <button hlmBtn size="sm" (click)="newEmail(null)">+ New email</button>
     <div class="flex items-center gap-2 ml-2 pl-4 border-l border-white/15">
       @if (auth.user$ | async; as user) {
