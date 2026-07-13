@@ -19,7 +19,7 @@
     </div>
     <div class="mb-3 flex flex-col gap-1">
       <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Background Color</label>
-      <app-color-picker [value]="row.backgroundColor ?? store.doc().settings.backgroundColor"
+      <app-color-picker [value]="row.backgroundColor ?? store.effectiveDoc().settings.backgroundColor"
              (valueChange)="updateRowBg($event)" />
       @if (row.backgroundColor) {
         <button type="button" hlmBtn variant="link" size="sm" class="mt-1 h-auto p-0 self-start" (click)="updateRowBg(null)">

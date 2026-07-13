@@ -1,0 +1,38 @@
+@if (editable()) {
+  <div class="flex items-end gap-2 mb-5 pb-5 border-b border-gray-200">
+    <div class="flex flex-col gap-1">
+      <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Color</label>
+      <input type="color" class="w-14 h-9 border border-gray-300 rounded-sm cursor-pointer p-0.5"
+             [ngModel]="newValue()" (ngModelChange)="newValue.set($event)" />
+    </div>
+    <div class="flex flex-col gap-1 flex-1">
+      <label class="text-[10px] font-semibold text-gray-600 uppercase tracking-wider">Name</label>
+      <input hlmInput type="text"
+             placeholder="e.g. Brand Blue" [ngModel]="newName()" (ngModelChange)="newName.set($event)" (keydown.enter)="add()" />
+    </div>
+    <button hlmBtn type="button"
+            [disabled]="!newName().trim()"
+            (click)="add()">Add color</button>
+  </div>
+}
+
+@if (colors().length === 0) {
+  <div class="text-sm text-gray-400 text-center py-8">
+    {{ editable() ? 'No saved colors yet. Add one above.' : 'This palette has no colors yet.' }}
+  </div>
+} @else {
+  <div class="grid grid-cols-2 gap-2">
+    @for (c of colors(); track c.id) {
+      <div class="flex items-center gap-2 border border-gray-200 rounded-sm px-2 py-1.5">
+        <span class="w-6 h-6 rounded-sm border border-gray-300 shrink-0" [style.background]="c.value"></span>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm text-gray-800 truncate">{{ c.name }}</div>
+          <div class="text-[10px] text-gray-400">{{ c.value }}</div>
+        </div>
+        @if (editable()) {
+          <button hlmBtn type="button" variant="ghost" size="icon-sm" class="text-destructive" (click)="removed.emit(c.id)">&#x2715;</button>
+        }
+      </div>
+    }
+  </div>
+}

@@ -10,87 +10,32 @@
   <!-- Global settings tab -->
   <div hlmTabsContent="global" class="flex-1 overflow-auto p-6">
     <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 flex flex-col gap-5">
-
-      <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Layout</div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs text-gray-600">Content width (px)</label>
-          <input hlmInput type="number"
-                 [value]="store.doc().settings.contentWidth"
-                 (change)="store.updateSettings({ contentWidth: +$any($event.target).value })" />
-        </div>
-      </div>
-
-      <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Colors</div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs text-gray-600">Page background</label>
-          <app-color-picker [value]="store.doc().settings.backgroundColor"
-                 (valueChange)="store.updateSettings({ backgroundColor: $event })" />
-          <label class="text-xs text-gray-600">Email body background</label>
-          <app-color-picker [value]="store.doc().settings.bodyColor"
-                 (valueChange)="store.updateSettings({ bodyColor: $event })" />
-        </div>
-      </div>
-
-      <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Body Border</div>
-        <div class="grid grid-cols-3 gap-2">
-          <div class="flex flex-col gap-1">
-            <label class="text-xs text-gray-600">Width (px)</label>
-            <input hlmInput type="number" min="0"
-                   [value]="store.doc().settings.bodyBorderWidth"
-                   (change)="store.updateSettings({ bodyBorderWidth: +$any($event.target).value })" />
+      @if (store.category(); as cat) {
+        @if (store.doc().inheritSettings) {
+          <div class="flex items-start justify-between gap-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+            <div>
+              <div class="text-sm font-medium text-blue-900">Using defaults from “{{ cat.name }}”</div>
+              <p class="text-xs text-blue-700 m-0 mt-1">
+                Layout, colors, border, typography and preview text come from the category container.
+                Changes to the category apply to this email automatically.
+              </p>
+            </div>
+            <button hlmBtn variant="outline" size="sm" class="shrink-0" (click)="store.overrideSettings()">Override for this email</button>
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-xs text-gray-600">Color</label>
-            <app-color-picker [value]="store.doc().settings.bodyBorderColor"
-                   (valueChange)="store.updateSettings({ bodyBorderColor: $event })" />
+          <app-settings-form [settings]="store.effectiveDoc().settings" (settingsChange)="onInheritedSettingsEdit()" class="opacity-60 pointer-events-none select-none" />
+        } @else {
+          <div class="flex items-start justify-between gap-4 bg-amber-50 border border-amber-200 rounded-md p-4">
+            <div>
+              <div class="text-sm font-medium text-amber-900">Overriding “{{ cat.name }}” defaults</div>
+              <p class="text-xs text-amber-700 m-0 mt-1">This email keeps its own global settings.</p>
+            </div>
+            <button hlmBtn variant="outline" size="sm" class="shrink-0" (click)="store.useCategorySettings()">Use category defaults</button>
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-xs text-gray-600">Style</label>
-            <select hlmInput [value]="store.doc().settings.bodyBorderStyle"
-                    (change)="store.updateSettings({ bodyBorderStyle: $any($event.target).value })">
-              <option value="solid">Solid</option>
-              <option value="dashed">Dashed</option>
-              <option value="dotted">Dotted</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Typography</div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs text-gray-600">Font family</label>
-          <input hlmInput type="text"
-                 [value]="store.doc().settings.fontFamily"
-                 (change)="store.updateSettings({ fontFamily: $any($event.target).value })"
-                 placeholder="Arial, sans-serif" />
-          <label class="text-xs text-gray-600">Google Font name</label>
-          <input hlmInput type="text"
-                 [value]="store.doc().settings.googleFontName"
-                 (change)="store.updateSettings({ googleFontName: $any($event.target).value })"
-                 placeholder="e.g. Roboto" />
-          <label class="text-xs text-gray-600">Google Font URL</label>
-          <input hlmInput type="text"
-                 [value]="store.doc().settings.googleFontUrl"
-                 (change)="store.updateSettings({ googleFontUrl: $any($event.target).value })"
-                 placeholder="https://fonts.googleapis.com/css?family=Roboto" />
-        </div>
-      </div>
-
-      <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Inbox</div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs text-gray-600">Preview text</label>
-          <input hlmInput type="text"
-                 [value]="store.doc().settings.previewText"
-                 (change)="store.updateSettings({ previewText: $any($event.target).value })"
-                 placeholder="Shown in inbox before opening..." />
-        </div>
-      </div>
-
+          <app-settings-form [settings]="store.doc().settings" (settingsChange)="store.updateSettings($event)" />
+        }
+      } @else {
+        <app-settings-form [settings]="store.doc().settings" (settingsChange)="store.updateSettings($event)" />
+      }
     </div>
 
     <!-- Account-level settings (stored per user, apply to every email) -->
@@ -109,18 +54,6 @@
           <button class="text-red-600 text-xs underline shrink-0" (click)="userSettings.error.set(null)">Dismiss</button>
         </div>
       }
-
-      <div>
-        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">AI</div>
-        <div class="flex flex-col gap-2">
-          <label class="text-xs text-gray-600">OpenAI API key</label>
-          <input hlmInput type="password" autocomplete="off"
-                 [value]="userSettings.openaiKey()"
-                 (change)="userSettings.setOpenaiKey($any($event.target).value)"
-                 placeholder="sk-..." />
-          <p class="text-[10px] text-gray-400 m-0">Used by AI import and auto-translate. Sent to our server per request and forwarded to OpenAI.</p>
-        </div>
-      </div>
 
       <div>
         <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Button defaults</div>
@@ -168,11 +101,53 @@
         }
       </div>
     </div>
+
+    <!-- Static info for API consumers: which id to send with POST /send/template -->
+    <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 mt-6">
+      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Email ID</div>
+      @if (templateId(); as id) {
+        <p class="text-[10px] text-gray-400 mt-0 mb-2">Use this as the <code class="bg-gray-100 px-1 rounded">templateId</code> when sending this email through the API. API keys are managed in the category container settings.</p>
+        <div class="flex items-center gap-2">
+          <code class="text-[11px] bg-gray-50 border border-gray-200 rounded-sm px-2 py-1.5">{{ id }}</code>
+          <button hlmBtn variant="outline" size="sm" (click)="copyTemplateId(id)">{{ copiedId() ? 'Copied ✓' : 'Copy' }}</button>
+        </div>
+      } @else {
+        <p class="text-xs text-gray-400 m-0">Save this email to get its ID for API sends.</p>
+      }
+    </div>
   </div>
 
   <!-- Colors tab -->
-  <div hlmTabsContent="colors" class="flex-1 overflow-hidden flex">
-    <app-colors-tab class="flex flex-1 overflow-hidden" />
+  <div hlmTabsContent="colors" class="flex-1 overflow-hidden flex flex-col">
+    @if (store.category(); as cat) {
+      <div class="flex-1 overflow-auto p-6">
+      <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
+        @if (store.doc().inheritColors) {
+          <div class="flex items-start justify-between gap-4 bg-blue-50 border border-blue-200 rounded-md p-4 mb-5">
+            <div>
+              <div class="text-sm font-medium text-blue-900">Palette from “{{ cat.name }}”</div>
+              <p class="text-xs text-blue-700 m-0 mt-1">These colors show up as quick picks in every color picker. Edit them in the category settings, or override for this email only.</p>
+            </div>
+            <button hlmBtn variant="outline" size="sm" class="shrink-0" (click)="store.overrideColors()">Override for this email</button>
+          </div>
+          <app-color-palette-editor [colors]="cat.savedColors" [editable]="false" />
+        } @else {
+          <div class="flex items-start justify-between gap-4 bg-amber-50 border border-amber-200 rounded-md p-4 mb-5">
+            <div>
+              <div class="text-sm font-medium text-amber-900">Custom palette for this email</div>
+              <p class="text-xs text-amber-700 m-0 mt-1">Saved with the email document instead of the “{{ cat.name }}” category.</p>
+            </div>
+            <button hlmBtn variant="outline" size="sm" class="shrink-0" (click)="store.useCategoryColors()">Use category colors</button>
+          </div>
+          <app-color-palette-editor [colors]="store.doc().savedColors ?? []"
+                                    (added)="store.addDocColor($event.name, $event.value)"
+                                    (removed)="store.removeDocColor($event)" />
+        }
+      </div>
+      </div>
+    } @else {
+      <app-colors-tab class="flex flex-1 overflow-hidden" />
+    }
   </div>
 
   <!-- Variables tab -->

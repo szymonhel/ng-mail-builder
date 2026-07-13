@@ -1,0 +1,81 @@
+<div class="flex flex-col gap-5">
+  <div>
+    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Layout</div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-gray-600">Content width (px)</label>
+      <input hlmInput type="number"
+             [value]="settings().contentWidth"
+             (change)="update({ contentWidth: +$any($event.target).value })" />
+    </div>
+  </div>
+
+  <div>
+    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Colors</div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-gray-600">Page background</label>
+      <app-color-picker [value]="settings().backgroundColor"
+             (valueChange)="update({ backgroundColor: $event })" />
+      <label class="text-xs text-gray-600">Email body background</label>
+      <app-color-picker [value]="settings().bodyColor"
+             (valueChange)="update({ bodyColor: $event })" />
+    </div>
+  </div>
+
+  <div>
+    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Body Border</div>
+    <div class="grid grid-cols-3 gap-2">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs text-gray-600">Width (px)</label>
+        <input hlmInput type="number" min="0"
+               [value]="settings().bodyBorderWidth"
+               (change)="update({ bodyBorderWidth: +$any($event.target).value })" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs text-gray-600">Color</label>
+        <app-color-picker [value]="settings().bodyBorderColor"
+               (valueChange)="update({ bodyBorderColor: $event })" />
+      </div>
+      <div class="flex flex-col gap-1">
+        <label class="text-xs text-gray-600">Style</label>
+        <select hlmInput [value]="settings().bodyBorderStyle"
+                (change)="update({ bodyBorderStyle: $any($event.target).value })">
+          <option value="solid">Solid</option>
+          <option value="dashed">Dashed</option>
+          <option value="dotted">Dotted</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Typography</div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-gray-600">Font family</label>
+      <input hlmInput type="text"
+             [value]="settings().fontFamily"
+             (change)="update({ fontFamily: $any($event.target).value })"
+             placeholder="Arial, sans-serif" />
+      <label class="text-xs text-gray-600">Google Font name</label>
+      <input hlmInput type="text"
+             [value]="settings().googleFontName"
+             (change)="update({ googleFontName: $any($event.target).value })"
+             placeholder="e.g. Roboto" />
+      <label class="text-xs text-gray-600">Google Font URL</label>
+      <input hlmInput type="text"
+             [value]="settings().googleFontUrl"
+             (change)="update({ googleFontUrl: $any($event.target).value })"
+             placeholder="https://fonts.googleapis.com/css?family=Roboto" />
+    </div>
+  </div>
+
+  <div>
+    <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Inbox</div>
+    <div class="flex flex-col gap-2">
+      <label class="text-xs text-gray-600">Preview text</label>
+      <input hlmInput type="text"
+             [value]="settings().previewText"
+             (change)="update({ previewText: $any($event.target).value })"
+             placeholder="Shown in inbox before opening..." />
+    </div>
+  </div>
+</div>

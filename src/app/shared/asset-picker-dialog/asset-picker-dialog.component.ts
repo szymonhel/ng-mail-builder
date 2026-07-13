@@ -1,5 +1,6 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { AssetsService, Asset } from '../../services/assets.service';
+import { WorkspaceContextService } from '../../services/workspace-context.service';
 import { HlmButton } from '@spartan-ng/helm/button';
 
 // Modal asset library: pick an existing upload or upload a new image, which is
@@ -12,6 +13,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 })
 export class AssetPickerDialogComponent {
   private assetsService = inject(AssetsService);
+  private workspace = inject(WorkspaceContextService);
 
   closed = output<void>();
   selected = output<Asset>();
@@ -23,7 +25,7 @@ export class AssetPickerDialogComponent {
 
   constructor() {
     this.loading.set(true);
-    this.assetsService.list().subscribe({
+    this.assetsService.list(this.workspace.categoryId()).subscribe({
       next: assets => {
         this.assets.set(assets);
         this.loading.set(false);
@@ -47,7 +49,7 @@ export class AssetPickerDialogComponent {
 
     this.error.set(null);
     this.uploading.set(true);
-    this.assetsService.upload(file).subscribe({
+    this.assetsService.upload(file, this.workspace.categoryId()).subscribe({
       next: asset => {
         this.uploading.set(false);
         this.selected.emit(asset);

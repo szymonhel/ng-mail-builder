@@ -1,4 +1,4 @@
-import { EmailDoc, Row, Column, Block, BlockType, DocSettings, EmailCollection, EmailVariable, Locale } from '../models/email-doc.model';
+import { EmailDoc, Row, Column, Block, BlockType, DocSettings, EmailCollection, EmailVariable, Locale, SavedColor } from '../models/email-doc.model';
 import { uid } from './id.utils';
 
 const DEFAULT_SETTINGS: DocSettings = {
@@ -127,6 +127,19 @@ export function normalizeImportedDoc(input: any): EmailDoc {
     locales,
     translations,
     rows,
+    // Category inheritance flags: missing means "keep own settings/colors", the
+    // safe reading for docs exported before categories existed.
+    inheritSettings: input.inheritSettings === true,
+    inheritColors: input.inheritColors === true,
+    savedColors: Array.isArray(input.savedColors)
+      ? input.savedColors
+          .filter((c: any) => typeof c?.value === 'string')
+          .map((c: any): SavedColor => ({
+            id: typeof c?.id === 'string' ? c.id : uid(),
+            name: typeof c?.name === 'string' ? c.name : '',
+            value: c.value,
+          }))
+      : undefined,
   };
 }
 

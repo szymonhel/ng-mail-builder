@@ -21,7 +21,7 @@
   </div>
 
   <!-- Columns -->
-  <div class="flex divide-x divide-gray-200" [style.background]="row().backgroundColor ?? store.doc().settings.bodyColor">
+  <div class="flex divide-x divide-gray-200" [style.background]="row().backgroundColor ?? store.effectiveDoc().settings.bodyColor">
     @for (col of row().columns; track col.id; let last = $last) {
       <div class="flex-1 min-w-0 relative ring-inset transition-colors"
            [class.ring-2]="isColumnSelected(col.id)"

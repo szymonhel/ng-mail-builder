@@ -7,8 +7,11 @@ import aiImportPdfRouter from './routes/aiImportPdf';
 import aiTranslateRouter from './routes/aiTranslate';
 import assetsRouter from './routes/assets';
 import templatesRouter from './routes/templates';
+import categoriesRouter from './routes/categories';
 import settingsRouter from './routes/settings';
+import apiKeysRouter from './routes/apikeys';
 import { checkJwt } from './middleware/auth';
+import { apiKeyOrJwt } from './middleware/apiKeyAuth';
 
 const app = express();
 const port = process.env.PORT ?? 3000;
@@ -26,13 +29,18 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.use('/send', checkJwt, sendRouter);
+// External services may authenticate /send and /templates with an X-Api-Key header;
+// inside those routers, key-authenticated requests are limited to POST /send/template
+// and GET /templates/:id/contract. Everything else is Auth0-only.
+app.use('/send', apiKeyOrJwt, sendRouter);
 app.use('/ai/import-image', checkJwt, aiImportRouter);
 app.use('/ai/import-pdf', checkJwt, aiImportPdfRouter);
 app.use('/ai/translate', checkJwt, aiTranslateRouter);
 app.use('/assets', checkJwt, assetsRouter);
-app.use('/templates', checkJwt, templatesRouter);
+app.use('/templates', apiKeyOrJwt, templatesRouter);
+app.use('/categories', checkJwt, categoriesRouter);
 app.use('/settings', checkJwt, settingsRouter);
+app.use('/apikeys', checkJwt, apiKeysRouter);
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);

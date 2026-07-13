@@ -39,6 +39,18 @@ function userPrefix(req: Request): string {
   return `${sub}/`;
 }
 
+// Category-scoped assets live under `<sub>/c/<categoryId>/`; everything else directly
+// under `<sub>/` (including all pre-category uploads) is the account-wide pool, which
+// stays visible from every email.
+function categoryPrefix(req: Request, categoryId: string): string {
+  return `${userPrefix(req)}c/${encodeURIComponent(categoryId)}/`;
+}
+
+function requestedCategory(req: Request): string | null {
+  const raw = req.query.category;
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
+}
+
 function blobUrl(containerUrl: string, name: string): string {
   return `${containerUrl}/${name.split('/').map(encodeURIComponent).join('/')}`;
 }
@@ -61,7 +73,9 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
 
   try {
     const container = await getAssetsContainer();
-    const name = `${userPrefix(req)}${blobNameFor(req.file.originalname)}`;
+    const category = requestedCategory(req);
+    const prefix = category ? categoryPrefix(req, category) : userPrefix(req);
+    const name = `${prefix}${blobNameFor(req.file.originalname)}`;
     const blob = container.getBlockBlobClient(name);
     await blob.uploadData(req.file.buffer, {
       blobHTTPHeaders: {
@@ -77,16 +91,25 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
   }
 });
 
+// Without ?category: the account-wide pool. With ?category=<id>: that category's
+// assets plus the account pool (marked by scope), so shared assets stay usable
+// from categorized emails.
 router.get('/', async (req: Request, res: Response) => {
   try {
     const container = await getAssetsContainer();
-    const assets: { name: string; url: string; size?: number; contentType?: string; lastModified?: string; width?: number; height?: number }[] = [];
-    for await (const blob of container.listBlobsFlat({ prefix: userPrefix(req), includeMetadata: true })) {
+    const category = requestedCategory(req);
+    const userPfx = userPrefix(req);
+    const catPfx = category ? categoryPrefix(req, category) : null;
+    const assets: { name: string; url: string; scope: 'account' | 'category'; size?: number; contentType?: string; lastModified?: string; width?: number; height?: number }[] = [];
+    for await (const blob of container.listBlobsFlat({ prefix: userPfx, includeMetadata: true })) {
+      const inCategoryDir = blob.name.startsWith(`${userPfx}c/`);
+      if (inCategoryDir && (!catPfx || !blob.name.startsWith(catPfx))) continue;
       const width = blob.metadata?.width ? Number(blob.metadata.width) : undefined;
       const height = blob.metadata?.height ? Number(blob.metadata.height) : undefined;
       assets.push({
         name: blob.name,
         url: blobUrl(container.url, blob.name),
+        scope: inCategoryDir ? 'category' : 'account',
         size: blob.properties.contentLength,
         contentType: blob.properties.contentType,
         lastModified: blob.properties.lastModified?.toISOString(),
