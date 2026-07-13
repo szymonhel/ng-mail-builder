@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import Mailjet from 'node-mailjet';
+import { getMailjetClient } from '../lib/mailjet';
 import mjml2html from 'mjml';
 import { getTemplatesTable, getCategoriesTable, getSettingsTable } from '../lib/azureTables';
 import { unchunkJson } from '../lib/tableJson';
@@ -106,13 +106,10 @@ async function compileAndSend(res: Response, mjml: string, history: SendContext)
     return;
   }
 
-  const client = new Mailjet({
-    apiKey: process.env.MAILJET_API_KEY!,
-    apiSecret: process.env.MAILJET_API_SECRET!,
-  });
+  const client = getMailjetClient();
 
   try {
-    await client.post('send', { version: 'v3.1' }).request({
+    const result = await client.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
           From: {
@@ -126,7 +123,15 @@ async function compileAndSend(res: Response, mjml: string, history: SendContext)
       ],
     });
 
-    recordSend(ownerSub, { ...context, status: 'sent' });
+    // Message ids from the send response enable delivery-status lookups later
+    // (GET /history/:id/status).
+    const recipient = (result.body as any)?.Messages?.[0]?.To?.[0];
+    recordSend(ownerSub, {
+      ...context,
+      status: 'sent',
+      mailjetMessageId: recipient?.MessageID != null ? String(recipient.MessageID) : undefined,
+      mailjetMessageUuid: recipient?.MessageUUID || undefined,
+    });
     res.json({ success: true });
   } catch (err: unknown) {
     const mjErr = err as any;

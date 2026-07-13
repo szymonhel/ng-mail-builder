@@ -25,6 +25,13 @@ export interface SendHistoryEntry {
   // kept for debugging what an external caller actually sent.
   variablesJson?: string;
   collectionsJson?: string;
+  // Mailjet identifiers from the send response, enabling later delivery lookups.
+  mailjetMessageId?: string;
+  mailjetMessageUuid?: string;
+  // Last delivery status fetched from Mailjet (sent/opened/clicked/bounced/...),
+  // cached here with its fetch time so the list can show it without re-querying.
+  deliveryStatus?: string;
+  deliveryCheckedAt?: string;
 }
 
 export interface RecordSendInput extends Omit<SendHistoryEntry, 'id' | 'sentAt' | 'variablesJson' | 'collectionsJson'> {
@@ -74,6 +81,10 @@ export function recordSend(ownerSub: string, input: RecordSendInput): void {
         language: input.language ?? '',
         variablesJson: truncatedVariablesJson(input.variables),
         collectionsJson: collectionCountsJson(input.collections),
+        mailjetMessageId: input.mailjetMessageId ?? '',
+        mailjetMessageUuid: input.mailjetMessageUuid ?? '',
+        deliveryStatus: '',
+        deliveryCheckedAt: '',
       };
       await table.createEntity(entity as any);
     } catch (err: any) {
@@ -99,7 +110,33 @@ function entryFromEntity(entity: Record<string, unknown>): SendHistoryEntry {
     language: (entity.language as string) || undefined,
     variablesJson: (entity.variablesJson as string) || undefined,
     collectionsJson: (entity.collectionsJson as string) || undefined,
+    mailjetMessageId: (entity.mailjetMessageId as string) || undefined,
+    mailjetMessageUuid: (entity.mailjetMessageUuid as string) || undefined,
+    deliveryStatus: (entity.deliveryStatus as string) || undefined,
+    deliveryCheckedAt: (entity.deliveryCheckedAt as string) || undefined,
   };
+}
+
+export async function getSendHistoryEntry(ownerSub: string, id: string): Promise<SendHistoryEntry | null> {
+  try {
+    const table = await getSendHistoryTable();
+    const entity = await table.getEntity(ownerSub, id);
+    return entryFromEntity(entity as Record<string, unknown>);
+  } catch (err: any) {
+    if (err?.statusCode === 404) return null;
+    throw err;
+  }
+}
+
+// Caches the latest Mailjet delivery status on the history row.
+export async function updateDeliveryStatus(ownerSub: string, id: string, status: string): Promise<void> {
+  const table = await getSendHistoryTable();
+  await table.updateEntity({
+    partitionKey: ownerSub,
+    rowKey: id,
+    deliveryStatus: status,
+    deliveryCheckedAt: new Date().toISOString(),
+  } as any, 'Merge');
 }
 
 export async function listSendHistory(ownerSub: string, options: { templateId?: string; limit?: number } = {}): Promise<SendHistoryEntry[]> {

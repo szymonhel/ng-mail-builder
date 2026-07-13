@@ -37,6 +37,13 @@
                       [class]="entry.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
                   {{ entry.status === 'sent' ? 'Sent' : 'Failed' }}
                 </span>
+                @if (entry.deliveryStatus; as delivery) {
+                  <span class="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-sm shrink-0"
+                        [title]="'Delivery status from Mailjet' + (entry.deliveryCheckedAt ? ', checked ' + entry.deliveryCheckedAt : '')"
+                        [class]="deliveryTone(delivery) === 'good' ? 'bg-blue-100 text-blue-700' : deliveryTone(delivery) === 'bad' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'">
+                    {{ delivery }}
+                  </span>
+                }
                 <div class="flex-1 min-w-0">
                   <div class="text-sm text-gray-800 truncate">
                     {{ entry.subject }}
@@ -81,6 +88,52 @@
                   }
                   @if (entry.error) {
                     <div class="text-red-600 break-all"><span class="font-semibold">Error:</span> {{ entry.error }}</div>
+                  }
+
+                  @if (entry.status === 'sent') {
+                    <div>
+                      <div class="flex items-center gap-3 mb-1">
+                        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Delivery (Mailjet)</div>
+                        @if (entry.mailjetMessageId) {
+                          <button hlmBtn variant="outline" size="xs"
+                                  [disabled]="deliveryLoading() === entry.id"
+                                  (click)="checkDelivery(entry)">
+                            {{ deliveryLoading() === entry.id ? 'Checking…' : (deliveryResults()[entry.id] || entry.deliveryStatus ? 'Refresh status' : 'Check delivery status') }}
+                          </button>
+                        } @else {
+                          <span class="text-[10px] text-gray-400">Not available for this send (no Mailjet message id recorded).</span>
+                        }
+                      </div>
+                      @if (deliveryError() && deliveryLoading() === null && expandedId() === entry.id) {
+                        <div class="text-red-600 text-[11px]">{{ deliveryError() }}</div>
+                      }
+                      @if (deliveryResults()[entry.id]; as delivery) {
+                        <div class="flex flex-col gap-1">
+                          <div class="text-gray-700">
+                            Status: <span class="font-semibold">{{ delivery.status }}</span>
+                            @if (delivery.arrivedAt) { <span class="text-gray-400"> · arrived {{ delivery.arrivedAt | date:'medium' }}</span> }
+                            <span class="text-gray-400"> · checked {{ delivery.checkedAt | date:'mediumTime' }}</span>
+                          </div>
+                          @if (delivery.events.length > 0) {
+                            <div class="flex flex-col gap-0.5 mt-1">
+                              @for (event of delivery.events; track $index) {
+                                <div class="text-gray-600">
+                                  <span class="text-gray-400">{{ event.at ? (event.at | date:'medium') : '—' }}</span>
+                                  · <span class="font-medium">{{ event.type }}</span>
+                                  @if (event.state) { <span class="text-gray-400"> ({{ event.state }})</span> }
+                                </div>
+                              }
+                            </div>
+                          } @else {
+                            <div class="text-[11px] text-gray-400">No event timeline available (Mailjet returns it only on some plans / recent messages).</div>
+                          }
+                        </div>
+                      } @else if (entry.deliveryStatus) {
+                        <div class="text-gray-600">Last known status: <span class="font-semibold">{{ entry.deliveryStatus }}</span>
+                          @if (entry.deliveryCheckedAt) { <span class="text-gray-400"> · checked {{ entry.deliveryCheckedAt | date:'medium' }}</span> }
+                        </div>
+                      }
+                    </div>
                   }
                 </div>
               }
