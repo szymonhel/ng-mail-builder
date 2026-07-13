@@ -2,13 +2,14 @@ import { Component, inject, output, signal } from '@angular/core';
 import { AssetsService, Asset } from '../../services/assets.service';
 import { WorkspaceContextService } from '../../services/workspace-context.service';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../spinner/spinner.component';
 
 // Modal asset library: pick an existing upload or upload a new image, which is
 // then selected immediately. Emits the chosen asset; the caller takes its URL.
 @Component({
   selector: 'app-asset-picker-dialog',
   standalone: true,
-  imports: [HlmButton],
+  imports: [HlmButton, SpinnerComponent],
   templateUrl: './asset-picker-dialog.component.html',
 })
 export class AssetPickerDialogComponent {

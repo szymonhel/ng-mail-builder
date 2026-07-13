@@ -23,8 +23,23 @@
     </div>
   }
 
+  <!-- Save control shown in each draft card's header (like the Assets card's Upload
+       button); all cards persist as one category config, so they share dirty/saved state. -->
+  <ng-template #saveBar>
+    <div class="flex items-center gap-3 shrink-0">
+      @if (dirty()) {
+        <span class="text-[11px] text-amber-600">Unsaved changes</span>
+      } @else if (saveState() === 'idle') {
+        <span class="text-[11px] text-gray-400">All changes saved</span>
+      }
+      <button hlmBtn size="sm" [disabled]="saveState() === 'saving' || !name().trim() || (!dirty() && saveState() === 'idle')" (click)="save()">
+        {{ saveState() === 'saving' ? 'Saving…' : saveState() === 'saved' ? 'Saved ✓' : saveState() === 'error' ? 'Save failed' : 'Save' }}
+      </button>
+    </div>
+  </ng-template>
+
   @if (loading()) {
-    <div class="text-sm text-gray-400 text-center py-16">Loading category…</div>
+    <app-spinner label="Loading category…" [center]="true" />
   } @else {
     <div hlmTabs tab="global" class="flex flex-col flex-1 overflow-hidden">
       <div hlmTabsList class="w-full max-w-4xl mx-auto mt-6 shrink-0 rounded-none border-b border-gray-200 bg-white h-auto p-0">
@@ -36,6 +51,16 @@
 
       <div hlmTabsContent="global" class="flex-1 overflow-auto p-6">
         <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 flex flex-col gap-5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900 m-0">Global defaults</h2>
+              <p class="text-xs text-gray-500 m-0 mt-1">
+                Apply to every email in this category that hasn't overridden them —
+                changes here update those emails automatically.
+              </p>
+            </div>
+            <ng-container [ngTemplateOutlet]="saveBar" />
+          </div>
           <div>
             <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-2">Category</div>
             <div class="flex flex-col gap-2">
@@ -43,10 +68,6 @@
               <input hlmInput type="text" [ngModel]="name()" (ngModelChange)="setName($event)" />
             </div>
           </div>
-          <p class="text-xs text-gray-400 m-0">
-            These defaults apply to every email in this category that hasn't overridden them —
-            changes here update those emails automatically.
-          </p>
           <app-settings-form [settings]="settings()" (settingsChange)="updateSettings($event)" />
         </div>
 
@@ -57,11 +78,14 @@
               <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Button defaults</div>
               <p class="text-[10px] text-gray-400 m-0">Applied to new button blocks (and hero buttons) added to emails in this category — existing blocks keep their styling.</p>
             </div>
-            @if (buttonDefaults()) {
-              <button hlmBtn variant="outline" size="sm" class="shrink-0" (click)="useAccountButtonDefaults()">Use account defaults</button>
-            } @else {
-              <button hlmBtn variant="outline" size="sm" class="shrink-0" (click)="customizeButtonDefaults()">Customize for this category</button>
-            }
+            <div class="flex items-center gap-2 shrink-0">
+              @if (buttonDefaults()) {
+                <button hlmBtn variant="outline" size="sm" (click)="useAccountButtonDefaults()">Use account defaults</button>
+              } @else {
+                <button hlmBtn variant="outline" size="sm" (click)="customizeButtonDefaults()">Customize for this category</button>
+              }
+              <ng-container [ngTemplateOutlet]="saveBar" />
+            </div>
           </div>
           @if (buttonDefaults(); as btn) {
             <div class="grid grid-cols-3 gap-2">
@@ -91,7 +115,10 @@
               <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Global data</div>
               <p class="text-[10px] text-gray-400 m-0">Reusable values available as {{ '{{name}}' }} in this category's emails. Overrides an account value with the same name; an email variable wins over both.</p>
             </div>
-            <button hlmBtn variant="outline" size="xs" (click)="addGlobalData()">+ Add</button>
+            <div class="flex items-center gap-2 shrink-0">
+              <button hlmBtn variant="outline" size="sm" (click)="addGlobalData()">+ Add</button>
+              <ng-container [ngTemplateOutlet]="saveBar" />
+            </div>
           </div>
           @if (globalData().length === 0) {
             <p class="text-xs text-gray-400 m-0">No category data yet — e.g. brandName, supportEmail, websiteUrl.</p>
@@ -113,10 +140,15 @@
 
       <div hlmTabsContent="colors" class="flex-1 overflow-auto p-6">
         <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6">
-          <h2 class="text-base font-semibold text-gray-900 mt-0 mb-1">Category palette</h2>
-          <p class="text-xs text-gray-500 mt-0 mb-4">
-            Quick-pick colors for every color picker in this category's emails (unless an email overrides them).
-          </p>
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900 m-0">Category palette</h2>
+              <p class="text-xs text-gray-500 m-0 mt-1">
+                Quick-pick colors for every color picker in this category's emails (unless an email overrides them).
+              </p>
+            </div>
+            <ng-container [ngTemplateOutlet]="saveBar" />
+          </div>
           <app-color-palette-editor [colors]="savedColors()"
                                     (added)="addColor($event)"
                                     (removed)="removeColor($event)" />

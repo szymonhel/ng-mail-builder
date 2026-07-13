@@ -99,6 +99,7 @@ Notes:
 - `variables` are optional — unprovided ones fall back to their default values, layered with account/category global data. Provided values always win. The `subject` also gets `{{token}}` substitution.
 - `collections` fill repeat blocks (repeated rows, table body rows, accordion items). A missing collection renders zero items — the in-editor sample data is never sent to a real recipient.
 - Responses: `200 {"success":true}` · `400` validation error · `401` invalid key · `403` email belongs to a different category than the key · `404` unknown `templateId`.
+- Every attempt (success or failure, app or API) is logged in the app under **Sent history**, including which API key sent it and the variables it provided.
 
 ### .NET example
 

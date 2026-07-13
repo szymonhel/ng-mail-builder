@@ -6,6 +6,7 @@
       <span>Email Builder</span>
     </div>
     <div class="flex-1"></div>
+    <a hlmBtn variant="outline" size="sm" class="text-foreground" routerLink="/history">Sent history</a>
     <button hlmBtn size="sm" (click)="newEmail(null)">+ New email</button>
     <div class="flex items-center gap-2 ml-2 pl-4 border-l border-white/15">
       @if (auth.user$ | async; as user) {
@@ -41,7 +42,7 @@
       </div>
 
       @if (loading()) {
-        <div class="text-sm text-gray-400 text-center py-16">Loading your emails…</div>
+        <app-spinner label="Loading your emails…" [center]="true" />
       } @else {
         @for (group of groups(); track group.category?.id ?? 'uncategorized') {
           <section class="bg-white rounded-lg border border-gray-200 overflow-hidden">

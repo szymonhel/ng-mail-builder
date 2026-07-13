@@ -5,6 +5,7 @@ import { ApiKeysService, ApiKeyMeta, CreatedApiKey } from '../../services/api-ke
 import { environment } from '../../../environments/environment';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 // Manage the API keys of one category container: keys let external services send
 // that category's emails (and read their contracts) — nothing else. Creating a key
@@ -12,7 +13,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 @Component({
   selector: 'app-api-keys-section',
   standalone: true,
-  imports: [DatePipe, FormsModule, HlmInput, HlmButton],
+  imports: [DatePipe, FormsModule, HlmInput, HlmButton, SpinnerComponent],
   templateUrl: './api-keys-section.component.html',
 })
 export class ApiKeysSectionComponent implements OnInit {

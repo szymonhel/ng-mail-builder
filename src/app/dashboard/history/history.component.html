@@ -1,0 +1,147 @@
+<div class="flex flex-col h-screen overflow-hidden font-sans bg-gray-100">
+  <!-- Top bar -->
+  <header class="flex items-center px-4 h-[52px] bg-[#1a1a2e] text-white shrink-0 gap-4">
+    <a routerLink="/" class="flex items-center gap-2 font-bold text-base mr-2 text-white no-underline hover:opacity-80 transition-opacity">
+      <span class="text-xl">&#x2709;</span>
+      <span>Email Builder</span>
+    </a>
+    <a routerLink="/" class="text-xs text-white/60 hover:text-white no-underline">&larr; Emails</a>
+    <span class="text-sm text-white/80">Sent history</span>
+    <div class="flex-1"></div>
+    <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="refresh()">Refresh</button>
+  </header>
+
+  <div class="flex-1 overflow-auto">
+    <div class="max-w-5xl mx-auto p-6 flex flex-col gap-4">
+
+      @if (error()) {
+        <div class="flex items-center justify-between gap-4 px-4 py-2 bg-red-50 border border-red-200 rounded-md">
+          <p class="text-red-600 text-xs m-0">{{ error() }}</p>
+          <button class="text-red-600 text-xs underline shrink-0" (click)="error.set(null)">Dismiss</button>
+        </div>
+      }
+
+      @if (loading()) {
+        <app-spinner label="Loading send history…" [center]="true" />
+      } @else if (entries().length === 0) {
+        <div class="bg-white rounded-lg border border-gray-200 text-sm text-gray-400 text-center py-16">
+          Nothing sent yet — every send attempt (from the app or via API keys) will show up here.
+        </div>
+      } @else {
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden divide-y divide-gray-100">
+          @for (entry of entries(); track entry.id) {
+            <div>
+              <button class="w-full text-left flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer border-0 bg-transparent"
+                      (click)="toggle(entry.id)">
+                <span class="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-sm shrink-0"
+                      [class]="entry.status === 'sent' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                  {{ entry.status === 'sent' ? 'Sent' : 'Failed' }}
+                </span>
+                @if (entry.deliveryStatus; as delivery) {
+                  <span class="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-sm shrink-0"
+                        [title]="'Delivery status from Mailjet' + (entry.deliveryCheckedAt ? ', checked ' + entry.deliveryCheckedAt : '')"
+                        [class]="deliveryTone(delivery) === 'good' ? 'bg-blue-100 text-blue-700' : deliveryTone(delivery) === 'bad' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'">
+                    {{ delivery }}
+                  </span>
+                }
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm text-gray-800 truncate">
+                    {{ entry.subject }}
+                    <span class="text-gray-400">→ {{ entry.toName || entry.to }}</span>
+                  </div>
+                  <div class="text-[10px] text-gray-400 truncate">
+                    {{ entry.sentAt | date:'medium' }}
+                    · {{ entry.templateName || (entry.templateId ? 'Saved email' : 'Raw MJML') }}
+                    @if (entry.language) { <span> · {{ entry.language }}</span> }
+                    · {{ entry.source === 'api' ? ('API key: ' + (entry.apiKeyName || 'unknown')) : 'App' }}
+                  </div>
+                </div>
+                <span class="text-gray-300 text-xs shrink-0">{{ expandedId() === entry.id ? '▲' : '▼' }}</span>
+              </button>
+
+              @if (expandedId() === entry.id) {
+                <div class="px-4 pb-3 pt-1 bg-gray-50 text-xs flex flex-col gap-2">
+                  <div class="grid grid-cols-[100px_1fr] gap-x-3 gap-y-1 text-gray-600">
+                    <span class="text-gray-400">Recipient</span><span>{{ entry.toName ? entry.toName + ' <' + entry.to + '>' : entry.to }}</span>
+                    @if (entry.templateId) {
+                      <span class="text-gray-400">Email ID</span><code class="text-[11px]">{{ entry.templateId }}</code>
+                    }
+                  </div>
+                  @if (detailLines(entry.variablesJson).length > 0) {
+                    <div>
+                      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Variables</div>
+                      <div class="grid grid-cols-[minmax(100px,auto)_1fr] gap-x-3 gap-y-0.5">
+                        @for (line of detailLines(entry.variablesJson); track line.name) {
+                          <code class="text-[11px] text-gray-500">{{ line.name }}</code>
+                          <span class="text-gray-700 break-all">{{ line.value }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                  @if (detailLines(entry.collectionsJson).length > 0) {
+                    <div>
+                      <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Collections</div>
+                      @for (line of detailLines(entry.collectionsJson); track line.name) {
+                        <span class="text-gray-600 mr-3"><code class="text-[11px]">{{ line.name }}</code>: {{ line.value }} item(s)</span>
+                      }
+                    </div>
+                  }
+                  @if (entry.error) {
+                    <div class="text-red-600 break-all"><span class="font-semibold">Error:</span> {{ entry.error }}</div>
+                  }
+
+                  @if (entry.status === 'sent') {
+                    <div>
+                      <div class="flex items-center gap-3 mb-1">
+                        <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">Delivery (Mailjet)</div>
+                        @if (entry.mailjetMessageId) {
+                          <button hlmBtn variant="outline" size="xs"
+                                  [disabled]="deliveryLoading() === entry.id"
+                                  (click)="checkDelivery(entry)">
+                            {{ deliveryLoading() === entry.id ? 'Checking…' : (deliveryResults()[entry.id] || entry.deliveryStatus ? 'Refresh status' : 'Check delivery status') }}
+                          </button>
+                        } @else {
+                          <span class="text-[10px] text-gray-400">Not available for this send (no Mailjet message id recorded).</span>
+                        }
+                      </div>
+                      @if (deliveryError() && deliveryLoading() === null && expandedId() === entry.id) {
+                        <div class="text-red-600 text-[11px]">{{ deliveryError() }}</div>
+                      }
+                      @if (deliveryResults()[entry.id]; as delivery) {
+                        <div class="flex flex-col gap-1">
+                          <div class="text-gray-700">
+                            Status: <span class="font-semibold">{{ delivery.status }}</span>
+                            @if (delivery.arrivedAt) { <span class="text-gray-400"> · arrived {{ delivery.arrivedAt | date:'medium' }}</span> }
+                            <span class="text-gray-400"> · checked {{ delivery.checkedAt | date:'mediumTime' }}</span>
+                          </div>
+                          @if (delivery.events.length > 0) {
+                            <div class="flex flex-col gap-0.5 mt-1">
+                              @for (event of delivery.events; track $index) {
+                                <div class="text-gray-600">
+                                  <span class="text-gray-400">{{ event.at ? (event.at | date:'medium') : '—' }}</span>
+                                  · <span class="font-medium">{{ event.type }}</span>
+                                  @if (event.state) { <span class="text-gray-400"> ({{ event.state }})</span> }
+                                </div>
+                              }
+                            </div>
+                          } @else {
+                            <div class="text-[11px] text-gray-400">No event timeline available (Mailjet returns it only on some plans / recent messages).</div>
+                          }
+                        </div>
+                      } @else if (entry.deliveryStatus) {
+                        <div class="text-gray-600">Last known status: <span class="font-semibold">{{ entry.deliveryStatus }}</span>
+                          @if (entry.deliveryCheckedAt) { <span class="text-gray-400"> · checked {{ entry.deliveryCheckedAt | date:'medium' }}</span> }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <p class="text-[10px] text-gray-400 text-center m-0">Showing the last {{ entries().length }} attempts.</p>
+      }
+    </div>
+  </div>
+</div>

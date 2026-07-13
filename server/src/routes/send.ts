@@ -1,10 +1,11 @@
 import { Router, Request, Response } from 'express';
-import Mailjet from 'node-mailjet';
+import { getMailjetClient } from '../lib/mailjet';
 import mjml2html from 'mjml';
 import { getTemplatesTable, getCategoriesTable, getSettingsTable } from '../lib/azureTables';
 import { unchunkJson } from '../lib/tableJson';
 import { applyVariables, defaultVariableValues, docToMjml, resolveDocForLocale, CollectionItems, EmailDoc } from '../lib/emailRender';
 import { isApiKeyAuth, apiKeyAllowsCategory } from '../middleware/apiKeyAuth';
+import { recordSend, RecordSendInput } from '../lib/sendHistory';
 
 const router = Router();
 
@@ -90,22 +91,25 @@ function sanitizeCollections(input: unknown): CollectionItems | null {
   return out;
 }
 
-async function compileAndSend(res: Response, mjml: string, to: string, toName: string | undefined, subject: string): Promise<void> {
+// Everything recordSend needs beyond the outcome itself; assembled by each route.
+type SendContext = { ownerSub: string } & Omit<RecordSendInput, 'status' | 'error'>;
+
+async function compileAndSend(res: Response, mjml: string, history: SendContext): Promise<void> {
+  const { ownerSub, ...context } = history;
+  const { to, toName, subject } = context;
   const { html, errors } = await mjml2html(mjml, { validationLevel: 'soft' });
 
   if (errors.length) {
     const messages = errors.map((e: any) => e.formattedMessage).join('; ');
+    recordSend(ownerSub, { ...context, status: 'failed', error: `MJML compilation failed: ${messages}` });
     res.status(400).json({ error: `MJML compilation failed: ${messages}` });
     return;
   }
 
-  const client = new Mailjet({
-    apiKey: process.env.MAILJET_API_KEY!,
-    apiSecret: process.env.MAILJET_API_SECRET!,
-  });
+  const client = getMailjetClient();
 
   try {
-    await client.post('send', { version: 'v3.1' }).request({
+    const result = await client.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
           From: {
@@ -119,12 +123,22 @@ async function compileAndSend(res: Response, mjml: string, to: string, toName: s
       ],
     });
 
+    // Message ids from the send response enable delivery-status lookups later
+    // (GET /history/:id/status).
+    const recipient = (result.body as any)?.Messages?.[0]?.To?.[0];
+    recordSend(ownerSub, {
+      ...context,
+      status: 'sent',
+      mailjetMessageId: recipient?.MessageID != null ? String(recipient.MessageID) : undefined,
+      mailjetMessageUuid: recipient?.MessageUUID || undefined,
+    });
     res.json({ success: true });
   } catch (err: unknown) {
     const mjErr = err as any;
     const statusCode = mjErr?.statusCode ?? 502;
     const detail = mjErr?.response?.body ?? mjErr?.message ?? 'Failed to send email';
     console.error('Mailjet error:', JSON.stringify(detail, null, 2));
+    recordSend(ownerSub, { ...context, status: 'failed', error: `Mailjet ${statusCode}: ${JSON.stringify(detail)}` });
     res.status(502).json({ error: `Mailjet ${statusCode}: ${JSON.stringify(detail)}` });
   }
 }
@@ -149,7 +163,11 @@ router.post('/', async (req: Request, res: Response) => {
     return;
   }
 
-  await compileAndSend(res, mjml, to, toName, subject);
+  await compileAndSend(res, mjml, {
+    ownerSub: req.auth!.payload.sub!,
+    to, toName, subject,
+    source: 'app',
+  });
 });
 
 router.post('/template', async (req: Request, res: Response) => {
@@ -177,6 +195,7 @@ router.post('/template', async (req: Request, res: Response) => {
 
   let doc: EmailDoc;
   let categoryId: string | null = null;
+  let templateName = '';
   try {
     const table = await getTemplatesTable();
     const sub = req.auth?.payload.sub;
@@ -184,6 +203,7 @@ router.post('/template', async (req: Request, res: Response) => {
     const entity = await table.getEntity(sub, templateId);
     doc = unchunkJson(entity as Record<string, unknown>) as EmailDoc;
     categoryId = (entity.categoryId as string) || null;
+    templateName = (entity.name as string) ?? '';
   } catch (err: any) {
     if (err?.statusCode === 404) {
       res.status(404).json({ error: 'Saved email not found.' });
@@ -236,7 +256,21 @@ router.post('/template', async (req: Request, res: Response) => {
   const localizedDoc = resolveDocForLocale(doc, localeId);
   const mjml = applyVariables(docToMjml(localizedDoc, values, collections), values);
 
-  await compileAndSend(res, mjml, to, toName, applyVariables(subject, values));
+  await compileAndSend(res, mjml, {
+    ownerSub: req.auth!.payload.sub!,
+    to, toName,
+    subject: applyVariables(subject, values),
+    source: isApiKeyAuth(req) ? 'api' : 'app',
+    apiKeyName: req.apiKeyName || undefined,
+    templateId,
+    templateName,
+    categoryId: categoryId ?? undefined,
+    language: language || undefined,
+    // The caller-provided values only (not the layered defaults) — that's what's
+    // useful when debugging what an integration actually sent.
+    variables,
+    collections,
+  });
 });
 
 export default router;

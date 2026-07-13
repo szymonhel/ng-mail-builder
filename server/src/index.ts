@@ -10,6 +10,7 @@ import templatesRouter from './routes/templates';
 import categoriesRouter from './routes/categories';
 import settingsRouter from './routes/settings';
 import apiKeysRouter from './routes/apikeys';
+import historyRouter from './routes/history';
 import { checkJwt } from './middleware/auth';
 import { apiKeyOrJwt } from './middleware/apiKeyAuth';
 
@@ -41,6 +42,7 @@ app.use('/templates', apiKeyOrJwt, templatesRouter);
 app.use('/categories', checkJwt, categoriesRouter);
 app.use('/settings', checkJwt, settingsRouter);
 app.use('/apikeys', checkJwt, apiKeysRouter);
+app.use('/history', checkJwt, historyRouter);
 
 app.listen(port, () => {
   console.log(`API listening on port ${port}`);

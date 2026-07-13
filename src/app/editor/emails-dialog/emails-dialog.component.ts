@@ -5,13 +5,14 @@ import { EditorStore } from '../../store/editor.store';
 import { TemplatesService, EmailTemplateMeta } from '../../services/templates.service';
 import { HlmInput } from '@spartan-ng/helm/input';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 
 // Save/open/delete emails stored in Azure Table storage. The dialog owns the
 // service calls; the editor tracks which saved email is currently loaded.
 @Component({
   selector: 'app-emails-dialog',
   standalone: true,
-  imports: [FormsModule, DatePipe, HlmInput, HlmButton],
+  imports: [FormsModule, DatePipe, HlmInput, HlmButton, SpinnerComponent],
   templateUrl: './emails-dialog.component.html',
 })
 export class EmailsDialogComponent {

@@ -43,3 +43,7 @@ export function getCategoriesTable(): Promise<TableClient> {
 export function getApiKeysTable(): Promise<TableClient> {
   return getTable(process.env.AZURE_APIKEYS_TABLE ?? 'apikeys');
 }
+
+export function getSendHistoryTable(): Promise<TableClient> {
+  return getTable(process.env.AZURE_SENDHISTORY_TABLE ?? 'sendhistory');
+}

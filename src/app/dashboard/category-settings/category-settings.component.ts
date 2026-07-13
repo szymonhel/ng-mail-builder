@@ -1,4 +1,5 @@
 import { Component, effect, inject, signal, OnDestroy } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CategoriesService } from '../../services/categories.service';
@@ -11,6 +12,7 @@ import { SettingsFormComponent } from '../../shared/settings-form/settings-form.
 import { ColorPaletteEditorComponent } from '../../shared/color-palette-editor/color-palette-editor.component';
 import { ColorPickerComponent } from '../../shared/color-picker/color-picker.component';
 import { SettingsSaveBarComponent } from '../../shared/settings-save-bar/settings-save-bar.component';
+import { SpinnerComponent } from '../../shared/spinner/spinner.component';
 import { AssetsTabComponent } from '../../editor/assets-tab/assets-tab.component';
 import { ApiKeysSectionComponent } from '../../editor/api-keys-section/api-keys-section.component';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -23,7 +25,7 @@ import { HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent } from '@spartan-n
 @Component({
   selector: 'app-category-settings',
   standalone: true,
-  imports: [FormsModule, RouterLink, SettingsFormComponent, ColorPaletteEditorComponent, ColorPickerComponent, SettingsSaveBarComponent, AssetsTabComponent, ApiKeysSectionComponent, HlmButton, HlmInput, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
+  imports: [NgTemplateOutlet, FormsModule, RouterLink, SettingsFormComponent, ColorPaletteEditorComponent, ColorPickerComponent, SettingsSaveBarComponent, SpinnerComponent, AssetsTabComponent, ApiKeysSectionComponent, HlmButton, HlmInput, HlmTabs, HlmTabsList, HlmTabsTrigger, HlmTabsContent],
   templateUrl: './category-settings.component.html',
 })
 export class CategorySettingsComponent implements OnDestroy {
