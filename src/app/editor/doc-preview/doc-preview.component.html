@@ -1,0 +1,18 @@
+<div class="flex flex-col h-full">
+  @if (doc().locales.length > 0) {
+    <div class="px-3 py-1.5 border-b border-gray-200 bg-gray-50 flex items-center">
+      <select class="text-xs border border-gray-300 rounded-sm px-2 py-1"
+              [ngModel]="locale()" (ngModelChange)="setLocale($event)">
+        <option [ngValue]="null">Source language</option>
+        @for (l of doc().locales; track l.id) {
+          <option [ngValue]="l.id">{{ l.label || l.code }}</option>
+        }
+      </select>
+    </div>
+  }
+  <div class="flex-1 overflow-auto bg-gray-200 p-3 flex justify-center">
+    <div class="w-full bg-white shadow-sm rounded-sm overflow-hidden" style="max-width: 700px;">
+      <iframe [src]="iframeSrc()" class="w-full h-full border-0 block" title="Version preview"></iframe>
+    </div>
+  </div>
+</div>

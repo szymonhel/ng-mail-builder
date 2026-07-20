@@ -1,0 +1,97 @@
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" (click)="closed.emit()">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-6xl h-[90vh] mx-4 overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
+
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between shrink-0">
+      <h2 class="text-base font-semibold text-gray-900 m-0">Version history @if (templateName()) { <span class="text-gray-400 font-normal">— {{ templateName() }}</span> }</h2>
+      <button hlmBtn type="button" variant="ghost" size="icon-sm" (click)="closed.emit()">&#x2715;</button>
+    </div>
+
+    @if (error()) {
+      <div class="flex items-center justify-between gap-4 px-6 py-2 bg-red-50 border-b border-red-200 shrink-0">
+        <p class="text-red-600 text-xs m-0">{{ error() }}</p>
+        <button class="text-red-600 text-xs underline shrink-0" (click)="error.set(null)">Dismiss</button>
+      </div>
+    }
+
+    <div class="flex-1 flex overflow-hidden">
+      <div class="w-72 shrink-0 border-r border-gray-200 overflow-y-auto p-3">
+        @if (loading()) {
+          <app-spinner label="Loading version history…" />
+        } @else {
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2 p-2 border rounded-md border-gray-200 bg-gray-50">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium m-0">Current (unsaved)</p>
+                <p class="text-[10px] text-gray-400 m-0">The live, in-editor state</p>
+              </div>
+              <button hlmBtn [variant]="leftId() === 'current' ? 'default' : 'outline'" size="xs" (click)="select('left', 'current')">A</button>
+              <button hlmBtn [variant]="rightId() === 'current' ? 'default' : 'outline'" size="xs" (click)="select('right', 'current')">B</button>
+            </div>
+            @if (list().length === 0) {
+              <p class="text-sm text-gray-500 m-0 px-2 py-1">No saved versions yet.</p>
+            }
+            @for (v of list(); track v.id) {
+              <div class="flex items-center gap-2 p-2 border rounded-md"
+                   [class.border-blue-300]="leftId() === v.id || rightId() === v.id"
+                   [class.bg-blue-50]="leftId() === v.id || rightId() === v.id"
+                   [class.border-gray-200]="leftId() !== v.id && rightId() !== v.id">
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium m-0">{{ v.savedAt | date:'medium' }}</p>
+                  <p class="text-[10px] text-gray-400 m-0 truncate">{{ v.comment || 'No comment' }}</p>
+                </div>
+                <button hlmBtn [variant]="leftId() === v.id ? 'default' : 'outline'" size="xs" (click)="select('left', v.id)">A</button>
+                <button hlmBtn [variant]="rightId() === v.id ? 'default' : 'outline'" size="xs" (click)="select('right', v.id)">B</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="flex-1 grid grid-cols-2 gap-4 p-4 overflow-hidden">
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 shrink-0">
+            <div class="min-w-0">
+              <p class="text-xs font-semibold m-0">A</p>
+              <p class="text-[10px] text-gray-400 m-0 truncate">
+                {{ leftId() === 'current' ? 'Current (unsaved)' : (metaFor(leftId())?.savedAt | date:'medium') }}
+                @if (metaFor(leftId())?.comment) { — {{ metaFor(leftId())?.comment }} }
+              </p>
+            </div>
+            <button hlmBtn variant="outline" size="xs" [disabled]="!docFor(leftId())" (click)="restore(leftId())">Restore</button>
+          </div>
+          <div class="flex-1 overflow-hidden">
+            @if (isLoading(leftId())) {
+              <app-spinner label="Loading…" />
+            } @else if (docFor(leftId()); as doc) {
+              <app-doc-preview class="block h-full" [doc]="doc" [globalValues]="store.globalValues()" />
+            } @else {
+              <p class="text-sm text-gray-400 p-4 m-0">Select a version on the left.</p>
+            }
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 shrink-0">
+            <div class="min-w-0">
+              <p class="text-xs font-semibold m-0">B</p>
+              <p class="text-[10px] text-gray-400 m-0 truncate">
+                {{ rightId() === 'current' ? 'Current (unsaved)' : (metaFor(rightId())?.savedAt | date:'medium') }}
+                @if (metaFor(rightId())?.comment) { — {{ metaFor(rightId())?.comment }} }
+              </p>
+            </div>
+            <button hlmBtn variant="outline" size="xs" [disabled]="!docFor(rightId())" (click)="restore(rightId())">Restore</button>
+          </div>
+          <div class="flex-1 overflow-hidden">
+            @if (isLoading(rightId())) {
+              <app-spinner label="Loading…" />
+            } @else if (docFor(rightId()); as doc) {
+              <app-doc-preview class="block h-full" [doc]="doc" [globalValues]="store.globalValues()" />
+            } @else {
+              <p class="text-sm text-gray-400 p-4 m-0">Select a version on the left.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

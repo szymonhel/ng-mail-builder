@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { getTemplatesTable } from '../lib/azureTables';
 import { chunkJson, unchunkJson } from '../lib/tableJson';
 import { isApiKeyAuth, apiKeyAllowsCategory } from '../middleware/apiKeyAuth';
+import { recordVersion, listVersions, getVersion } from '../lib/templateVersions';
 
 const router = Router();
 
@@ -131,6 +132,31 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
+// Newest-first version snapshots for one template; ?limit=<n> caps the page (default 50, max 200).
+router.get('/:id/versions', async (req: Request, res: Response) => {
+  try {
+    const limit = typeof req.query.limit === 'string' ? Number(req.query.limit) || undefined : undefined;
+    res.json({ versions: await listVersions(partitionKey(req), req.params.id as string, limit) });
+  } catch (err: any) {
+    console.error('Version list error:', err?.message ?? err);
+    res.status(502).json({ error: 'Failed to load version history.' });
+  }
+});
+
+router.get('/:id/versions/:versionId', async (req: Request, res: Response) => {
+  try {
+    const version = await getVersion(partitionKey(req), req.params.versionId as string);
+    if (!version) {
+      res.status(404).json({ error: 'Version not found.' });
+      return;
+    }
+    res.json(version);
+  } catch (err: any) {
+    console.error('Version get error:', err?.message ?? err);
+    res.status(502).json({ error: 'Failed to load version.' });
+  }
+});
+
 router.post('/', async (req: Request, res: Response) => {
   const { name, doc } = req.body ?? {};
   if (!name || typeof name !== 'string' || !doc) {
@@ -142,6 +168,12 @@ router.post('/', async (req: Request, res: Response) => {
     const id = randomUUID();
     const entity = toEntity(partitionKey(req), id, name.trim(), doc, new Date().toISOString(), parseCategoryId(req.body?.categoryId));
     await table.createEntity(entity as any);
+    try {
+      const comment = typeof req.body?.versionComment === 'string' ? req.body.versionComment.trim().slice(0, 500) : '';
+      await recordVersion(partitionKey(req), id, name.trim(), doc, comment);
+    } catch (err: any) {
+      console.error('Template version write error:', err?.message ?? err);
+    }
     res.status(201).json(metaFromEntity(entity));
   } catch (err: any) {
     if (err?.status === 413) {
@@ -179,6 +211,12 @@ router.put('/:id', async (req: Request, res: Response) => {
     const entity = toEntity(pk, id, name.trim(), doc, createdAt, categoryId);
     // Replace (not merge) so stale doc chunks from a previously larger doc are dropped.
     await table.upsertEntity(entity as any, 'Replace');
+    try {
+      const comment = typeof req.body?.versionComment === 'string' ? req.body.versionComment.trim().slice(0, 500) : '';
+      await recordVersion(pk, id, name.trim(), doc, comment);
+    } catch (err: any) {
+      console.error('Template version write error:', err?.message ?? err);
+    }
     res.json(metaFromEntity(entity));
   } catch (err: any) {
     if (err?.status === 413) {

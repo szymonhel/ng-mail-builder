@@ -36,9 +36,10 @@ export class TemplatesService {
   }
 
   // categoryId omitted = keep the stored assignment (server-side default).
-  update(id: string, name: string, doc: EmailDoc, categoryId?: string | null): Observable<EmailTemplateMeta> {
+  update(id: string, name: string, doc: EmailDoc, categoryId?: string | null, versionComment?: string): Observable<EmailTemplateMeta> {
     const body: Record<string, unknown> = { name, doc };
     if (categoryId !== undefined) body['categoryId'] = categoryId;
+    if (versionComment) body['versionComment'] = versionComment;
     return this.http.put<EmailTemplateMeta>(`${environment.apiUrl}/templates/${encodeURIComponent(id)}`, body);
   }
 

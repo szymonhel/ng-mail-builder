@@ -48,6 +48,10 @@ export function getSendHistoryTable(): Promise<TableClient> {
   return getTable(process.env.AZURE_SENDHISTORY_TABLE ?? 'sendhistory');
 }
 
+export function getTemplateVersionsTable(): Promise<TableClient> {
+  return getTable(process.env.AZURE_TEMPLATEVERSIONS_TABLE ?? 'templateversions');
+}
+
 export function getBlockPresetsTable(): Promise<TableClient> {
   return getTable(process.env.AZURE_BLOCKPRESETS_TABLE ?? 'blockpresets');
 }

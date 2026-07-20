@@ -1,59 +1,37 @@
 <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" (click)="closed.emit()">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 overflow-hidden flex flex-col max-h-[80vh]" (click)="$event.stopPropagation()">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
 
     <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between shrink-0">
-      <h2 class="text-base font-semibold text-gray-900 m-0">My emails</h2>
+      <h2 class="text-base font-semibold text-gray-900 m-0">Save email</h2>
       <button hlmBtn type="button" variant="ghost" size="icon-sm" (click)="closed.emit()">&#x2715;</button>
     </div>
 
-    <div class="px-6 py-4 border-b border-gray-200 shrink-0">
-      <label class="text-xs font-medium text-gray-600 block mb-1">Save current email as</label>
-      <div class="flex gap-2">
-        <input hlmInput type="text" class="flex-1 min-w-0" placeholder="e.g. Welcome newsletter"
-               [(ngModel)]="name" (keydown.enter)="save(false)" />
-        <button hlmBtn size="sm" [disabled]="saving() || !name.trim()" (click)="save(false)">
-          {{ saving() ? 'Saving…' : currentId() ? 'Save' : 'Save new' }}
-        </button>
-        @if (currentId()) {
-          <button hlmBtn variant="outline" size="sm" [disabled]="saving() || !name.trim()" (click)="save(true)">Save as new</button>
-        }
-      </div>
-      @if (currentId()) {
-        <p class="text-[10px] text-gray-400 mt-1 mb-0">"Save" overwrites the currently opened email.</p>
-      }
-    </div>
-
-    <div class="px-6 py-4 overflow-y-auto">
+    <div class="px-6 py-4 flex flex-col gap-3">
       @if (error()) {
-        <div class="flex items-center justify-between gap-4 px-4 py-2 mb-4 bg-red-50 border border-red-200 rounded-sm">
+        <div class="flex items-center justify-between gap-4 px-4 py-2 bg-red-50 border border-red-200 rounded-sm">
           <p class="text-red-600 text-xs m-0">{{ error() }}</p>
           <button class="text-red-600 text-xs underline shrink-0" (click)="error.set(null)">Dismiss</button>
         </div>
       }
 
-      @if (loading()) {
-        <app-spinner label="Loading saved emails…" />
-      } @else if (list().length === 0) {
-        <p class="text-sm text-gray-500 m-0">No saved emails yet. Give this one a name and save it above.</p>
-      } @else {
-        <div class="flex flex-col gap-2">
-          @for (t of list(); track t.id) {
-            <div class="flex items-center gap-3 p-3 border rounded-md"
-                 [class.border-blue-300]="t.id === currentId()"
-                 [class.bg-blue-50]="t.id === currentId()"
-                 [class.border-gray-200]="t.id !== currentId()">
-              <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium truncate m-0">{{ t.name }}</p>
-                <p class="text-[10px] text-gray-400 m-0">Updated {{ t.updatedAt | date:'medium' }}</p>
-              </div>
-              <button hlmBtn variant="outline" size="xs" [disabled]="openingId() !== null" (click)="open(t)">
-                {{ openingId() === t.id ? 'Opening…' : 'Open' }}
-              </button>
-              <button hlmBtn variant="ghost" size="icon-xs" class="text-destructive" (click)="delete(t)">✕</button>
-            </div>
-          }
+      <div>
+        <label class="text-xs font-medium text-gray-600 block mb-1">Name</label>
+        <input hlmInput type="text" class="w-full" placeholder="e.g. Welcome newsletter"
+               [(ngModel)]="name" (keydown.enter)="save()" />
+      </div>
+
+      @if (currentId()) {
+        <div>
+          <label class="text-xs font-medium text-gray-600 block mb-1">Comment (optional)</label>
+          <input hlmInput type="text" class="w-full" placeholder="What changed in this save?"
+                 [(ngModel)]="comment" (keydown.enter)="save()" />
         </div>
+        <p class="text-[10px] text-gray-400 m-0">This will overwrite the currently opened email.</p>
       }
+
+      <button hlmBtn size="sm" class="self-end" [disabled]="saving() || !name.trim()" (click)="save()">
+        {{ saving() ? 'Saving…' : 'Save' }}
+      </button>
     </div>
   </div>
 </div>

@@ -38,10 +38,8 @@
       <button hlmBtn variant="outline" size="sm" class="text-foreground px-2" [disabled]="!store.canRedo()" (click)="store.redo()" title="Redo (Ctrl/Cmd+Shift+Z)">
         <ng-icon name="lucideRedo2" size="16" />
       </button>
-      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="quickSave()">
-        {{ saveState() === 'saving' ? 'Saving…' : saveState() === 'saved' ? 'Saved ✓' : saveState() === 'error' ? 'Save failed' : 'Save' }}
-      </button>
-      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="emailsDialogOpen.set(true)">Emails</button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="emailsDialogOpen.set(true)">Save</button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground" [disabled]="!currentTemplateId()" (click)="versionHistoryOpen.set(true)">History</button>
       <button hlmBtn size="sm" (click)="openSendDialog()">Send</button>
     </div>
     <div class="flex items-center gap-2 ml-2 pl-4 border-l border-white/15">
@@ -79,8 +77,15 @@
       [categoryId]="currentCategoryId()"
       (closed)="emailsDialogOpen.set(false)"
       (saved)="onTemplateSaved($event)"
-      (opened)="onTemplateOpened($event)"
-      (deleted)="onTemplateDeleted($event)"
+    />
+  }
+
+  @if (versionHistoryOpen()) {
+    <app-version-history-dialog
+      [templateId]="currentTemplateId()!"
+      [templateName]="currentTemplateName()"
+      (closed)="versionHistoryOpen.set(false)"
+      (restored)="versionHistoryOpen.set(false)"
     />
   }
 

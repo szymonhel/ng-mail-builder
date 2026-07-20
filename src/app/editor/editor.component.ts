@@ -15,6 +15,7 @@ import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.co
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { TranslationsTabComponent } from './translations-tab/translations-tab.component';
 import { EmailsDialogComponent } from './emails-dialog/emails-dialog.component';
+import { VersionHistoryDialogComponent } from './version-history-dialog/version-history-dialog.component';
 import { SavePresetDialogComponent } from './save-preset-dialog/save-preset-dialog.component';
 import { TemplatesService, EmailTemplateMeta } from '../services/templates.service';
 import { UserSettingsService } from '../services/user-settings.service';
@@ -33,7 +34,7 @@ import { NgIcon } from '@ng-icons/core';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, SavePresetDialogComponent, HlmButton, NgIcon, SpinnerComponent],
+  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, VersionHistoryDialogComponent, SavePresetDialogComponent, HlmButton, NgIcon, SpinnerComponent],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent implements OnDestroy {
@@ -54,10 +55,10 @@ export class EditorComponent implements OnDestroy {
   }
 
   emailsDialogOpen = signal(false);
+  versionHistoryOpen = signal(false);
   currentTemplateId = signal<string | null>(null);
   currentTemplateName = signal('');
   currentCategoryId = signal<string | null>(null);
-  saveState = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
   // True while fetching a saved email for the /emails/:id route — the workspace
   // shows a spinner instead of the stale/starter doc.
   templateLoading = signal(false);
@@ -125,41 +126,6 @@ export class EditorComponent implements OnDestroy {
     this.currentTemplateName.set(meta.name);
     // Reflect the saved email in the URL so a refresh reopens it.
     this.router.navigate(['/emails', meta.id], { replaceUrl: true });
-  }
-
-  onTemplateOpened(meta: EmailTemplateMeta) {
-    this.currentTemplateId.set(meta.id);
-    this.currentTemplateName.set(meta.name);
-    this.setCategoryContext(meta.categoryId ?? null);
-    this.router.navigate(['/emails', meta.id], { replaceUrl: true });
-  }
-
-  onTemplateDeleted(id: string) {
-    if (this.currentTemplateId() === id) {
-      this.currentTemplateId.set(null);
-      this.currentTemplateName.set('');
-    }
-  }
-
-  // Header Save button: overwrite the loaded email in one click, or open the
-  // dialog to name it first when the doc has never been saved.
-  quickSave() {
-    const id = this.currentTemplateId();
-    if (!id) {
-      this.emailsDialogOpen.set(true);
-      return;
-    }
-    this.saveState.set('saving');
-    this.templates.update(id, this.currentTemplateName(), this.store.doc()).subscribe({
-      next: () => {
-        this.saveState.set('saved');
-        setTimeout(() => this.saveState.set('idle'), 1500);
-      },
-      error: () => {
-        this.saveState.set('error');
-        setTimeout(() => this.saveState.set('idle'), 3000);
-      },
-    });
   }
 
   @HostListener('document:keydown', ['$event'])
