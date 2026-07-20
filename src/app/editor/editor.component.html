@@ -191,7 +191,7 @@
             }
           </div>
         </div>
-        <div class="flex-1 grid grid-cols-2 gap-6 min-h-[500px]">
+        <div class="flex-1 grid grid-cols-3 gap-6 min-h-[500px]">
           <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
               <h3 class="m-0 text-sm font-semibold">JSON Document Model</h3>
@@ -216,6 +216,16 @@
               </div>
             </div>
             <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre">{{ mjmlOutput() }}</pre>
+          </div>
+          <div class="bg-white rounded-lg border border-gray-200 overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <h3 class="m-0 text-sm font-semibold">HTML Output</h3>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500" title="Tokens like {{ '{{' }}name{{ '}}' }} are left as-is for services (e.g. Auth0) that do their own substitution">raw tokens</span>
+                <button hlmBtn variant="outline" size="sm" (click)="copyHtml()">Copy</button>
+              </div>
+            </div>
+            <pre class="m-0 p-4 text-xs font-mono overflow-auto flex-1 bg-gray-50 whitespace-pre">{{ htmlOutput() }}</pre>
           </div>
         </div>
       </div>

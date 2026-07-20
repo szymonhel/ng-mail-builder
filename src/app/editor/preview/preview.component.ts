@@ -40,11 +40,21 @@ export class PreviewComponent {
   private internalLocale = signal<string | null>(null);
   locale = computed(() => this.lockedLocale() !== undefined ? this.lockedLocale()! : this.internalLocale());
 
+  // When true, {{token}} placeholders are left untouched instead of being
+  // substituted — for templates (e.g. Auth0) where the *receiving* system
+  // does its own variable substitution and the exported HTML must keep the
+  // literal placeholders.
+  rawVariables = signal(false);
+
   private localizedDoc = computed(() => resolveDocForLocale(this.store.effectiveDoc(), this.locale()));
 
+  private renderHtml(doc: ReturnType<typeof this.localizedDoc>): string {
+    const html = docToHtml(doc);
+    return this.rawVariables() ? html : applyVariables(html, this.variableValues(doc.variables));
+  }
+
   previewHtml = computed(() => {
-    const doc = this.localizedDoc();
-    const html = applyVariables(docToHtml(doc), this.variableValues(doc.variables));
+    const html = this.renderHtml(this.localizedDoc());
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 
@@ -58,8 +68,7 @@ export class PreviewComponent {
   );
 
   iframeSrc = computed(() => {
-    const doc = this.debouncedLocalizedDoc();
-    const html = applyVariables(docToHtml(doc), this.variableValues(doc.variables));
+    const html = this.renderHtml(this.debouncedLocalizedDoc());
     const blob = new Blob([html], { type: 'text/html' });
     return this.sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(blob));
   });
@@ -91,6 +100,8 @@ export class PreviewComponent {
   setMode(mode: 'desktop' | 'mobile') { this.mode = mode; }
 
   setLocale(id: string | null) { this.internalLocale.set(id); }
+
+  setRawVariables(raw: boolean) { this.rawVariables.set(raw); }
 
   copyMjml() {
     navigator.clipboard.writeText(this.mjmlOutput());

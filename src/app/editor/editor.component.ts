@@ -22,6 +22,7 @@ import { MailService } from '../services/mail.service';
 import { AiImportService, PdfImportMode } from '../services/ai-import.service';
 import { AiApiKeyService } from '../services/ai-api-key.service';
 import { docToMjml, mjmlToDoc } from '../utils/mjml-mapper';
+import { docToHtml } from '../utils/html-preview';
 import { parseJsonImport, normalizeImportedDoc } from '../utils/import.utils';
 import { applyVariables } from '../utils/template-vars';
 import { resolveDocForLocale } from '../utils/translation-resolver';
@@ -182,6 +183,9 @@ export class EditorComponent implements OnDestroy {
   jsonOutput = computed(() => JSON.stringify(this.store.doc(), null, 2));
   exportLocaleId = signal<string | null>(null);
   mjmlOutput = computed(() => docToMjml(resolveDocForLocale(this.store.effectiveDoc(), this.exportLocaleId())));
+  // Raw HTML, tokens like {{name}} left untouched — for handing off to systems
+  // (e.g. Auth0 email templates) that do their own variable substitution.
+  htmlOutput = computed(() => docToHtml(resolveDocForLocale(this.store.effectiveDoc(), this.exportLocaleId())));
 
   sendDialogOpen = signal(false);
   sendStatus = signal<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -196,6 +200,7 @@ export class EditorComponent implements OnDestroy {
 
   copyJson() { navigator.clipboard.writeText(this.jsonOutput()); }
   copyMjml() { navigator.clipboard.writeText(this.mjmlOutput()); }
+  copyHtml() { navigator.clipboard.writeText(this.htmlOutput()); }
 
   onAiImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;

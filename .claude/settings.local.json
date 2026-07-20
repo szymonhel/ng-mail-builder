@@ -122,7 +122,8 @@
       "Bash(perl -0pi -e \"s|import \\\\{ SettingsSaveBarComponent \\\\} from '../../shared/settings-save-bar/settings-save-bar.component';|import { SettingsSaveBarComponent } from '../../shared/settings-save-bar/settings-save-bar.component';\\\\nimport { SpinnerComponent } from '../../shared/spinner/spinner.component';|; s|SettingsSaveBarComponent, AssetsTabComponent|SettingsSaveBarComponent, SpinnerComponent, AssetsTabComponent|\" src/app/dashboard/category-settings/category-settings.component.ts)",
       "Bash(perl -0pi -e \"s|import \\\\{ HlmButton \\\\} from '\\\\@spartan-ng/helm/button';|import { HlmButton } from '\\\\@spartan-ng/helm/button';\\\\nimport { SpinnerComponent } from '../../shared/spinner/spinner.component';|; s|imports: \\\\[HlmButton\\\\],|imports: [HlmButton, SpinnerComponent],|\" src/app/editor/assets-tab/assets-tab.component.ts)",
       "Bash(perl -0pi -e \"s|import \\\\{ HlmButton \\\\} from '\\\\@spartan-ng/helm/button';|import { HlmButton } from '\\\\@spartan-ng/helm/button';\\\\nimport { SpinnerComponent } from '../shared/spinner/spinner.component';|; s|EmailsDialogComponent, HlmButton, NgIcon\\\\],|EmailsDialogComponent, HlmButton, NgIcon, SpinnerComponent],|\" src/app/editor/editor.component.ts)",
-      "Bash(xargs -I{} grep -n \"emailDocSchema\\\\|import.*emailDocSchema\" {})"
+      "Bash(xargs -I{} grep -n \"emailDocSchema\\\\|import.*emailDocSchema\" {})",
+      "Bash(grep -rliE 'iframe|renderHtml|toHtml|generateHtml|exportHtml' --include='*.ts' --include='*.html' -not -path '*/node_modules/*' .)"
     ]
   }
 }

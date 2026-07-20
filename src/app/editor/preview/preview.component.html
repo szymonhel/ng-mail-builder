@@ -4,6 +4,12 @@
       <button hlmBtn size="sm" [variant]="mode === 'desktop' ? 'default' : 'outline'" (click)="setMode('desktop')">Desktop</button>
       <button hlmBtn size="sm" [variant]="mode === 'mobile' ? 'default' : 'outline'" (click)="setMode('mobile')">Mobile</button>
     </div>
+    <div class="flex gap-1">
+      <button hlmBtn size="sm" [variant]="!rawVariables() ? 'default' : 'outline'" (click)="setRawVariables(false)"
+              title="Show variables replaced with their preview values">Merged</button>
+      <button hlmBtn size="sm" [variant]="rawVariables() ? 'default' : 'outline'" (click)="setRawVariables(true)"
+              title="Show the exported HTML as-is, with {{ '{{' }} tokens {{ '}}' }} untouched">Raw</button>
+    </div>
     @if (!hideLocalePicker() && store.doc().locales.length > 0) {
       <select class="text-sm border border-gray-300 rounded-sm px-2 py-1"
               [ngModel]="locale()" (ngModelChange)="setLocale($event)">
