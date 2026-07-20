@@ -14,6 +14,7 @@ interface SendBody {
   toName?: string;
   subject: string;
   mjml: string;
+  categoryId?: string;
 }
 
 // Template-based send for external consumers: renders a saved email server-side
@@ -91,10 +92,38 @@ function sanitizeCollections(input: unknown): CollectionItems | null {
   return out;
 }
 
+// A category container's own sender identity, when set, overrides the account's
+// base FROM_EMAIL/FROM_NAME config — e.g. so different brands/products sending
+// through the same account each show their own "From" name.
+interface CategorySender {
+  fromName?: string | null;
+  fromEmail?: string | null;
+}
+
+async function loadCategorySender(sub: string, categoryId: string | null | undefined): Promise<CategorySender> {
+  if (!categoryId) return {};
+  try {
+    const categories = await getCategoriesTable();
+    const entity = await categories.getEntity(sub, categoryId);
+    const payload = unchunkJson(entity as Record<string, unknown>) as CategorySender | null;
+    return { fromName: payload?.fromName ?? null, fromEmail: payload?.fromEmail ?? null };
+  } catch (err: any) {
+    if (err?.statusCode !== 404) console.error('Category sender load error:', err?.message ?? err);
+    return {};
+  }
+}
+
+function resolveSender(sender: CategorySender): { Email: string; Name: string } {
+  return {
+    Email: sender.fromEmail || process.env.FROM_EMAIL!,
+    Name: sender.fromName || process.env.FROM_NAME || 'Mail Builder',
+  };
+}
+
 // Everything recordSend needs beyond the outcome itself; assembled by each route.
 type SendContext = { ownerSub: string } & Omit<RecordSendInput, 'status' | 'error'>;
 
-async function compileAndSend(res: Response, mjml: string, history: SendContext): Promise<void> {
+async function compileAndSend(res: Response, mjml: string, history: SendContext, sender: CategorySender = {}): Promise<void> {
   const { ownerSub, ...context } = history;
   const { to, toName, subject } = context;
   const { html, errors } = await mjml2html(mjml, { validationLevel: 'soft' });
@@ -112,10 +141,7 @@ async function compileAndSend(res: Response, mjml: string, history: SendContext)
     const result = await client.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
-          From: {
-            Email: process.env.FROM_EMAIL!,
-            Name: process.env.FROM_NAME ?? 'Mail Builder',
-          },
+          From: resolveSender(sender),
           To: [{ Email: to, Name: toName ?? to }],
           Subject: subject,
           HTMLPart: html,
@@ -151,7 +177,7 @@ router.post('/', async (req: Request, res: Response) => {
     return;
   }
 
-  const { to, toName, subject, mjml } = req.body as SendBody;
+  const { to, toName, subject, mjml, categoryId } = req.body as SendBody;
 
   if (!to || !subject || !mjml) {
     res.status(400).json({ error: 'Missing required fields: to, subject, mjml' });
@@ -163,11 +189,15 @@ router.post('/', async (req: Request, res: Response) => {
     return;
   }
 
+  const ownerSub = req.auth!.payload.sub!;
+  const sender = await loadCategorySender(ownerSub, categoryId);
+
   await compileAndSend(res, mjml, {
-    ownerSub: req.auth!.payload.sub!,
+    ownerSub,
     to, toName, subject,
     source: 'app',
-  });
+    categoryId,
+  }, sender);
 });
 
 router.post('/template', async (req: Request, res: Response) => {
@@ -225,13 +255,15 @@ router.post('/template', async (req: Request, res: Response) => {
   // doc inherits them, and its global data always. A missing/deleted category falls
   // back to the doc's own last-saved settings rather than failing the send.
   let categoryGlobalValues: Record<string, string> = {};
+  let categorySender: CategorySender = {};
   if (categoryId) {
     try {
       const categories = await getCategoriesTable();
       const catEntity = await categories.getEntity(req.auth!.payload.sub!, categoryId);
-      const payload = unchunkJson(catEntity as Record<string, unknown>) as { settings?: EmailDoc['settings'] | null; globalData?: unknown } | null;
+      const payload = unchunkJson(catEntity as Record<string, unknown>) as { settings?: EmailDoc['settings'] | null; globalData?: unknown } & CategorySender | null;
       if (doc.inheritSettings && payload?.settings) doc = { ...doc, settings: payload.settings };
       categoryGlobalValues = globalDataValues(payload?.globalData);
+      categorySender = { fromName: payload?.fromName ?? null, fromEmail: payload?.fromEmail ?? null };
     } catch (err: any) {
       if (err?.statusCode !== 404) console.error('Category settings load error:', err?.message ?? err);
     }
@@ -270,7 +302,7 @@ router.post('/template', async (req: Request, res: Response) => {
     // useful when debugging what an integration actually sent.
     variables,
     collections,
-  });
+  }, categorySender);
 });
 
 export default router;

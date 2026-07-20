@@ -19,6 +19,8 @@ export interface CategoryPayload {
   savedColors: SavedColor[];
   buttonDefaults?: CategoryButtonDefaults | null;
   globalData?: CategoryDataItem[];
+  fromName?: string | null;
+  fromEmail?: string | null;
 }
 
 @Service()

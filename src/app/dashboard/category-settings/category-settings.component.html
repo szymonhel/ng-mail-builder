@@ -136,6 +136,27 @@
             </div>
           }
         </div>
+
+        <!-- Sender: category override of the account's base FROM_EMAIL/FROM_NAME -->
+        <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 p-6 flex flex-col gap-4 mt-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">Sender</div>
+              <p class="text-[10px] text-gray-400 m-0">The "From" name/address emails in this category are sent as. Leave blank to use the account's default sender.</p>
+            </div>
+            <ng-container [ngTemplateOutlet]="saveBar" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs text-gray-600">From name</label>
+              <input hlmInput type="text" placeholder="Account default" [value]="fromName() ?? ''" (change)="setFromName($any($event.target).value)" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs text-gray-600">From email</label>
+              <input hlmInput type="email" placeholder="Account default" [value]="fromEmail() ?? ''" (change)="setFromEmail($any($event.target).value)" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div hlmTabsContent="colors" class="flex-1 overflow-auto p-6">

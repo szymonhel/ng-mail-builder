@@ -8,6 +8,7 @@ export interface SendPayload {
   toName?: string;
   subject: string;
   mjml: string;
+  categoryId?: string;
 }
 
 @Injectable({ providedIn: 'root' })

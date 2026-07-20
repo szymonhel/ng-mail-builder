@@ -37,6 +37,9 @@ function fromEntity(entity: Record<string, unknown>) {
     // null = the category defers to the account-level button defaults.
     buttonDefaults: payload.buttonDefaults ?? null,
     globalData: Array.isArray(payload.globalData) ? payload.globalData : [],
+    // null/empty = fall back to the account's base sender configuration.
+    fromName: (payload.fromName as string) || null,
+    fromEmail: (payload.fromEmail as string) || null,
   };
 }
 
@@ -46,6 +49,8 @@ function payloadFromBody(body: any) {
     savedColors: body?.savedColors ?? [],
     buttonDefaults: body?.buttonDefaults ?? null,
     globalData: Array.isArray(body?.globalData) ? body.globalData : [],
+    fromName: typeof body?.fromName === 'string' ? body.fromName.trim() || null : null,
+    fromEmail: typeof body?.fromEmail === 'string' ? body.fromEmail.trim() || null : null,
   };
 }
 

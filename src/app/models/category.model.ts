@@ -29,6 +29,10 @@ export interface Category {
   // Layered over account global data: on a name clash the category value wins,
   // and an email variable with the same name wins over both.
   globalData?: CategoryDataItem[];
+  // Sender identity for emails sent from this category. null/empty = fall back
+  // to the account's base sender configuration.
+  fromName?: string | null;
+  fromEmail?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }

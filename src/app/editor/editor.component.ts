@@ -343,6 +343,7 @@ export class EditorComponent implements OnDestroy {
       toName: form.toName || undefined,
       subject: form.subject,
       mjml,
+      categoryId: this.currentCategoryId() ?? undefined,
     }).subscribe({
       next: () => this.sendStatus.set('success'),
       error: (err) => {

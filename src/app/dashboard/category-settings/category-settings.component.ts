@@ -43,6 +43,9 @@ export class CategorySettingsComponent implements OnDestroy {
   // null = defer to the account-level button defaults.
   buttonDefaults = signal<CategoryButtonDefaults | null>(null);
   globalData = signal<CategoryDataItem[]>([]);
+  // null/empty = fall back to the account's base sender configuration.
+  fromName = signal<string | null>(null);
+  fromEmail = signal<string | null>(null);
 
   loading = signal(true);
   dirty = signal(false);
@@ -72,6 +75,8 @@ export class CategorySettingsComponent implements OnDestroy {
           this.savedColors.set(category.savedColors);
           this.buttonDefaults.set(category.buttonDefaults ?? null);
           this.globalData.set(category.globalData ?? []);
+          this.fromName.set(category.fromName ?? null);
+          this.fromEmail.set(category.fromEmail ?? null);
           this.dirty.set(false);
           this.loading.set(false);
         },
@@ -136,6 +141,16 @@ export class CategorySettingsComponent implements OnDestroy {
     this.dirty.set(true);
   }
 
+  setFromName(value: string) {
+    this.fromName.set(value.trim() || null);
+    this.dirty.set(true);
+  }
+
+  setFromEmail(value: string) {
+    this.fromEmail.set(value.trim() || null);
+    this.dirty.set(true);
+  }
+
   save() {
     const id = this.categoryId();
     const name = this.name().trim();
@@ -147,6 +162,8 @@ export class CategorySettingsComponent implements OnDestroy {
       savedColors: this.savedColors(),
       buttonDefaults: this.buttonDefaults(),
       globalData: this.globalData(),
+      fromName: this.fromName(),
+      fromEmail: this.fromEmail(),
     }).subscribe({
       next: () => {
         this.dirty.set(false);
