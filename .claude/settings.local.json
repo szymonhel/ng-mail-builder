@@ -121,7 +121,8 @@
       "Bash(perl -pi -e 's/imports: \\\\[DatePipe, FormsModule, HlmInput, HlmButton\\\\],/imports: [DatePipe, FormsModule, HlmInput, HlmButton, SpinnerComponent],/' src/app/editor/api-keys-section/api-keys-section.component.ts)",
       "Bash(perl -0pi -e \"s|import \\\\{ SettingsSaveBarComponent \\\\} from '../../shared/settings-save-bar/settings-save-bar.component';|import { SettingsSaveBarComponent } from '../../shared/settings-save-bar/settings-save-bar.component';\\\\nimport { SpinnerComponent } from '../../shared/spinner/spinner.component';|; s|SettingsSaveBarComponent, AssetsTabComponent|SettingsSaveBarComponent, SpinnerComponent, AssetsTabComponent|\" src/app/dashboard/category-settings/category-settings.component.ts)",
       "Bash(perl -0pi -e \"s|import \\\\{ HlmButton \\\\} from '\\\\@spartan-ng/helm/button';|import { HlmButton } from '\\\\@spartan-ng/helm/button';\\\\nimport { SpinnerComponent } from '../../shared/spinner/spinner.component';|; s|imports: \\\\[HlmButton\\\\],|imports: [HlmButton, SpinnerComponent],|\" src/app/editor/assets-tab/assets-tab.component.ts)",
-      "Bash(perl -0pi -e \"s|import \\\\{ HlmButton \\\\} from '\\\\@spartan-ng/helm/button';|import { HlmButton } from '\\\\@spartan-ng/helm/button';\\\\nimport { SpinnerComponent } from '../shared/spinner/spinner.component';|; s|EmailsDialogComponent, HlmButton, NgIcon\\\\],|EmailsDialogComponent, HlmButton, NgIcon, SpinnerComponent],|\" src/app/editor/editor.component.ts)"
+      "Bash(perl -0pi -e \"s|import \\\\{ HlmButton \\\\} from '\\\\@spartan-ng/helm/button';|import { HlmButton } from '\\\\@spartan-ng/helm/button';\\\\nimport { SpinnerComponent } from '../shared/spinner/spinner.component';|; s|EmailsDialogComponent, HlmButton, NgIcon\\\\],|EmailsDialogComponent, HlmButton, NgIcon, SpinnerComponent],|\" src/app/editor/editor.component.ts)",
+      "Bash(xargs -I{} grep -n \"emailDocSchema\\\\|import.*emailDocSchema\" {})"
     ]
   }
 }

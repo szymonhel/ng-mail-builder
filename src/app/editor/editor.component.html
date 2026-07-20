@@ -84,6 +84,15 @@
     />
   }
 
+  @if (store.presetSaveRequest(); as presetRequest) {
+    <app-save-preset-dialog
+      [request]="presetRequest"
+      [categoryId]="currentCategoryId()"
+      (closed)="store.clearPresetSaveRequest()"
+      (saved)="store.clearPresetSaveRequest()"
+    />
+  }
+
   <!-- Main workspace -->
   <div class="flex flex-1 overflow-hidden">
     @if (templateLoading()) {
@@ -92,7 +101,7 @@
       </div>
     } @else {
     @if (store.activeTab() === 'editor') {
-      <aside class="w-48 shrink-0 overflow-y-auto border-r border-gray-200">
+      <aside class="w-56 shrink-0 overflow-y-auto border-r border-gray-200">
         <app-palette />
       </aside>
       <main class="flex-1 overflow-y-auto min-w-0">

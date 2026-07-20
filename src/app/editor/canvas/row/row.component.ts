@@ -29,6 +29,11 @@ export class RowComponent {
     this.store.removeRow(this.row().id);
   }
 
+  saveAsPreset(event: MouseEvent) {
+    event.stopPropagation();
+    this.store.requestSaveRowAsPreset(this.row().id);
+  }
+
   selectRow(event: MouseEvent) {
     event.stopPropagation();
     this.store.selectRow(this.row().id);

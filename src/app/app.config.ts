@@ -28,6 +28,7 @@ import {
   lucideBarChart3,
   lucideUndo2,
   lucideRedo2,
+  lucideBookmark,
 } from '@ng-icons/lucide';
 
 import { routes } from './app.routes';
@@ -75,6 +76,7 @@ export const appConfig: ApplicationConfig = {
       lucideBarChart3,
       lucideUndo2,
       lucideRedo2,
+      lucideBookmark,
     }),
   ]
 };

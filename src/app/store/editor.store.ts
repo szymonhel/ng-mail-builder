@@ -8,6 +8,8 @@ import { uid } from '../utils/id.utils';
 // Block creation deep-clones these via cloneBlockProps so every instance gets fresh ids.
 const ITEM_ARRAY_FIELDS = ['links', 'rows', 'items', 'images'] as const;
 
+export type PresetSaveRequest = { kind: 'row'; row: Row } | { kind: 'block'; block: Block };
+
 function cloneBlockProps(type: BlockType, overrides: Record<string, unknown> = {}): any {
   const base: any = { ...BLOCK_DEFAULTS[type], ...overrides };
   for (const field of ITEM_ARRAY_FIELDS) {
@@ -16,6 +18,32 @@ function cloneBlockProps(type: BlockType, overrides: Record<string, unknown> = {
     }
   }
   return base;
+}
+
+// A saved user preset is a static JSON snapshot with fixed ids baked in — unlike
+// SECTION_PRESETS, which call uid() fresh on every build(). Regenerate every id
+// before inserting so it can't collide with what's already in the doc (selection
+// and translation-key targeting both key off these ids).
+function regenerateBlockIds(block: Block): Block {
+  const props: any = { ...block.props };
+  for (const field of ITEM_ARRAY_FIELDS) {
+    if (Array.isArray(props[field])) {
+      props[field] = props[field].map((item: any) => ({ ...item, id: uid() }));
+    }
+  }
+  return { ...block, id: uid(), props };
+}
+
+function regenerateRowIds(row: Row): Row {
+  return {
+    ...row,
+    id: uid(),
+    columns: row.columns.map(col => ({
+      ...col,
+      id: uid(),
+      blocks: col.blocks.map(regenerateBlockIds),
+    })),
+  };
 }
 
 const BLOCK_DEFAULTS: Record<BlockType, any> = {
@@ -276,6 +304,29 @@ export class EditorStore {
     return null;
   });
 
+  // Pending "save as preset" request, surfaced here (rather than in the row/column
+  // component that triggered it) so the save dialog — owned by the editor shell —
+  // can pick it up the same way it already reads selectedRowId/selectedBlockId.
+  private _presetSaveRequest = signal<PresetSaveRequest | null>(null);
+  presetSaveRequest = this._presetSaveRequest.asReadonly();
+
+  requestSaveRowAsPreset(rowId: string) {
+    const row = this._doc().rows.find(r => r.id === rowId);
+    if (row) this._presetSaveRequest.set({ kind: 'row', row });
+  }
+
+  requestSaveBlockAsPreset(blockId: string) {
+    const block = this._doc().rows
+      .flatMap(r => r.columns)
+      .flatMap(c => c.blocks)
+      .find(b => b.id === blockId);
+    if (block) this._presetSaveRequest.set({ kind: 'block', block });
+  }
+
+  clearPresetSaveRequest() {
+    this._presetSaveRequest.set(null);
+  }
+
   // All doc mutations funnel through here so undo/redo has a single choke point.
   private commit(updater: (doc: EmailDoc) => EmailDoc) {
     const prev = this._doc();
@@ -356,6 +407,28 @@ export class EditorStore {
       return { ...d, rows };
     });
     this._selectedRowId.set(row.id);
+  }
+
+  // Inserts a user-saved row preset (see regenerateRowIds) at the end of the doc.
+  addUserPresetRow(presetRow: Row) {
+    this.addPresetRow(regenerateRowIds(presetRow));
+  }
+
+  // Inserts a user-saved block preset into the row's first column, same targeting as addBlock().
+  addUserPresetBlock(rowId: string, presetBlock: Block) {
+    const row = this._doc().rows.find(r => r.id === rowId);
+    const col = row?.columns[0];
+    if (!row || !col) return;
+    const block = regenerateBlockIds(presetBlock);
+    this.commit(d => ({
+      ...d,
+      rows: d.rows.map(r => r.id !== rowId ? r : {
+        ...r,
+        columns: r.columns.map((c, i) => i === 0 ? { ...c, blocks: [...c.blocks, block] } : c)
+      })
+    }));
+    this._selectedBlockId.set(block.id);
+    this._selectedRowId.set(rowId);
   }
 
   addColumn(rowId: string) {

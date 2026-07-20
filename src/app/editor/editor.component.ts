@@ -15,6 +15,7 @@ import { SendDialogComponent, SendFormValue } from './send-dialog/send-dialog.co
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { TranslationsTabComponent } from './translations-tab/translations-tab.component';
 import { EmailsDialogComponent } from './emails-dialog/emails-dialog.component';
+import { SavePresetDialogComponent } from './save-preset-dialog/save-preset-dialog.component';
 import { TemplatesService, EmailTemplateMeta } from '../services/templates.service';
 import { UserSettingsService } from '../services/user-settings.service';
 import { MailService } from '../services/mail.service';
@@ -31,7 +32,7 @@ import { NgIcon } from '@ng-icons/core';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, HlmButton, NgIcon, SpinnerComponent],
+  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, SavePresetDialogComponent, HlmButton, NgIcon, SpinnerComponent],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent implements OnDestroy {

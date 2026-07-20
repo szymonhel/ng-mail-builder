@@ -31,8 +31,9 @@ import { PaletteItem } from '../../palette/palette.component';
           <div class="px-7">
             <app-block-host [block]="block" />
           </div>
-          <div class="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          <div class="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5"
                [class.opacity-100]="isSelected(block.id)">
+            <button class="border-0 bg-transparent cursor-pointer px-1.5 py-0.5 rounded-sm text-xs text-gray-400 hover:bg-gray-100 hover:text-gray-600" (click)="saveAsPreset(block.id, $event)" title="Save block as preset">&#x1F516;</button>
             <button class="border-0 bg-transparent cursor-pointer px-1.5 py-0.5 rounded-sm text-xs text-red-500 hover:bg-red-50" (click)="removeBlock(block.id, $event)" title="Remove block">&#x2715;</button>
           </div>
           <div *cdkDragPlaceholder class="h-10 bg-blue-100 border-2 border-dashed border-blue-500 rounded-sm"></div>
@@ -97,6 +98,11 @@ export class ColumnComponent implements OnInit, OnDestroy {
   removeBlock(blockId: string, event: MouseEvent) {
     event.stopPropagation();
     this.store.removeBlock(blockId);
+  }
+
+  saveAsPreset(blockId: string, event: MouseEvent) {
+    event.stopPropagation();
+    this.store.requestSaveBlockAsPreset(blockId);
   }
 
   isSelected(blockId: string) {

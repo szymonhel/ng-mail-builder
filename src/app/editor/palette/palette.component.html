@@ -2,8 +2,9 @@
 
   <!-- Tab bar -->
   <div hlmTabsList class="w-full shrink-0 rounded-none border-b border-gray-200 bg-white h-auto p-0">
-    <button hlmTabsTrigger="blocks" class="flex-1 py-2 rounded-none">Blocks</button>
-    <button hlmTabsTrigger="sections" class="flex-1 py-2 rounded-none">Sections</button>
+    <button hlmTabsTrigger="blocks" class="flex-1 py-2 px-1 rounded-none text-xs">Blocks</button>
+    <button hlmTabsTrigger="sections" class="flex-1 py-2 px-1 rounded-none text-xs">Sections</button>
+    <button hlmTabsTrigger="presets" class="flex-1 py-2 px-1 rounded-none text-xs">Presets</button>
   </div>
 
   <!-- Blocks tab -->
@@ -56,6 +57,34 @@
         </div>
       }
     </div>
+  </div>
+
+  <!-- My presets tab -->
+  <div hlmTabsContent="presets" class="p-3 overflow-y-auto flex-1">
+    <div class="text-xs text-gray-400 mb-3">Click to add &middot; saved from the canvas via "Save preset" / &#x1F516;</div>
+    @if (userPresetsError()) {
+      <div class="flex items-center justify-between gap-4 px-3 py-2 mb-3 bg-red-50 border border-red-200 rounded-sm">
+        <p class="text-red-600 text-xs m-0">{{ userPresetsError() }}</p>
+        <button class="text-red-600 text-xs underline shrink-0" (click)="userPresetsError.set(null)">Dismiss</button>
+      </div>
+    }
+    @if (userPresetsLoading()) {
+      <app-spinner label="Loading presets…" />
+    } @else if (userPresets().length === 0) {
+      <p class="text-xs text-gray-400 m-0">No saved presets yet. Select a row or block on the canvas and use its "Save preset" action.</p>
+    } @else {
+      <div class="flex flex-col gap-1.5">
+        @for (preset of userPresets(); track preset.id) {
+          <div class="flex items-center gap-2.5 px-3 py-2.5 border border-gray-200 rounded-md bg-white cursor-pointer transition-all text-sm hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+               (click)="usePreset(preset)">
+            <ng-icon name="lucideBookmark" size="18" class="w-5 shrink-0" />
+            <span class="font-medium select-none flex-1 min-w-0 truncate">{{ preset.name }}</span>
+            <span class="text-[10px] text-gray-400 uppercase shrink-0">{{ preset.kind }}</span>
+            <button class="border-0 bg-transparent cursor-pointer px-1 py-0.5 rounded-sm text-xs text-red-400 hover:bg-red-50 hover:text-red-500 shrink-0" (click)="deletePreset(preset, $event)" title="Delete preset">&#x2715;</button>
+          </div>
+        }
+      </div>
+    }
   </div>
 
 </div>

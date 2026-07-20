@@ -1,0 +1,49 @@
+<div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" (click)="closed.emit()">
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
+
+    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between shrink-0">
+      <h2 class="text-base font-semibold text-gray-900 m-0">
+        Save {{ request().kind === 'row' ? 'row' : 'block' }} as preset
+      </h2>
+      <button hlmBtn type="button" variant="ghost" size="icon-sm" (click)="closed.emit()">&#x2715;</button>
+    </div>
+
+    <div class="px-6 py-4 flex flex-col gap-4">
+      @if (error()) {
+        <div class="flex items-center justify-between gap-4 px-4 py-2 bg-red-50 border border-red-200 rounded-sm">
+          <p class="text-red-600 text-xs m-0">{{ error() }}</p>
+          <button class="text-red-600 text-xs underline shrink-0" (click)="error.set(null)">Dismiss</button>
+        </div>
+      }
+
+      <div>
+        <label class="text-xs font-medium text-gray-600 block mb-1">Name</label>
+        <input hlmInput type="text" class="w-full" placeholder="e.g. Two-column footer"
+               [(ngModel)]="name" (keydown.enter)="save()" autofocus />
+      </div>
+
+      @if (categoryName(); as catName) {
+        <div>
+          <label class="text-xs font-medium text-gray-600 block mb-1">Availability</label>
+          <div class="flex flex-col gap-1.5">
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+              <input type="radio" name="scope" value="category" [(ngModel)]="scope" />
+              Save to "{{ catName }}" — every email in this category
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+              <input type="radio" name="scope" value="personal" [(ngModel)]="scope" />
+              Personal — all my emails
+            </label>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2 shrink-0">
+      <button hlmBtn variant="outline" size="sm" (click)="closed.emit()">Cancel</button>
+      <button hlmBtn size="sm" [disabled]="saving() || !name.trim()" (click)="save()">
+        {{ saving() ? 'Saving…' : 'Save preset' }}
+      </button>
+    </div>
+  </div>
+</div>
