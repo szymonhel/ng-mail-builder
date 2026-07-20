@@ -16,6 +16,7 @@ import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { TranslationsTabComponent } from './translations-tab/translations-tab.component';
 import { EmailsDialogComponent } from './emails-dialog/emails-dialog.component';
 import { VersionHistoryDialogComponent } from './version-history-dialog/version-history-dialog.component';
+import { AiChatDialogComponent } from './ai-chat-dialog/ai-chat-dialog.component';
 import { SavePresetDialogComponent } from './save-preset-dialog/save-preset-dialog.component';
 import { TemplatesService, EmailTemplateMeta } from '../services/templates.service';
 import { UserSettingsService } from '../services/user-settings.service';
@@ -34,7 +35,7 @@ import { NgIcon } from '@ng-icons/core';
 @Component({
   selector: 'app-editor',
   standalone: true,
-  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, VersionHistoryDialogComponent, SavePresetDialogComponent, HlmButton, NgIcon, SpinnerComponent],
+  imports: [NgClass, AsyncPipe, FormsModule, RouterLink, PaletteComponent, CanvasComponent, InspectorComponent, PreviewComponent, SendDialogComponent, SettingsTabComponent, TranslationsTabComponent, EmailsDialogComponent, VersionHistoryDialogComponent, AiChatDialogComponent, SavePresetDialogComponent, HlmButton, NgIcon, SpinnerComponent],
   templateUrl: './editor.component.html'
 })
 export class EditorComponent implements OnDestroy {
@@ -56,6 +57,16 @@ export class EditorComponent implements OnDestroy {
 
   emailsDialogOpen = signal(false);
   versionHistoryOpen = signal(false);
+  aiChatOpen = signal(false);
+  // Keeps the dialog (and its conversation) mounted after first open, so closing it doesn't
+  // destroy the chat history — only real navigation to a different/new email should.
+  aiChatMounted = signal(false);
+  chatSessionKey = signal(0);
+
+  openAiChat() {
+    this.aiChatMounted.set(true);
+    this.aiChatOpen.set(true);
+  }
   currentTemplateId = signal<string | null>(null);
   currentTemplateName = signal('');
   currentCategoryId = signal<string | null>(null);
@@ -79,9 +90,11 @@ export class EditorComponent implements OnDestroy {
         this.currentTemplateId.set(null);
         this.currentTemplateName.set('');
         this.setCategoryContext(this.route.snapshot.queryParamMap.get('category'));
+        this.chatSessionKey.update(k => k + 1);
         return;
       }
-      // URL updated to an email that's already loaded (e.g. right after first save).
+      // URL updated to an email that's already loaded (e.g. right after first save) — not a
+      // real navigation, so the AI chat session (if open) should carry on rather than reset.
       if (id === this.currentTemplateId()) return;
       this.templateLoading.set(true);
       this.templates.get(id).subscribe({
@@ -91,6 +104,7 @@ export class EditorComponent implements OnDestroy {
           this.currentTemplateName.set(template.name);
           this.setCategoryContext(template.categoryId ?? null);
           this.templateLoading.set(false);
+          this.chatSessionKey.update(k => k + 1);
         },
         error: () => {
           this.templateLoading.set(false);

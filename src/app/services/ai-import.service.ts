@@ -7,6 +7,11 @@ import { EmailDoc } from '../models/email-doc.model';
 
 export type PdfImportMode = 'mockup' | 'brief';
 
+export interface ChatTurn {
+  role: 'user' | 'assistant';
+  text: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AiImportService {
   private http = inject(HttpClient);
@@ -40,5 +45,23 @@ export class AiImportService {
     return this.http
       .post<{ doc: EmailDoc }>(`${environment.apiUrl}/ai/import-pdf`, formData, { headers })
       .pipe(map(res => res.doc));
+  }
+
+  // Conversational turn: replays the whole message history each call (server is stateless),
+  // plus the doc as it exists right now (omitted on a brand-new template's first message) and
+  // an optional file attached to the latest user turn. Returns both the (possibly unchanged)
+  // doc and a short conversational reply, since the user's message may be a question rather
+  // than an edit request.
+  chat(turns: ChatTurn[], currentDoc: EmailDoc | null, file: File | null, openaiApiKey: string): Observable<{ reply: string; doc: EmailDoc }> {
+    const formData = new FormData();
+    formData.append('messages', JSON.stringify(turns));
+    if (currentDoc) formData.append('currentDoc', JSON.stringify(currentDoc));
+    if (file) formData.append('file', file);
+
+    const headers = new HttpHeaders({
+      'x-openai-key': openaiApiKey,
+    });
+
+    return this.http.post<{ reply: string; doc: EmailDoc }>(`${environment.apiUrl}/ai/chat`, formData, { headers });
   }
 }

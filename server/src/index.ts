@@ -4,6 +4,7 @@ import cors from 'cors';
 import sendRouter from './routes/send';
 import aiImportRouter from './routes/aiImport';
 import aiImportPdfRouter from './routes/aiImportPdf';
+import aiChatRouter from './routes/aiChat';
 import aiTranslateRouter from './routes/aiTranslate';
 import assetsRouter from './routes/assets';
 import templatesRouter from './routes/templates';
@@ -37,6 +38,7 @@ app.get('/health', (_req, res) => {
 app.use('/send', apiKeyOrJwt, sendRouter);
 app.use('/ai/import-image', checkJwt, aiImportRouter);
 app.use('/ai/import-pdf', checkJwt, aiImportPdfRouter);
+app.use('/ai/chat', checkJwt, aiChatRouter);
 app.use('/ai/translate', checkJwt, aiTranslateRouter);
 app.use('/assets', checkJwt, assetsRouter);
 app.use('/templates', apiKeyOrJwt, templatesRouter);

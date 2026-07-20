@@ -1,29 +1,27 @@
 import OpenAI from 'openai';
 import { EMAIL_DOC_JSON_SCHEMA } from './emailDocSchema';
 
-// Shared by the image and PDF import routes: both just supply a system prompt and a
-// user content array (image_url / file / text parts) and get back a parsed EmailDoc-shaped
-// object, forced to match EMAIL_DOC_JSON_SCHEMA via strict Structured Outputs.
+// Shared by the image, PDF, and chat import routes: all just supply a full OpenAI
+// messages array (system + one or more user/assistant turns) and get back a parsed object,
+// forced to match the given schema (an EmailDoc by default) via strict Structured Outputs.
 export async function generateEmailDoc(
   openaiKey: string,
-  systemPrompt: string,
-  content: OpenAI.Chat.Completions.ChatCompletionContentPart[]
+  messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[],
+  schema: Record<string, unknown> = EMAIL_DOC_JSON_SCHEMA,
+  schemaName = 'emit_email_doc'
 ): Promise<unknown> {
   const client = new OpenAI({ apiKey: openaiKey });
 
   const completion = await client.chat.completions.create({
     model: 'gpt-4o',
     max_tokens: 8192,
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content },
-    ],
+    messages,
     response_format: {
       type: 'json_schema',
       json_schema: {
-        name: 'emit_email_doc',
+        name: schemaName,
         strict: true,
-        schema: EMAIL_DOC_JSON_SCHEMA,
+        schema,
       },
     },
   });

@@ -189,7 +189,7 @@ const rowSchema = obj(
   'One horizontal section of the email, divided into one or more columns side by side.'
 );
 
-export const EMAIL_DOC_JSON_SCHEMA = obj({
+const emailDocShape = {
   version: { type: 'number', enum: [1] },
   settings: obj({
     contentWidth: { type: 'number', description: 'Overall email width in pixels, typically 600.' },
@@ -206,6 +206,18 @@ export const EMAIL_DOC_JSON_SCHEMA = obj({
     items: obj({ name: { type: 'string' }, defaultValue: { type: 'string' } }),
   },
   rows: { type: 'array', items: rowSchema },
+};
+
+export const EMAIL_DOC_JSON_SCHEMA = obj(emailDocShape);
+
+// Chat responses carry a short conversational reply alongside the document, so the UI can show
+// something meaningful (an answer, a summary of what changed) instead of a canned string.
+export const EMAIL_DOC_CHAT_JSON_SCHEMA = obj({
+  reply: {
+    type: 'string',
+    description: 'A short conversational reply: answer the user’s question directly, or briefly summarize what you changed. 1-3 sentences, no markdown.',
+  },
+  doc: obj(emailDocShape, 'The current template. Identical to the "Current template JSON" you were given if this turn was just a question with no edit requested.'),
 });
 
 export const EMAIL_DOC_MOCKUP_SYSTEM_PROMPT = `You reconstruct email template designs from a photo or design document (image or PDF) as a structured document, so a user can continue editing it in a block-based email builder.
@@ -227,3 +239,13 @@ Rules:
 - If the brief references an image or asset that isn't attached, use a placeholder image URL rather than omitting that block.
 - Do not invent content unrelated to what the brief describes or implies.
 - Respond only with the JSON document — no extra commentary.`;
+
+export const EMAIL_DOC_CHAT_SYSTEM_PROMPT = `You help a user build and iteratively edit an email template through conversation, using a fixed library of block types, so they can continue editing it in a block-based email builder. Every response has two parts: a short conversational "reply", and the "doc" — the complete, current EmailDoc JSON document (never a partial diff or just the changed parts).
+
+Rules:
+- If the user asks a question or requests suggestions rather than an edit (e.g. "what else could I add?"), answer it directly in "reply" and return "doc" completely unchanged from the "Current template JSON" you were given.
+- If the conversation includes a "Current template JSON" message and the user's latest message requests a change, apply exactly what they asked for in "doc" — leave every other row, column, block, and setting exactly as it was, and briefly summarize what you changed in "reply" (e.g. "Changed the button to green."). Do not regenerate or restyle parts of the template the user didn't mention.
+- If there is no "Current template JSON" message, design a new template from scratch based on the conversation so far, optionally using an attached image (visual mockup to match) or PDF (either a mockup or a written brief) as reference, following the same content and layout judgment as reconstructing a photo or brief; briefly describe what you created in "reply".
+- Always prefer the most specific typed block that fits (e.g. a banner with overlaid title/button is a single "hero" block, not separate image+heading+button blocks). Only use the "html" block as a last resort, since html content loses inline editability.
+- Preserve any links/URLs the user or an attached file gives you exactly as given, into the corresponding block's href field.
+- Do not invent content the user didn't ask for or that isn't present in an attached file.`;

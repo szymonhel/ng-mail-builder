@@ -40,6 +40,7 @@
       </button>
       <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="emailsDialogOpen.set(true)">Save</button>
       <button hlmBtn variant="outline" size="sm" class="text-foreground" [disabled]="!currentTemplateId()" (click)="versionHistoryOpen.set(true)">History</button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="openAiChat()">AI Assistant</button>
       <button hlmBtn size="sm" (click)="openSendDialog()">Send</button>
     </div>
     <div class="flex items-center gap-2 ml-2 pl-4 border-l border-white/15">
@@ -86,6 +87,15 @@
       [templateName]="currentTemplateName()"
       (closed)="versionHistoryOpen.set(false)"
       (restored)="versionHistoryOpen.set(false)"
+    />
+  }
+
+  @if (aiChatMounted()) {
+    <app-ai-chat-dialog
+      [class.hidden]="!aiChatOpen()"
+      [templateId]="currentTemplateId()"
+      [sessionKey]="chatSessionKey()"
+      (closed)="aiChatOpen.set(false)"
     />
   }
 
