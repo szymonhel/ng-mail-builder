@@ -1,0 +1,69 @@
+<div class="h-full flex flex-col bg-white">
+  <div class="px-3 py-2 border-b border-gray-200 flex items-center justify-between shrink-0">
+    <h3 class="m-0 text-sm font-semibold">AI Assistant</h3>
+    <div class="flex items-center gap-1">
+      <button hlmBtn type="button" variant="ghost" size="xs" [disabled]="turns().length === 0" (click)="clearChat()">New</button>
+      <button hlmBtn type="button" variant="ghost" size="icon-sm" (click)="closed.emit()" title="Back to inspector">&#x2715;</button>
+    </div>
+  </div>
+
+  @if (!aiApiKeyService.key()) {
+    <div class="px-3 py-2 bg-amber-50 border-b border-amber-200 shrink-0">
+      <p class="text-[11px] text-amber-700 m-0">
+        Set your OpenAI API key in <button class="underline font-medium" (click)="store.setActiveTab('settings')">Settings</button> to use the AI Assistant.
+      </p>
+    </div>
+  }
+
+  <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
+    @if (turns().length === 0) {
+      <p class="text-xs text-gray-400 m-0">
+        Describe the email you want, optionally attach a photo or PDF, and I'll generate it — then keep chatting to refine it, e.g. "make the button green" or "what else could I add?"
+      </p>
+    }
+    @for (turn of turns(); track $index) {
+      <div class="flex" [class.justify-end]="turn.role === 'user'">
+        <div
+          class="max-w-[90%] rounded-lg px-3 py-2 text-xs whitespace-pre-wrap"
+          [class.bg-blue-600]="turn.role === 'user'"
+          [class.text-white]="turn.role === 'user'"
+          [class.bg-gray-100]="turn.role === 'assistant'"
+          [class.text-gray-800]="turn.role === 'assistant'"
+        >{{ turn.text }}</div>
+      </div>
+    }
+    @if (loading()) {
+      <app-spinner label="Thinking…" [size]="16" />
+    }
+  </div>
+
+  @if (error()) {
+    <div class="px-3 py-2 border-t border-red-200 bg-red-50 shrink-0">
+      <p class="text-red-600 text-xs m-0">{{ error() }}</p>
+    </div>
+  }
+
+  <div class="p-3 border-t border-gray-200 shrink-0 flex flex-col gap-2">
+    @if (attachedFile(); as file) {
+      <div class="flex items-center gap-2 text-[11px] text-gray-600">
+        <span class="truncate">📎 {{ file.name }}</span>
+        <button class="text-gray-400 hover:text-gray-600" (click)="attachedFile.set(null)">&#x2715;</button>
+      </div>
+    }
+    <div class="flex items-end gap-2">
+      <input #fileInput type="file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf" class="hidden" (change)="onFileSelected($event)" />
+      <button hlmBtn type="button" variant="outline" size="icon-sm" [disabled]="loading()" (click)="fileInput.click()" title="Attach a photo or PDF">📎</button>
+      <textarea
+        rows="2"
+        placeholder="Describe what you want…"
+        class="flex-1 text-xs border border-gray-200 rounded-md p-2 outline-none resize-none"
+        [value]="draft()"
+        (input)="draft.set($any($event.target).value)"
+        (keydown.enter)="$event.preventDefault(); send()"
+      ></textarea>
+      <button hlmBtn type="button" size="sm" [disabled]="loading() || !aiApiKeyService.key() || (!draft().trim() && !attachedFile())" (click)="send()">
+        {{ loading() ? '…' : 'Send' }}
+      </button>
+    </div>
+  </div>
+</div>

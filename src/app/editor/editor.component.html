@@ -90,15 +90,6 @@
     />
   }
 
-  @if (aiChatMounted()) {
-    <app-ai-chat-dialog
-      [class.hidden]="!aiChatOpen()"
-      [templateId]="currentTemplateId()"
-      [sessionKey]="chatSessionKey()"
-      (closed)="aiChatOpen.set(false)"
-    />
-  }
-
   @if (store.presetSaveRequest(); as presetRequest) {
     <app-save-preset-dialog
       [request]="presetRequest"
@@ -122,8 +113,25 @@
       <main class="flex-1 overflow-y-auto min-w-0">
         <app-canvas />
       </main>
-      <aside class="w-64 shrink-0 overflow-y-auto border-l border-gray-200">
-        <app-inspector />
+      <aside
+        class="shrink-0 border-l border-gray-200"
+        [class.w-64]="!aiChatOpen()"
+        [class.w-96]="aiChatOpen()"
+        [class.overflow-y-auto]="!aiChatOpen()"
+        [class.overflow-hidden]="aiChatOpen()"
+      >
+        <div [class.hidden]="aiChatOpen()">
+          <app-inspector />
+        </div>
+        @if (aiChatMounted()) {
+          <div class="h-full" [class.hidden]="!aiChatOpen()">
+            <app-ai-chat-panel
+              [templateId]="currentTemplateId()"
+              [sessionKey]="chatSessionKey()"
+              (closed)="aiChatOpen.set(false)"
+            />
+          </div>
+        }
       </aside>
     }
     @if (store.activeTab() === 'preview') {

@@ -5,15 +5,14 @@ import { AiApiKeyService } from '../../services/ai-api-key.service';
 import { normalizeImportedDoc } from '../../utils/import.utils';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { SpinnerComponent } from '../../shared/spinner/spinner.component';
-import { DocPreviewComponent } from '../doc-preview/doc-preview.component';
 
 @Component({
-  selector: 'app-ai-chat-dialog',
+  selector: 'app-ai-chat-panel',
   standalone: true,
-  imports: [HlmButton, SpinnerComponent, DocPreviewComponent],
-  templateUrl: './ai-chat-dialog.component.html',
+  imports: [HlmButton, SpinnerComponent],
+  templateUrl: './ai-chat-panel.component.html',
 })
-export class AiChatDialogComponent {
+export class AiChatPanelComponent {
   store = inject(EditorStore);
   aiApiKeyService = inject(AiApiKeyService);
   private aiImport = inject(AiImportService);
@@ -24,9 +23,9 @@ export class AiChatDialogComponent {
   // something itself).
   templateId = input<string | null>(null);
 
-  // Bumped by the editor on real navigation (a different email opened, or "New"). The dialog
-  // itself is kept mounted across open/close so the conversation survives closing the modal;
-  // this is what resets it when the underlying email actually changes instead.
+  // Bumped by the editor on real navigation (a different email opened, or "New"). The panel
+  // itself is kept mounted while collapsed so the conversation survives hiding it; this is
+  // what resets it when the underlying email actually changes instead.
   sessionKey = input<number>(0);
 
   closed = output<void>();
@@ -73,7 +72,22 @@ export class AiChatDialogComponent {
 
     this.aiImport.chat(requestTurns, currentDoc, file, apiKey).subscribe({
       next: ({ reply, doc }) => {
-        this.store.loadDoc(normalizeImportedDoc(doc));
+        // The AI's schema only knows about settings/variables/rows — it never sees (and for
+        // "variables" is told to ignore) locales, translations, collections, category
+        // inheritance flags, or the saved-color palette. Carry those over from the doc as it
+        // stood before this turn so an AI edit can't silently wipe out translation work etc.
+        const before = this.store.doc();
+        const merged = {
+          ...normalizeImportedDoc(doc),
+          variables: before.variables,
+          collections: before.collections,
+          locales: before.locales,
+          translations: before.translations,
+          inheritSettings: before.inheritSettings,
+          inheritColors: before.inheritColors,
+          savedColors: before.savedColors,
+        };
+        this.store.loadDoc(merged);
         this.turns.update(t => [...t, { role: 'assistant', text: reply }]);
         this.hasGenerated.set(true);
         this.loading.set(false);
