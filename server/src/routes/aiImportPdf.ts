@@ -38,9 +38,15 @@ router.post('/', upload.single('file'), async (req: Request, res: Response) => {
   const fileDataUrl = `data:application/pdf;base64,${req.file.buffer.toString('base64')}`;
 
   try {
-    const doc = await generateEmailDoc(openaiKey, systemPrompt, [
-      { type: 'file', file: { filename: req.file.originalname || 'document.pdf', file_data: fileDataUrl } },
-      { type: 'text', text: instruction },
+    const doc = await generateEmailDoc(openaiKey, [
+      { role: 'system', content: systemPrompt },
+      {
+        role: 'user',
+        content: [
+          { type: 'file', file: { filename: req.file.originalname || 'document.pdf', file_data: fileDataUrl } },
+          { type: 'text', text: instruction },
+        ],
+      },
     ]);
     res.json({ doc });
   } catch (err: any) {

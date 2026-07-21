@@ -40,6 +40,7 @@
       </button>
       <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="emailsDialogOpen.set(true)">Save</button>
       <button hlmBtn variant="outline" size="sm" class="text-foreground" [disabled]="!currentTemplateId()" (click)="versionHistoryOpen.set(true)">History</button>
+      <button hlmBtn variant="outline" size="sm" class="text-foreground" (click)="openAiChat()">AI Assistant</button>
       <button hlmBtn size="sm" (click)="openSendDialog()">Send</button>
     </div>
     <div class="flex items-center gap-2 ml-2 pl-4 border-l border-white/15">
@@ -112,8 +113,25 @@
       <main class="flex-1 overflow-y-auto min-w-0">
         <app-canvas />
       </main>
-      <aside class="w-64 shrink-0 overflow-y-auto border-l border-gray-200">
-        <app-inspector />
+      <aside
+        class="shrink-0 border-l border-gray-200"
+        [class.w-64]="!aiChatOpen()"
+        [class.w-96]="aiChatOpen()"
+        [class.overflow-y-auto]="!aiChatOpen()"
+        [class.overflow-hidden]="aiChatOpen()"
+      >
+        <div [class.hidden]="aiChatOpen()">
+          <app-inspector />
+        </div>
+        @if (aiChatMounted()) {
+          <div class="h-full" [class.hidden]="!aiChatOpen()">
+            <app-ai-chat-panel
+              [templateId]="currentTemplateId()"
+              [sessionKey]="chatSessionKey()"
+              (closed)="aiChatOpen.set(false)"
+            />
+          </div>
+        }
       </aside>
     }
     @if (store.activeTab() === 'preview') {

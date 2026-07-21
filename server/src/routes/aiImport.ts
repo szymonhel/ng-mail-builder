@@ -33,9 +33,15 @@ router.post('/', upload.single('image'), async (req: Request, res: Response) => 
   const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
 
   try {
-    const doc = await generateEmailDoc(openaiKey, EMAIL_DOC_MOCKUP_SYSTEM_PROMPT, [
-      { type: 'text', text: 'Reconstruct this email template from the photo.' },
-      { type: 'image_url', image_url: { url: dataUrl } },
+    const doc = await generateEmailDoc(openaiKey, [
+      { role: 'system', content: EMAIL_DOC_MOCKUP_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'Reconstruct this email template from the photo.' },
+          { type: 'image_url', image_url: { url: dataUrl } },
+        ],
+      },
     ]);
     res.json({ doc });
   } catch (err: any) {
